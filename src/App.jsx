@@ -1,4 +1,5 @@
 import NavbarApp from "./components/NavbarApp";
+import PiePagina from "./components/PiePagina";
 import Bienvenida from "./components/Bienvenida";
 import ProductCard from "./components/ProductCard";
 
@@ -14,6 +15,7 @@ function App() {
           </div>
         </div>
       </main>
+      <PiePagina />
     </>
   );
 }
