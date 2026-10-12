@@ -10,6 +10,7 @@ function NavbarApp() {
           <Nav className="ms-auto">
             <Nav.Link href="#inicio">Inicio</Nav.Link>
             <Nav.Link href="#catalogo">Catálogo</Nav.Link>
+            <Nav.Link href="#carrito">Carrito</Nav.Link>
             <Nav.Link href="#nosotros">Nosotros</Nav.Link>
             <Nav.Link href="#contacto">Contacto</Nav.Link>
           </Nav>
