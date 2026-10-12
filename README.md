@@ -1,5 +1,13 @@
 # React + Vite
 
+## Catálogo Gas El Volcán
+
+Los productos de 5, 11 y 15 kg se definen en `src/data/productos.js`, reutilizando las imágenes existentes. `App` los renderiza con `map` y `ProductCard` recibe los datos mediante props.
+
+El precio original de 15 kg se conserva ($25.990). Los precios de 5 y 11 kg están pendientes de confirmación (`null`). El botón de carrito todavía no tiene una acción implementada.
+
+Para iniciar: `npm ci` y `npm run dev`. Para verificar: `npm run lint` y `npm run build`. Este proyecto no incluye aún pruebas unitarias ni un script `test`.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

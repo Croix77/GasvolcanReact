@@ -1,10 +1,11 @@
-function ProductCard() {
+function ProductCard({ nombre, descripcion, precio, imagen }) {
   return (
     <article className="card h-100 shadow-sm">
+      <img src={imagen} alt={nombre} className="card-img-top p-3" style={{ height: "240px", objectFit: "contain" }} />
       <div className="card-body d-flex flex-column">
-        <h2 className="h5">Cilindro de Gas 15 Kg</h2>
-        <p className="card-text">Gas licuado de petróleo de uso doméstico e industrial.</p>
-        <p className="fw-bold text-primary fs-4">$25.990</p>
+        <h3 className="h5">{nombre}</h3>
+        <p className="card-text">{descripcion}</p>
+        <p className="fw-bold text-primary fs-4">{precio == null ? "Precio por confirmar" : new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(precio)}</p>
         <button className="btn btn-primary mt-auto">Añadir al Carrito</button>
       </div>
     </article>
