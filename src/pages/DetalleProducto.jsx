@@ -11,22 +11,35 @@ function DetalleProducto({ productos, onAgregar }) {
       </>
     );
   return (
-    <section>
+    <section className="detalle-producto">
+      <p className="sobre-titulo">{producto.categoria}</p>
       <h1>{producto.nombre}</h1>
       <div className="row g-4">
         <div className="col-md-5">
-          {producto.imagen && (
+          {producto.imagen ? (
             <img
               className="img-fluid detalle-imagen"
               src={producto.imagen}
               alt={producto.nombre}
             />
+          ) : (
+            <div
+              className="producto-sin-imagen detalle-sin-imagen"
+              aria-label={`Sin fotografía: ${producto.nombre}`}
+            >
+              <span className="producto-inicial" aria-hidden="true">
+                {producto.categoria.charAt(0)}
+              </span>
+              <span>{producto.categoria}</span>
+            </div>
           )}
         </div>
-        <div className="col-md-7">
+        <div className="col-md-7 detalle-informacion">
           <p>{producto.descripcionLarga || producto.descripcion}</p>
           <p>Categoría: {producto.categoria}</p>
-          <p className="fs-3 fw-bold">{producto.precio === 0 ? 'Gratis' : moneda(producto.precio)}</p>
+          <p className="precio-producto">
+            {producto.precio === 0 ? "Gratis" : moneda(producto.precio)}
+          </p>
           <p>Stock: {producto.stock}</p>
           <button
             className="btn btn-primary"

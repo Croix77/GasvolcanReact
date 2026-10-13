@@ -17,9 +17,10 @@ function Contacto() {
     setValidado(Object.keys(resultado).length === 0);
   }
   return (
-    <section className="formulario-pagina">
+    <section className="formulario-pagina formulario-tarjeta">
+      <p className="sobre-titulo">HABLEMOS DE TU PEDIDO</p>
       <h1>Contacto</h1>
-      <p>
+      <p className="texto-introduccion">
         Prepara tu consulta sobre productos y despacho.
       </p>
       <form noValidate onSubmit={validar}>

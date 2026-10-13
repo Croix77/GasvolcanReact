@@ -16,7 +16,7 @@ function AdminInicio({ productos, pedidos }) {
             <article className="card h-100">
               <div className="card-body">
                 <h2 className="h5">{titulo}</h2>
-                <p className="fs-2">{valor}</p>
+                <p className="indicador-admin">{valor}</p>
               </div>
             </article>
           </div>

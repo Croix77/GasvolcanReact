@@ -43,8 +43,12 @@ function Login() {
     }
   }
   return (
-    <section className="formulario-pagina">
+    <section className="formulario-pagina formulario-tarjeta">
+      <p className="sobre-titulo">BIENVENIDO A GAS EL VOLCÁN</p>
       <h1>Iniciar sesión</h1>
+      <p className="texto-introduccion">
+        Ingresa con tu correo y contraseña para acceder a tu cuenta.
+      </p>
       <form noValidate onSubmit={enviar}>
         <CampoFormulario
           nombre="correo"

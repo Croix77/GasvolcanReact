@@ -4,9 +4,13 @@ function AdminLayout() {
   const { salir } = useAuth();
   const navegar = useNavigate();
   return (
-    <div className="row g-4">
+    <div className="row g-4 administracion-layout">
       <aside className="col-12 col-lg-3">
-        <nav aria-label="Menú administrativo" className="list-group">
+        <p className="sobre-titulo">ADMINISTRACIÓN</p>
+        <nav
+          aria-label="Menú administrativo"
+          className="list-group administracion-menu"
+        >
           {[
             ["/admin", "Panel general"],
             ["/admin/productos", "Productos"],
@@ -40,7 +44,7 @@ function AdminLayout() {
           </button>
         </nav>
       </aside>
-      <div className="col-12 col-lg-9">
+      <div className="col-12 col-lg-9 administracion-contenido">
         <p className="alert alert-warning">
           Administración de demostración local. La restricción de rutas no
           sustituye la autenticación de un servidor.

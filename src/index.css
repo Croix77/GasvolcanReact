@@ -62,6 +62,10 @@ a:hover {
   font-weight: 650;
   padding: 0.72rem 1.2rem;
 }
+.btn-sm {
+  padding: .35rem .65rem;
+  font-size: .8rem;
+}
 .btn-primary {
   --bs-btn-bg: var(--volcan);
   --bs-btn-border-color: var(--volcan);
@@ -526,5 +530,166 @@ label {
   *::after {
     scroll-behavior: auto !important;
     transition: none !important;
+  }
+}
+
+/* Formularios, compra y panel administrativo. */
+.formulario-tarjeta {
+  padding: 2rem;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: 1rem;
+}
+.formulario-tarjeta h1 {
+  margin-bottom: 0.8rem;
+}
+.texto-introduccion {
+  color: var(--texto-suave);
+  margin-bottom: 1.7rem;
+}
+.formulario-tarjeta form > div:last-child .btn-primary {
+  width: 100%;
+}
+.compra-pasos {
+  list-style: none;
+  display: flex;
+  padding: 0;
+  gap: 2rem;
+  margin: 0 0 2rem;
+  color: var(--texto-suave);
+  font-size: 0.85rem;
+}
+.compra-pasos span {
+  display: inline-grid;
+  place-items: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  background: #eee9e0;
+  border-radius: 50%;
+  font-weight: 700;
+  margin-right: 0.35rem;
+}
+.compra-pasos [aria-current] {
+  color: var(--volcan);
+  font-weight: 700;
+}
+.compra-pasos [aria-current] span {
+  color: #fff;
+  background: var(--volcan);
+}
+.resumen-compra {
+  padding: 1.8rem;
+  border: 1px solid #e6d4bd;
+  border-radius: 1rem;
+  background: #f7eddf;
+}
+.resumen-compra ul {
+  list-style: none;
+  padding: 0;
+}
+.resumen-compra li {
+  padding: 0.9rem 0;
+  border-bottom: 1px solid #dfd0bd;
+}
+.resumen-compra p {
+  font-size: 0.9rem;
+}
+.resumen-compra .fw-bold {
+  font-size: 1.1rem;
+}
+.resultado-compra {
+  max-width: 780px;
+  margin: 1rem auto;
+}
+.nosotros-descripcion {
+  max-width: 720px;
+  font-size: 1.1rem;
+}
+.zona-tarjeta {
+  border-left: 4px solid var(--volcan);
+}
+.zona-tarjeta .card-body {
+  padding: 1.5rem;
+}
+.zona-tarjeta p {
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+}
+.zona-tarjeta p:last-child {
+  background: #fff1e9;
+  color: var(--volcan-oscuro);
+  border-radius: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0;
+}
+.detalle-informacion {
+  padding-top: 1rem;
+}
+.detalle-sin-imagen {
+  min-height: 320px;
+  border-radius: 1rem;
+}
+.historial-pagina .list-group-item {
+  padding: 1.3rem;
+  border-color: var(--borde);
+}
+.administracion-menu {
+  border: 1px solid var(--borde);
+  border-radius: 0.8rem;
+  background: #fff;
+  overflow: hidden;
+}
+.administracion-menu .list-group-item {
+  border: 0;
+  padding: 0.9rem 1rem;
+  font-size: 0.86rem;
+}
+.administracion-menu .list-group-item.active {
+  background: #fff0e6;
+  color: var(--volcan);
+  border-left: 3px solid var(--volcan);
+  font-weight: 700;
+}
+.administracion-contenido > section {
+  padding: 1.5rem;
+  border: 1px solid var(--borde);
+  border-radius: 1rem;
+  background: #fff;
+}
+.administracion-contenido h1 {
+  font-size: 1.8rem;
+}
+.administracion-contenido .alert {
+  font-size: 0.8rem;
+  border-radius: 0.7rem;
+}
+.administracion-contenido .card {
+  background: var(--fondo);
+}
+.indicador-admin {
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: var(--volcan);
+  margin: 0.7rem 0 0;
+}
+@media (max-width: 767px) {
+  .formulario-tarjeta,
+  .resumen-compra {
+    padding: 1.3rem;
+  }
+  .compra-pasos {
+    gap: 0.75rem;
+    font-size: 0.75rem;
+    justify-content: space-between;
+  }
+  .compra-pasos span {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  .administracion-contenido > section {
+    padding: 1rem;
+  }
+  .administracion-contenido h1 {
+    font-size: 1.55rem;
   }
 }

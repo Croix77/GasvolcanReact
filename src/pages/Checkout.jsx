@@ -57,10 +57,7 @@ function Checkout({ items, vaciar, onPedido }) {
       })),
       total,
       comuna: datos.comuna,
-      estado:
-        resultado === "exito"
-          ? "Confirmado"
-          : "Fallido",
+      estado: resultado === "exito" ? "Confirmado" : "Fallido",
     };
     if (resultado === "exito") {
       onPedido(pedido);
@@ -69,11 +66,23 @@ function Checkout({ items, vaciar, onPedido }) {
     navegar(`/compra/${resultado}`, { state: { pedido } });
   }
   return (
-    <section>
+    <section className="compra-pagina">
+      <p className="sobre-titulo">UN PASO MÁS PARA TU PEDIDO</p>
       <h1>Datos de entrega</h1>
+      <ol className="compra-pasos" aria-label="Pasos de compra">
+        <li>
+          <span>1</span> Carrito
+        </li>
+        <li aria-current="step">
+          <span>2</span> Entrega
+        </li>
+        <li>
+          <span>3</span> Resumen
+        </li>
+      </ol>
       <div className="row g-4">
         <div className="col-12 col-lg-7">
-          <form noValidate onSubmit={enviar}>
+          <form className="formulario-tarjeta" noValidate onSubmit={enviar}>
             <CampoFormulario
               nombre="nombre"
               etiqueta="Nombre de quien recibe"
@@ -121,26 +130,28 @@ function Checkout({ items, vaciar, onPedido }) {
           </form>
         </div>
         <aside className="col-12 col-lg-5">
-          <h2 className="h4">Resumen</h2>
-          <ul>
-            {items.map((item) => (
-              <li key={item.id}>
-                {item.nombre} × {item.cantidad}
-              </li>
-            ))}
-          </ul>
-          <p className="fw-bold">Total de productos: {moneda(total)}</p>
-          <p>
-            Pago en efectivo al recibir en el flujo del negocio. El costo de
-            despacho no está incluido.
-          </p>
-          {noDisponible && (
-            <p role="alert">
-              Revisa el carrito: hay productos sin precio confirmado o con stock
-              insuficiente.
+          <div className="resumen-compra">
+            <h2 className="h4">Resumen</h2>
+            <ul>
+              {items.map((item) => (
+                <li key={item.id}>
+                  {item.nombre} × {item.cantidad}
+                </li>
+              ))}
+            </ul>
+            <p className="fw-bold">Total de productos: {moneda(total)}</p>
+            <p>
+              Pago en efectivo al recibir en el flujo del negocio. El costo de
+              despacho no está incluido.
             </p>
-          )}
-          <Link to="/carrito">Volver al carrito</Link>
+            {noDisponible && (
+              <p role="alert">
+                Revisa el carrito: hay productos sin precio confirmado o con
+                stock insuficiente.
+              </p>
+            )}
+            <Link to="/carrito">Volver al carrito</Link>
+          </div>
         </aside>
       </div>
     </section>

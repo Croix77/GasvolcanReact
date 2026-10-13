@@ -6,13 +6,13 @@ function ResultadoCompra() {
   const pedido = state?.pedido;
   if (!pedido || !["exito", "error"].includes(resultado))
     return (
-      <section>
+      <section className="resultado-compra formulario-tarjeta">
         <h1>No hay un resumen de compra disponible</h1>
         <Link to="/carrito">Volver al carrito</Link>
       </section>
     );
   return (
-    <section>
+    <section className="resultado-compra formulario-tarjeta">
       <h1>
         {resultado === "exito"
           ? "Compra confirmada"
