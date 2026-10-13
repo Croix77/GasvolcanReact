@@ -1,30 +1,51 @@
-# React + Vite
+# Gas El Volcán
 
-## Catálogo Gas El Volcán
+Frontend académico en React con Vite, React Router, Bootstrap y Vitest.
 
-Los productos de 5, 11 y 15 kg se definen en `src/data/productos.js`, reutilizando las imágenes existentes. `App` los renderiza con `map` y `ProductCard` recibe los datos mediante props.
+## Ejecutar
 
-El precio original de 15 kg se conserva ($25.990). Los precios de 5 y 11 kg están pendientes de confirmación (`null`). Cuando hay precios pendientes, el carrito muestra un subtotal confirmado y avisa que el importe final no está completo.
+Requiere Node.js compatible con Vite 8 (se verificó con Node 24).
 
-Para iniciar: `npm ci` y `npm run dev`. Para verificar: `npm test`, `npm run lint` y `npm run build`. Para pruebas en modo continuo: `npm run test:watch`.
+```sh
+npm ci
+npm run dev
+```
 
-## Carrito y pruebas
+## Verificar
 
-El carrito permite agregar cilindros, agrupar los repetidos, cambiar su cantidad (1 a 99), eliminar productos y vaciarlo. Se guarda en `localStorage` bajo `gas-el-volcan-carrito`, con identificador y cantidad; las imágenes y los precios se obtienen siempre del catálogo actual. Si el almacenamiento está bloqueado, funciona durante la sesión. Los registros corruptos o inválidos se descartan.
+```sh
+npm test
+npm run test:coverage
+npm run lint
+npm run build
+```
 
-Las pruebas usan Vitest, React Testing Library y jsdom. Verifican catálogo, operaciones, totales, precios pendientes, persistencia, límite de cantidades y almacenamiento inválido o bloqueado. Aún no hay proceso de pago o envío de pedidos.
+La cobertura se genera en `coverage/`, excluida de Git. `npm run test:watch` ejecuta las pruebas durante el desarrollo.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Funciones
 
-Currently, two official plugins are available:
+- Catálogo de 14 productos con precios residenciales y stock del catálogo Forma C. Los cilindros de 5, 11 y 15 kg reutilizan las imágenes originales; el resto no tiene fotografías disponibles.
+- Búsqueda, filtro por categoría, detalle por identificador y vista de ofertas.
+- Carrito con cantidades, eliminación, vaciado, límite de stock y persistencia local.
+- Formulario de contacto controlado con validación. No envía correos.
+- Checkout de demostración con entrega, resultado exitoso o fallido y resumen. No cobra ni envía pedidos reales. Solo los pedidos exitosos aparecen en el panel durante la sesión.
+- Administración local del catálogo con crear, leer, actualizar y eliminar; edición de precio, stock y destacados en ofertas.
+- Cobertura de despacho para Chillán y comunas del caso. Navegación SPA y página 404.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Alcance de los datos
 
-## React Compiler
+`src/data/productos.js` y `src/data/zonas.js` contienen los datos del caso. `src/data/catalogo.js` reúne validación y funciones CRUD. Los cambios del catálogo y el carrito se guardan en el navegador. Esta persistencia no comparte datos entre dispositivos ni sustituye una API.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+El panel administrativo es una demostración sin autenticación. No debe usarse con información real. Los datos de contacto y dirección no se guardan en almacenamiento persistente. No se recopilan contraseñas o tarjetas. El checkout usa precios residenciales y no incluye una tarifa de despacho; no existe una tarifa verificada en los documentos.
 
-## Expanding the ESLint configuration
+No se implementaron aún backend Spring Boot, cuentas y roles reales, mapas de reparto, base de datos o despliegue AWS. Los informes de evaluación se entregan por separado.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Rutas
+
+`/`, `/catalogo`, `/categorias`, `/ofertas`, `/productos/:id`, `/carrito`, `/nosotros`, `/contacto`, `/checkout`, `/compra/:resultado`, `/admin`.
+
+Al publicar con BrowserRouter, el servidor debe dirigir las rutas internas a `index.html`. Vite permite comprobar las URL directas en desarrollo. El entorno de producción debe configurar esa regla.
+
+## Fuera del repositorio y del ZIP
+
+`node_modules`, `dist`, `coverage`, archivos temporales, ZIP, PDFs de clase, rúbricas, informes de entrega, claves `.pem`/`.key`, archivos `.env` con secretos y datos personales reales. Las pruebas y la configuración de Vitest sí forman parte del código fuente. No se utilizan Jasmine ni Karma, conforme a la instrucción del usuario.

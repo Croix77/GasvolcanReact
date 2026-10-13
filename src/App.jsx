@@ -1,37 +1,105 @@
+import { useState } from "react";
+import { Route, Routes } from "react-router-dom";
 import NavbarApp from "./components/NavbarApp";
 import PiePagina from "./components/PiePagina";
 import Bienvenida from "./components/Bienvenida";
-import ProductCard from "./components/ProductCard";
-import { productos } from "./data/productos";
 import Carrito from "./components/Carrito";
 import { useCarrito } from "./hooks/useCarrito";
-import { useState } from "react";
+import { useCatalogo } from "./hooks/useCatalogo";
+import Catalogo from "./pages/Catalogo";
+import DetalleProducto from "./pages/DetalleProducto";
+import Nosotros from "./pages/Nosotros";
+import Contacto from "./pages/Contacto";
+import Checkout from "./pages/Checkout";
+import ResultadoCompra from "./pages/ResultadoCompra";
+import Administracion from "./pages/Administracion";
+import NoEncontrada from "./pages/NoEncontrada";
 
 function App() {
-  const carrito = useCarrito();
+  const catalogo = useCatalogo();
+  const carrito = useCarrito(catalogo.productos);
   const [mensaje, setMensaje] = useState("");
+  const [pedidos, setPedidos] = useState([]);
 
   function agregarProducto(producto) {
     carrito.agregar(producto.id);
-    setMensaje(`${producto.nombre}: carrito actualizado (máximo 99 unidades por producto).`);
+    setMensaje(`${producto.nombre}: carrito actualizado.`);
   }
+  const listado = (
+    <Catalogo productos={catalogo.productos} onAgregar={agregarProducto} />
+  );
   return (
     <>
       <NavbarApp />
-      <main id="inicio" className="container py-4">
-        <Bienvenida />
-        <section id="catalogo" aria-labelledby="titulo-catalogo" className="mt-4">
-          <h2 id="titulo-catalogo">Catálogo de productos</h2>
-          <div className="row g-4 mt-3">
-            {productos.map((producto) => (
-              <div key={producto.id} className="col-12 col-md-6 col-lg-4">
-                <ProductCard {...producto} onAgregar={() => agregarProducto(producto)} />
-              </div>
-            ))}
-          </div>
-        </section>
-        <p role="status" className="mt-3">{mensaje}</p>
-        <Carrito {...carrito} />
+      <main id="contenido" className="container py-4">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <Bienvenida />
+                {listado}
+                <Carrito {...carrito} />
+              </>
+            }
+          />
+          <Route path="/catalogo" element={listado} />
+          <Route
+            path="/categorias"
+            element={
+              <Catalogo
+                productos={catalogo.productos}
+                onAgregar={agregarProducto}
+                titulo="Categorías"
+              />
+            }
+          />
+          <Route
+            path="/ofertas"
+            element={
+              <Catalogo
+                productos={catalogo.productos.filter(
+                  (producto) => producto.oferta,
+                )}
+                onAgregar={agregarProducto}
+                titulo="Ofertas"
+              />
+            }
+          />
+          <Route
+            path="/productos/:id"
+            element={
+              <DetalleProducto
+                productos={catalogo.productos}
+                onAgregar={agregarProducto}
+              />
+            }
+          />
+          <Route path="/carrito" element={<Carrito {...carrito} />} />
+          <Route path="/nosotros" element={<Nosotros />} />
+          <Route path="/contacto" element={<Contacto />} />
+          <Route
+            path="/checkout"
+            element={
+              <Checkout
+                items={carrito.items}
+                vaciar={carrito.vaciar}
+                onPedido={(pedido) =>
+                  setPedidos((actual) => [...actual, pedido])
+                }
+              />
+            }
+          />
+          <Route path="/compra/:resultado" element={<ResultadoCompra />} />
+          <Route
+            path="/admin"
+            element={<Administracion {...catalogo} pedidos={pedidos} />}
+          />
+          <Route path="*" element={<NoEncontrada />} />
+        </Routes>
+        <p role="status" className="mt-3">
+          {mensaje}
+        </p>
       </main>
       <PiePagina />
     </>

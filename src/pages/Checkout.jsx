@@ -1,0 +1,164 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import CampoFormulario from "../components/CampoFormulario";
+import { validarEntrega } from "../utils/validacion";
+import { moneda } from "../utils/moneda";
+const comunas = [
+  "Chillán",
+  "Chillán Viejo",
+  "El Carmen",
+  "Pinto",
+  "San Ignacio",
+  "Bulnes",
+  "Quillón",
+];
+function Checkout({ items, vaciar, onPedido }) {
+  const navegar = useNavigate();
+  const [datos, setDatos] = useState({
+    nombre: "",
+    telefono: "",
+    direccion: "",
+    comuna: "",
+  });
+  const [errores, setErrores] = useState({});
+  const [resultado, setResultado] = useState("exito");
+  const total = items.reduce(
+    (suma, item) => suma + (item.precio ?? 0) * item.cantidad,
+    0,
+  );
+  const noDisponible = items.some(
+    (item) => item.precio == null || item.cantidad > item.stock,
+  );
+  if (!items.length)
+    return (
+      <section>
+        <h1>Compra</h1>
+        <p>Agrega productos antes de continuar.</p>
+        <Link to="/catalogo">Ver catálogo</Link>
+      </section>
+    );
+  function cambiar(evento) {
+    setDatos({ ...datos, [evento.target.name]: evento.target.value });
+  }
+  function enviar(evento) {
+    evento.preventDefault();
+    const nuevosErrores = validarEntrega(datos);
+    setErrores(nuevosErrores);
+    if (Object.keys(nuevosErrores).length || noDisponible) return;
+    const pedido = {
+      id: crypto.randomUUID(),
+      fecha: new Date().toISOString(),
+      items: items.map(({ id, nombre, precio, cantidad }) => ({
+        id,
+        nombre,
+        precio,
+        cantidad,
+      })),
+      total,
+      comuna: datos.comuna,
+      estado:
+        resultado === "exito"
+          ? "Confirmado (simulación)"
+          : "Fallido (simulación)",
+    };
+    if (resultado === "exito") {
+      onPedido(pedido);
+      vaciar();
+    }
+    navegar(`/compra/${resultado}`, { state: { pedido } });
+  }
+  return (
+    <section>
+      <h1>Datos de entrega</h1>
+      <p>
+        Compra de demostración: usa datos ficticios. No se realizará ningún
+        cobro ni despacho.
+      </p>
+      <div className="row g-4">
+        <div className="col-12 col-lg-7">
+          <form noValidate onSubmit={enviar}>
+            <CampoFormulario
+              nombre="nombre"
+              etiqueta="Nombre de quien recibe"
+              valor={datos.nombre}
+              onChange={cambiar}
+              error={errores.nombre}
+              required
+              maxLength={100}
+            />
+            <CampoFormulario
+              nombre="telefono"
+              etiqueta="Teléfono"
+              tipo="tel"
+              valor={datos.telefono}
+              onChange={cambiar}
+              error={errores.telefono}
+              required
+              maxLength={20}
+            />
+            <CampoFormulario
+              nombre="direccion"
+              etiqueta="Dirección"
+              valor={datos.direccion}
+              onChange={cambiar}
+              error={errores.direccion}
+              required
+              maxLength={200}
+            />
+            <CampoFormulario
+              nombre="comuna"
+              etiqueta="Comuna"
+              opciones={comunas}
+              valor={datos.comuna}
+              onChange={cambiar}
+              error={errores.comuna}
+              required
+            />
+            <label className="form-label" htmlFor="resultado">
+              Resultado de la compra de demostración
+            </label>
+            <select
+              id="resultado"
+              className="form-select mb-3"
+              value={resultado}
+              onChange={(evento) => setResultado(evento.target.value)}
+            >
+              <option value="exito">Compra exitosa</option>
+              <option value="error">Compra fallida</option>
+            </select>
+            <button
+              className="btn btn-primary"
+              type="submit"
+              disabled={noDisponible}
+            >
+              Confirmar compra simulada
+            </button>
+          </form>
+        </div>
+        <aside className="col-12 col-lg-5">
+          <h2 className="h4">Resumen</h2>
+          <ul>
+            {items.map((item) => (
+              <li key={item.id}>
+                {item.nombre} × {item.cantidad}
+              </li>
+            ))}
+          </ul>
+          <p className="fw-bold">Total de productos: {moneda(total)}</p>
+          <p>
+            Pago en efectivo al recibir en el flujo del negocio. El costo de
+            despacho no está incluido.
+          </p>
+          {noDisponible && (
+            <p role="alert">
+              Revisa el carrito: hay productos sin precio confirmado o con stock
+              insuficiente.
+            </p>
+          )}
+          <Link to="/carrito">Volver al carrito</Link>
+        </aside>
+      </div>
+    </section>
+  );
+}
+export default Checkout;
