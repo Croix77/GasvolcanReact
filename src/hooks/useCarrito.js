@@ -5,7 +5,19 @@ const clave = "gas-el-volcan-carrito";
 
 function leerCarrito(catalogo) {
   try {
-    const datos = JSON.parse(localStorage.getItem(clave) || "[]");
+    const guardado = localStorage.getItem(clave);
+    const anterior =
+      guardado == null
+        ? JSON.parse(localStorage.getItem("pedidosGas") || "[]")
+        : [];
+    const datos =
+      guardado == null && Array.isArray(anterior)
+        ? anterior.map((item) => ({
+            id: catalogo.find((producto) => producto.codigo === item?.codigo)
+              ?.id,
+            cantidad: 1,
+          }))
+        : JSON.parse(guardado || "[]");
     if (!Array.isArray(datos)) return [];
     const ids = new Set();
     return datos

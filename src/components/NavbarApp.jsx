@@ -1,7 +1,7 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { NavLink, Link } from "react-router-dom";
 
-function NavbarApp() {
+function NavbarApp({ totalPedidos = 0 }) {
   return (
     <Navbar
       collapseOnSelect
@@ -35,6 +35,14 @@ function NavbarApp() {
                 eventKey={ruta}
               >
                 {nombre}
+                {ruta === "/carrito" && totalPedidos > 0 && (
+                  <span
+                    className="badge bg-warning text-dark ms-1"
+                    aria-label={`${totalPedidos} unidades en el carrito`}
+                  >
+                    {totalPedidos}
+                  </span>
+                )}
               </Nav.Link>
             ))}
           </Nav>

@@ -178,7 +178,81 @@ const datos = [
   },
 ];
 
+const detalles = {
+  CL001: {
+    descripcionLarga:
+      "Cilindro de gas licuado de petróleo de 5 kg, pensado para hogares de bajo consumo. Perfecto para cocina, calefacción pequeña o artefactos de uso ocasional. Fabricado bajo normativa vigente y con válvula de seguridad.",
+    stockCritico: 10,
+  },
+  CL002: {
+    descripcionLarga:
+      "El cilindro más utilizado en los hogares chilenos. Con 11 kg de capacidad es ideal para el consumo diario de una familia promedio, incluyendo cocina y calefacción. Compatible con reguladores estándar.",
+    stockCritico: 20,
+  },
+  CL003: {
+    descripcionLarga:
+      "Cilindro de mayor capacidad, recomendado para hogares con alto consumo o locales pequeños. Con 15 kg de gas licuado se reduce la frecuencia de recargas y es ideal para calefacción central o varios artefactos simultáneos.",
+    stockCritico: 15,
+  },
+  CL004: {
+    descripcionLarga:
+      "Cilindro industrial de 45 kg. Uso comercial: restaurantes, talleres y calefacción de locales. Pensado para clientes comerciales con alto consumo de gas licuado.",
+    stockCritico: 5,
+  },
+  RG001: {
+    descripcionLarga:
+      "Regulador de 1 etapa para cilindros de 5, 11 y 15 kg. Presión de salida de 28 mbar. Compatible con los reguladores y mangueras estándar del mercado.",
+    stockCritico: 8,
+  },
+  RG002: {
+    descripcionLarga:
+      "Regulador de alta presión para cocinas industriales o equipos de mayor consumo. Presión regulable según la necesidad del artefacto conectado.",
+    stockCritico: 3,
+  },
+  RG003: {
+    descripcionLarga:
+      "Regulador dual con dos salidas. Permite conectar dos artefactos simultáneamente al mismo cilindro, ideal para hogares con varios equipos a gas.",
+    stockCritico: 4,
+  },
+  MG001: {
+    descripcionLarga:
+      "Manguera flexible homologada de 1.5 metros. Diámetro interior de 9 mm. Compatible con reguladores estándar, ideal para distancias cortas entre el cilindro y el artefacto.",
+    stockCritico: 15,
+  },
+  MG002: {
+    descripcionLarga:
+      "Manguera larga de 3 metros para instalaciones donde el artefacto está alejado del cilindro. Flexible y homologada con las normas de seguridad vigentes.",
+    stockCritico: 10,
+  },
+  MG003: {
+    descripcionLarga:
+      "Abrazadera de acero para asegurar la conexión manguera-regulador y manguera-artefacto. Elemento de seguridad esencial en toda instalación de gas.",
+    stockCritico: 30,
+  },
+  MG004: {
+    descripcionLarga:
+      "Kit con todo lo necesario para instalar un cilindro nuevo: regulador, manguera de 1.5 metros y abrazaderas. Ahorra tiempo y asegura una instalación correcta.",
+    stockCritico: 5,
+  },
+  AC001: {
+    descripcionLarga:
+      "Carro metálico con ruedas para transportar cilindros de 11 y 15 kg dentro del hogar con seguridad y sin esfuerzo.",
+    stockCritico: 4,
+  },
+  AC002: {
+    descripcionLarga:
+      "Tapa de plástico ABS para proteger la válvula del cilindro durante el transporte o almacenamiento. Evita daños y mantiene la válvula limpia.",
+    stockCritico: 12,
+  },
+  AC003: {
+    descripcionLarga:
+      "Detector de gas a batería con sensor electroquímico. Alarma sonora y visual ante fuga de gas GLP o metano. Elemento de seguridad recomendado para todos los hogares.",
+    stockCritico: 2,
+  },
+};
+
 export const productos = datos.map((producto) => ({
   ...producto,
+  ...detalles[producto.codigo],
   imagen: imagenes[producto.id] || "",
 }));

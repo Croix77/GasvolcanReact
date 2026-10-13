@@ -30,7 +30,12 @@ function App() {
   );
   return (
     <>
-      <NavbarApp />
+      <NavbarApp
+        totalPedidos={carrito.items.reduce(
+          (suma, item) => suma + item.cantidad,
+          0,
+        )}
+      />
       <main id="contenido" className="container py-4">
         <Routes>
           <Route
