@@ -9,16 +9,18 @@ function NavbarApp({ totalPedidos = 0 }) {
   return (
     <Navbar
       collapseOnSelect
-      expand="lg"
-      bg="dark"
-      data-bs-theme="dark"
+      expand="xl"
+      className="navegacion"
       sticky="top"
       expanded={expandido}
       onToggle={setExpandido}
     >
       <Container>
         <Navbar.Brand as={Link} to="/">
-          🔥 Gas El Volcán
+          <span className="marca-icono" aria-hidden="true">
+            🔥
+          </span>{" "}
+          Gas El Volcán
         </Navbar.Brand>
         <Navbar.Toggle
           aria-controls="menu-principal"
@@ -62,7 +64,7 @@ function NavbarApp({ totalPedidos = 0 }) {
             ))}
             {sesion?.rol === "cliente" && (
               <button
-                className="btn btn-outline-light"
+                className="btn btn-outline-secondary"
                 type="button"
                 onClick={salir}
               >

@@ -20,9 +20,19 @@ function Catalogo({
         .includes(busqueda.trim().toLocaleLowerCase("es")),
   );
   return (
-    <section aria-labelledby="titulo-catalogo">
-      <h2 id="titulo-catalogo">{titulo}</h2>
-      <div className="row g-3 my-3">
+    <section aria-labelledby="titulo-catalogo" className="catalogo">
+      <div className="catalogo-cabecera">
+        <div>
+          <p className="sobre-titulo">TODO LO QUE NECESITAS</p>
+          <h2 id="titulo-catalogo">{titulo}</h2>
+        </div>
+        <p>
+          Cilindros y accesorios.
+          <br />
+          Encuentra el adecuado para tu hogar.
+        </p>
+      </div>
+      <div className="row g-3 filtros-catalogo">
         <div className="col-12 col-md-7">
           <label htmlFor="buscar">Buscar productos</label>
           <input
@@ -48,14 +58,19 @@ function Catalogo({
           </select>
         </div>
       </div>
-      <p>{visibles.length} productos encontrados</p>
+      <p className="catalogo-cantidad">
+        {visibles.length} productos encontrados
+      </p>
       {visibles.length === 0 && (
         <p>No hay productos disponibles con estos filtros.</p>
       )}
-      <div className="row g-4 mt-3">
+      <div className="row g-4">
         {visibles.map((producto) => (
           <div key={producto.id} className="col-12 col-md-6 col-lg-4">
-            <TarjetaProducto {...producto} onAgregar={() => onAgregar(producto)} />
+            <TarjetaProducto
+              {...producto}
+              onAgregar={() => onAgregar(producto)}
+            />
           </div>
         ))}
       </div>

@@ -13,40 +13,46 @@ function TarjetaProducto({
   onAgregar,
 }) {
   return (
-    <article className="card h-100 shadow-sm">
+    <article className="card tarjeta-producto h-100">
       {imagen ? (
         <img
           src={imagen}
           alt={nombre}
-          className="card-img-top p-3"
-          style={{ height: "240px", objectFit: "contain" }}
+          className="card-img-top producto-imagen"
+          loading="lazy"
         />
       ) : (
         <div
           className="producto-sin-imagen"
           aria-label={`Sin fotografía: ${nombre}`}
         >
-          Gas El Volcán
+          <span aria-hidden="true" className="producto-inicial">
+            {categoria?.charAt(0) || "G"}
+          </span>
+          <span>{categoria || "Accesorios"}</span>
+          <small>Consulta sus características</small>
         </div>
       )}
       <div className="card-body d-flex flex-column">
-        <span className="badge bg-secondary align-self-start mb-2">
+        <span className="categoria-producto align-self-start mb-2">
           {categoria}
         </span>
         <h3 className="h5">{nombre}</h3>
         <p className="card-text">{descripcion}</p>
-        <p className="fw-bold text-primary fs-4">
+        <p className="precio-producto">
           {precio == null
             ? "Precio por confirmar"
             : precio === 0
               ? "Gratis"
               : moneda(precio)}
         </p>
-        <p className="mb-3">{stock === 0 ? "Agotado" : `Stock: ${stock}`}</p>
+        <p className="stock-producto mb-3">
+          {stock === 0 ? "Agotado" : `Stock: ${stock}`}
+        </p>
         {stock > 0 && stock <= stockCritico && (
           <p className="text-danger">Stock crítico: quedan pocas unidades.</p>
         )}
-        <Link className="mb-3" to={`/productos/${id}`}>
+        <Link className="detalle-enlace mb-3" to={`/productos/${id}`}>
           Ver detalle
         </Link>
         <button

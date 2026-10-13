@@ -1,19 +1,77 @@
-const bannerImage = '/img/banner-gas-el-volcan.png';
+import { Link } from "react-router-dom";
 function Bienvenida() {
-  const nombreProyecto = "Gas el Volcan";
-
   return (
-    <section className="text-center my-4">
-      <img 
-        src={bannerImage} 
-        alt="Banner Gas El Volcán" 
-        className="img-fluid rounded mb-3" 
-        style={{ maxHeight: "300px", objectFit: "contain" }}
-      />
-      <h1>{nombreProyecto}</h1>
-      <p className="lead">Encuentra cilindros de gas y despacho a domicilio de forma rápida y segura.</p>
-    </section>
+    <>
+      <section className="bienvenida" aria-labelledby="titulo-bienvenida">
+        <div className="bienvenida-texto">
+          <p className="sobre-titulo">DE CHILLÁN, PARA TU HOGAR</p>
+          <h1 id="titulo-bienvenida">
+            El calor de tu hogar,
+            <br />
+            <span>más cerca.</span>
+          </h1>
+          <p className="bienvenida-descripcion">
+            Cilindros de gas y accesorios para el día a día. Elige lo que
+            necesitas y prepara tu pedido a domicilio con Gas El Volcán.
+          </p>
+          <div className="d-flex flex-wrap gap-3">
+            <Link className="btn btn-primary" to="/catalogo">
+              Ver productos <span aria-hidden="true">→</span>
+            </Link>
+            <Link className="btn btn-outline-secondary" to="/nosotros">
+              Consultar cobertura
+            </Link>
+          </div>
+          <p className="bienvenida-nota">
+            Distribuidora familiar en la Región de Ñuble desde 1998.
+          </p>
+        </div>
+        <div className="bienvenida-visual">
+          <img
+            className="bienvenida-logo"
+            src="/img/banner-gas-el-volcan.png"
+            alt="Gas El Volcán, distribución de gas a domicilio"
+          />
+          <div className="bienvenida-cilindros" aria-hidden="true">
+            <img className="cilindro-pequeno" src="/img/gas-5kg.png" alt="" />
+            <img className="cilindro-grande" src="/img/gas-15kg.png" alt="" />
+            <img className="cilindro-mediano" src="/img/gas-11kg.png" alt="" />
+          </div>
+          <span className="bienvenida-etiqueta">
+            5, 11 y 15 kg · Elige tu formato
+          </span>
+        </div>
+      </section>
+      <div className="servicios-franja">
+        <div>
+          <span className="servicio-numero" aria-hidden="true">
+            01
+          </span>
+          <p>
+            <strong>Elige tu producto</strong>
+            <span>Cilindros, reguladores y accesorios.</span>
+          </p>
+        </div>
+        <div>
+          <span className="servicio-numero" aria-hidden="true">
+            02
+          </span>
+          <p>
+            <strong>Revisa tu despacho</strong>
+            <span>Cobertura en Chillán y comunas cercanas.</span>
+          </p>
+        </div>
+        <div>
+          <span className="servicio-numero" aria-hidden="true">
+            03
+          </span>
+          <p>
+            <strong>Prepara tu pedido</strong>
+            <span>Revisa cantidades y datos de entrega.</span>
+          </p>
+        </div>
+      </div>
+    </>
   );
 }
-
 export default Bienvenida;

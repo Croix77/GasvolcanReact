@@ -56,7 +56,7 @@ function ContenidoApp() {
           0,
         )}
       />
-      <main id="contenido" className="container py-4">
+      <main id="contenido" className="container contenido-principal">
         <Routes>
           <Route
             path="/"

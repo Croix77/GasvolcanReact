@@ -10,10 +10,20 @@ function Carrito({ items, cambiarCantidad, eliminar, vaciar }) {
   const pendientes = items.some((item) => item.precio == null);
 
   return (
-    <section id="carrito" aria-labelledby="titulo-carrito" className="mt-5">
+    <section
+      id="carrito"
+      aria-labelledby="titulo-carrito"
+      className="carrito-panel"
+    >
       <h2 id="titulo-carrito">Carrito ({cantidad})</h2>
       {items.length === 0 ? (
-        <p>Tu carrito está vacío.</p>
+        <div className="carrito-vacio">
+          <span aria-hidden="true" className="carrito-vacio-icono">
+            ＋
+          </span>
+          <p>Tu carrito está vacío.</p>
+          <small>Elige un producto del catálogo para comenzar.</small>
+        </div>
       ) : (
         <>
           <ul className="list-group mb-3">
