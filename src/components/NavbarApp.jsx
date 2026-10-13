@@ -33,6 +33,7 @@ function NavbarApp({ totalPedidos = 0 }) {
                 to={ruta}
                 end={ruta === "/"}
                 eventKey={ruta}
+                aria-label={ruta === '/carrito' ? 'Carrito' : undefined}
               >
                 {nombre}
                 {ruta === "/carrito" && totalPedidos > 0 && (
