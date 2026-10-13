@@ -11,7 +11,9 @@ function TarjetaProducto({
   categoria,
   stockCritico = 10,
   onAgregar,
+  nivelTitulo = "h3",
 }) {
+  const Titulo = nivelTitulo;
   return (
     <article className="card tarjeta-producto h-100">
       {imagen ? (
@@ -37,7 +39,7 @@ function TarjetaProducto({
         <span className="categoria-producto align-self-start mb-2">
           {categoria}
         </span>
-        <h3 className="h5">{nombre}</h3>
+        <Titulo className="h5">{nombre}</Titulo>
         <p className="card-text">{descripcion}</p>
         <p className="precio-producto">
           {precio == null
