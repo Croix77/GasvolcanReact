@@ -55,6 +55,9 @@ describe("Navegación y formularios", () => {
       screen.getByRole("button", { name: "Confirmar compra" }),
     ).toBeDisabled();
     expect(screen.getByRole("alert")).toHaveTextContent("stock insuficiente");
+    const guardado = JSON.parse(localStorage.getItem("gas-volcan-catalogo-v2"));
+    expect(guardado.productos[0].stock).toBe(0);
+    expect(guardado.productos[0].imagen).toMatch(/^\/img\//);
   });
   it("filtra por búsqueda y categoría y muestra el estado vacío", async () => {
     const user = userEvent.setup();
@@ -225,7 +228,7 @@ describe("Navegación y formularios", () => {
       screen.queryByRole("button", { name: "Editar Accesorio de prueba" }),
     ).not.toBeInTheDocument();
     expect(
-      JSON.parse(localStorage.getItem("gas-el-volcan-catalogo-v1")).some(
+      JSON.parse(localStorage.getItem("gas-volcan-catalogo-v2")).productos.some(
         (item) => item.nombre === "Accesorio de prueba",
       ),
     ).toBe(false);

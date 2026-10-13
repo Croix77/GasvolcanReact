@@ -76,4 +76,6 @@ Las categorías tienen persistencia y nombre único (sin distinguir mayúsculas)
 
 Los usuarios se pueden crear, editar, asignar a roles y activar o desactivar. Se admiten únicamente correos ficticios de los dominios reservados example.com, example.org y example.net. No se recopilan contraseñas. Estos registros no crean cuentas de acceso ni cambian el login fijo de demostración; la autenticación y autorización de servidor se dejan para la futura integración con backend.
 
-El catálogo y sus categorías se guardan juntos en `gas-volcan-catalogo-v2`. Se conserva lectura y escritura compatible con el catálogo anterior. Los números recuperados se normalizan, y un registro inconsistente recupera los datos anteriores. Los usuarios ficticios se guardan en `gas-volcan-usuarios-demo-v1`.
+El catálogo y sus categorías se guardan juntos en `gas-volcan-catalogo-v2`. `src/services/catalogoLocal.js` concentra la lectura y el guardado. Solo se escribe este formato; los datos del catálogo anterior se pueden recuperar para conservar cambios existentes. Los números recuperados se normalizan y los registros inválidos utilizan el catálogo anterior o inicial. Los usuarios ficticios se guardan en `gas-volcan-usuarios-demo-v1`.
+
+El carrito y el historial de pedidos pertenecen al navegador de demostración. No están aislados por cuenta de usuario. El módulo Usuarios administra registros ficticios independientes de las dos cuentas de acceso.

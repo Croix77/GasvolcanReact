@@ -1,5 +1,3 @@
-import { productos } from "../data/productos";
-
 export function validarProducto(producto) {
   const errores = {};
   if (
@@ -36,7 +34,7 @@ function enteroNoNegativo(valor) {
   );
 }
 
-function preparar(producto) {
+export function normalizarProducto(producto) {
   if (Object.keys(validarProducto(producto)).length)
     throw new Error("Producto inválido");
   return {
@@ -51,7 +49,7 @@ function preparar(producto) {
 }
 
 export function crearProducto(lista, producto) {
-  const nuevo = preparar(producto);
+  const nuevo = normalizarProducto(producto);
   if (!nuevo.id || lista.some((item) => item.id === nuevo.id))
     throw new Error("Identificador duplicado o vacío");
   return [...lista, nuevo];
@@ -64,33 +62,10 @@ export function leerProducto(lista, id) {
 export function actualizarProducto(lista, id, cambios) {
   const anterior = leerProducto(lista, id);
   if (!anterior) throw new Error("Producto inexistente");
-  const actualizado = preparar({ ...anterior, ...cambios, id });
+  const actualizado = normalizarProducto({ ...anterior, ...cambios, id });
   return lista.map((item) => (item.id === id ? actualizado : item));
 }
 
 export function eliminarProducto(lista, id) {
   return lista.filter((item) => item.id !== id);
-}
-
-export function recuperarCatalogo() {
-  try {
-    const datos = JSON.parse(
-      localStorage.getItem("gas-el-volcan-catalogo-v1") || "null",
-    );
-    if (!Array.isArray(datos)) return productos;
-    const ids = new Set();
-    for (const item of datos) {
-      if (!item || typeof item.id !== "string" || ids.has(item.id))
-        return productos;
-      if (Object.keys(validarProducto(item)).length > 0) return productos;
-      ids.add(item.id);
-    }
-    return datos.map((item) => ({
-      ...preparar(item),
-      imagen:
-        productos.find((original) => original.id === item.id)?.imagen || "",
-    }));
-  } catch {
-    return productos;
-  }
 }

@@ -37,7 +37,7 @@ it("crea categorías sin duplicados y las ofrece en el formulario de productos",
 });
 it("renombra una categoría y actualiza los productos y el filtro público", async () => {
   const user = userEvent.setup();
-  abrir("/admin/categorias");
+  const vista = abrir("/admin/categorias");
   await user.click(
     screen.getByRole("button", { name: "Editar categoría Reguladores" }),
   );
@@ -47,7 +47,8 @@ it("renombra una categoría y actualiza los productos y el filtro público", asy
     "Reguladores de prueba",
   );
   await user.click(screen.getByRole("button", { name: "Guardar categoría" }));
-  await user.click(screen.getByRole("link", { name: "Catálogo", exact: true }));
+  vista.unmount();
+  abrir("/catalogo");
   await user.selectOptions(
     screen.getByLabelText("Categoría"),
     "Reguladores de prueba",
@@ -59,6 +60,7 @@ it("renombra una categoría y actualiza los productos y el filtro público", asy
       (producto) => producto.categoria === "Reguladores de prueba",
     ),
   ).toHaveLength(3);
+  expect(localStorage.getItem("gas-el-volcan-catalogo-v1")).toBeNull();
 });
 it("impide eliminar categorías usadas y permite eliminar las vacías con confirmación", async () => {
   const user = userEvent.setup();
