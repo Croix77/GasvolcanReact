@@ -34,7 +34,7 @@ La suite contiene 30 casos automatizados de funciones, componentes e integració
 
 ## Alcance de los datos
 
-`src/data/productos.js` y `src/data/zonas.js` contienen los datos del caso. `src/data/catalogo.js` reúne validación y funciones CRUD. Los cambios del catálogo y el carrito se guardan en el navegador. Esta persistencia no comparte datos entre dispositivos ni sustituye una API.
+`src/data/productos.js` y `src/data/zonas.js` contienen los datos del caso. `src/services/catalogo.js` reúne validación y funciones CRUD. Los cambios del catálogo y el carrito se guardan en el navegador. Esta persistencia no comparte datos entre dispositivos ni sustituye una API.
 
 El panel administrativo requiere una sesión de demostración. Este control vive en el navegador y no constituye autenticación real de servidor. No debe usarse con información real. Los datos de contacto y dirección no se guardan en almacenamiento persistente. No se recopilan contraseñas o tarjetas. El checkout usa precios residenciales y no incluye una tarifa de despacho; no existe una tarifa verificada en los documentos.
 
@@ -48,7 +48,7 @@ Al publicar con BrowserRouter, el servidor debe dirigir las rutas internas a `in
 
 ## Fuera del repositorio y del ZIP
 
-`node_modules`, `dist`, `coverage`, archivos temporales, ZIP, PDFs de clase, rúbricas, informes de entrega, claves `.pem`/`.key`, archivos `.env` con secretos y datos personales reales. Las pruebas y la configuración de Vitest sí forman parte del código fuente. No se utilizan Jasmine ni Karma, conforme a la instrucción del usuario.
+`node_modules`, `dist`, `coverage`, archivos temporales, ZIP, PDFs de clase, rúbricas, informes de entrega, claves `.pem`/`.key`, archivos `.env` con secretos y datos personales reales. Las pruebas y la configuración de Vitest sí forman parte del código fuente. Las pruebas se ejecutan con Vitest y Testing Library.
 
 ## Login de demostración
 
@@ -60,9 +60,9 @@ En `/login`, usar `admin@example.com` y `VolcanDemo123!` para administración, o
 - `src/components`: elementos compartidos; `admin`, `auth` y `pedidos` agrupan piezas del panel, control de rutas e historial.
 - `src/pages`: vistas públicas; `src/pages/admin` contiene vistas del panel con menú lateral.
 - `src/contexts`: estado de sesión compartido.
-- `src/services`: servicio de autenticación de demostración, reemplazable en la etapa de backend.
+- `src/services`: operaciones y validaciones de catálogo, categorías y usuarios, y acceso de demostración.
 - `src/hooks`: lógica reutilizable de catálogo, carrito, sesión y pedidos.
-- `src/data`: catálogo inicial, zonas y operaciones CRUD simuladas.
+- `src/data`: productos iniciales, zonas y datos ficticios de usuarios.
 - `src/utils`: validación y presentación de moneda.
 - `src/test`: preparación compartida del entorno; las pruebas se colocan junto a la función o vista que verifican.
 

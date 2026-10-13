@@ -1,14 +1,11 @@
+import { usuariosIniciales } from "../data/usuariosDemo";
 import { expect, it } from "vitest";
 import {
   agregarCategoria,
   editarCategoria,
   borrarCategoria,
 } from "./categorias";
-import {
-  guardarUsuario,
-  recuperarUsuarios,
-  usuariosIniciales,
-} from "./usuariosDemo";
+import { guardarUsuario, recuperarUsuarios } from "./usuariosDemo";
 const estado = {
   categorias: [{ id: "gas", nombre: "Gas" }],
   productos: [{ id: "prod", categoria: "Gas" }],

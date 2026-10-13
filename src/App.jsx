@@ -13,7 +13,7 @@ import Nosotros from "./pages/Nosotros";
 import Contacto from "./pages/Contacto";
 import Checkout from "./pages/Checkout";
 import ResultadoCompra from "./pages/ResultadoCompra";
-import Administracion from "./pages/admin/AdminProductos";
+import AdminProductos from "./pages/admin/AdminProductos";
 import NoEncontrada from "./pages/NoEncontrada";
 import AuthProvider from "./contexts/AuthProvider";
 import RutaAdministrador from "./components/auth/RutaAdministrador";
@@ -130,7 +130,7 @@ function ContenidoApp() {
               />
               <Route
                 path="productos"
-                element={<Administracion {...catalogo} pedidos={pedidos} />}
+                element={<AdminProductos {...catalogo} />}
               />
               <Route
                 path="pedidos"

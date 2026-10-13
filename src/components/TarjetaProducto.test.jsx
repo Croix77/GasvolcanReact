@@ -2,12 +2,12 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { expect, it, vi } from "vitest";
-import ProductCard from "./ProductCard";
+import TarjetaProducto from "./TarjetaProducto";
 it("muestra Gratis y ejecuta la función del botón recibida por props", async () => {
   const agregar = vi.fn();
   render(
     <MemoryRouter>
-      <ProductCard
+      <TarjetaProducto
         id="gratis"
         nombre="Accesorio gratuito"
         descripcion="Prueba"
@@ -27,7 +27,7 @@ it("deshabilita el botón cuando el producto está agotado", async () => {
   const agregar = vi.fn();
   render(
     <MemoryRouter>
-      <ProductCard
+      <TarjetaProducto
         id="agotado"
         nombre="Agotado"
         descripcion="Prueba"

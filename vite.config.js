@@ -17,7 +17,6 @@ export default defineConfig({
         "src/**/*.test.{js,jsx}",
         "src/data/productos.js",
         "src/data/zonas.js",
-        "src/components/Cabecera.jsx",
       ],
     },
   },

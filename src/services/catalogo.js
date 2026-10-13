@@ -1,4 +1,4 @@
-import { productos } from "./productos";
+import { productos } from "../data/productos";
 
 export function validarProducto(producto) {
   const errores = {};
@@ -79,16 +79,12 @@ export function recuperarCatalogo() {
     );
     if (!Array.isArray(datos)) return productos;
     const ids = new Set();
-    if (
-      datos.some(
-        (item) =>
-          !item ||
-          typeof item.id !== "string" ||
-          ids.has(item.id) ||
-          (ids.add(item.id), Object.keys(validarProducto(item)).length),
-      )
-    )
-      return productos;
+    for (const item of datos) {
+      if (!item || typeof item.id !== "string" || ids.has(item.id))
+        return productos;
+      if (Object.keys(validarProducto(item)).length > 0) return productos;
+      ids.add(item.id);
+    }
     return datos.map((item) => ({
       ...preparar(item),
       imagen:

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ProductCard from "../components/ProductCard";
+import TarjetaProducto from "../components/TarjetaProducto";
 
 function Catalogo({
   productos,
@@ -55,7 +55,7 @@ function Catalogo({
       <div className="row g-4 mt-3">
         {visibles.map((producto) => (
           <div key={producto.id} className="col-12 col-md-6 col-lg-4">
-            <ProductCard {...producto} onAgregar={() => onAgregar(producto)} />
+            <TarjetaProducto {...producto} onAgregar={() => onAgregar(producto)} />
           </div>
         ))}
       </div>

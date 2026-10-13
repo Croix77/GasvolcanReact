@@ -18,34 +18,32 @@ function CampoFormulario({
     "aria-describedby": error ? `${nombre}-error` : undefined,
     ...atributos,
   };
+  let campo;
+  const clase = error ? "is-invalid" : "";
+  if (opciones) {
+    campo = (
+      <select {...comunes} className={`form-select ${clase}`}>
+        <option value="">Selecciona una opción</option>
+        {opciones.map((opcion) => (
+          <option key={opcion}>{opcion}</option>
+        ))}
+      </select>
+    );
+  } else if (multilinea) {
+    campo = (
+      <textarea {...comunes} rows={4} className={`form-control ${clase}`} />
+    );
+  } else {
+    campo = (
+      <input {...comunes} type={tipo} className={`form-control ${clase}`} />
+    );
+  }
   return (
     <div className="mb-3">
       <label className="form-label" htmlFor={nombre}>
         {etiqueta}
       </label>
-      {opciones ? (
-        <select
-          {...comunes}
-          className={`form-select ${error ? "is-invalid" : ""}`}
-        >
-          <option value="">Selecciona una opción</option>
-          {opciones.map((opcion) => (
-            <option key={opcion}>{opcion}</option>
-          ))}
-        </select>
-      ) : multilinea ? (
-        <textarea
-          {...comunes}
-          rows={4}
-          className={`form-control ${error ? "is-invalid" : ""}`}
-        />
-      ) : (
-        <input
-          {...comunes}
-          type={tipo}
-          className={`form-control ${error ? "is-invalid" : ""}`}
-        />
-      )}
+      {campo}
       {error && (
         <p id={`${nombre}-error`} className="invalid-feedback">
           {error}

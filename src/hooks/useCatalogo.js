@@ -5,14 +5,14 @@ import {
   eliminarProducto,
   recuperarCatalogo,
   validarProducto,
-} from "../data/catalogo";
+} from "../services/catalogo";
 import { productos as iniciales } from "../data/productos";
 import {
   agregarCategoria,
   editarCategoria,
   borrarCategoria,
   validarCategoria,
-} from "../data/categorias";
+} from "../services/categorias";
 const clave = "gas-volcan-catalogo-v2";
 function recuperar() {
   const productos = recuperarCatalogo().map((item) => ({

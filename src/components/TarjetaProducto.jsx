@@ -1,7 +1,7 @@
 import { moneda } from "../utils/moneda";
 import { Link } from "react-router-dom";
 
-function ProductCard({
+function TarjetaProducto({
   id,
   nombre,
   descripcion,
@@ -62,4 +62,4 @@ function ProductCard({
   );
 }
 
-export default ProductCard;
+export default TarjetaProducto;

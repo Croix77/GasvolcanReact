@@ -1,6 +1,6 @@
 import { useState } from "react";
 import CampoFormulario from "../CampoFormulario";
-import { validarProducto } from "../../data/catalogo";
+import { validarProducto } from "../../services/catalogo";
 const inicial = {
   nombre: "",
   descripcion: "",

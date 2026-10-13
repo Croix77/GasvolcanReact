@@ -1,6 +1,7 @@
 import { useState } from "react";
 import CampoFormulario from "../../components/CampoFormulario";
-import { rolesDemo, validarUsuario } from "../../data/usuariosDemo";
+import { rolesDemo } from "../../data/usuariosDemo";
+import { validarUsuario } from "../../services/usuariosDemo";
 const inicial = { nombre: "", correo: "", rol: "", activo: true };
 function AdminUsuarios({ usuarios, guardar, alternar }) {
   const [datos, setDatos] = useState(inicial);

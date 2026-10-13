@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { guardarUsuario, recuperarUsuarios } from "../data/usuariosDemo";
+import { guardarUsuario, recuperarUsuarios } from "../services/usuariosDemo";
 export function useUsuariosDemo() {
   const [usuarios, setUsuarios] = useState(recuperarUsuarios);
   useEffect(() => {

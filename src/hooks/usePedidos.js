@@ -5,27 +5,31 @@ function recuperar() {
     const datos = JSON.parse(localStorage.getItem(clave) || "[]");
     if (!Array.isArray(datos)) return [];
     const ids = new Set();
-    return datos
-      .filter(
-        (pedido) =>
-          pedido &&
-          typeof pedido.id === "string" &&
-          !ids.has(pedido.id) &&
-          (ids.add(pedido.id), typeof pedido.fecha === "string") &&
-          Array.isArray(pedido.items) &&
-          pedido.items.length > 0 &&
-          pedido.items.every(
-            (item) =>
-              typeof item.id === "string" &&
-              typeof item.nombre === "string" &&
-              Number.isSafeInteger(item.cantidad) &&
-              item.cantidad > 0 &&
-              Number.isSafeInteger(item.precio) &&
-              item.precio >= 0,
-          ),
+    const pedidos = [];
+    for (const pedido of datos) {
+      if (!pedido || typeof pedido.id !== "string" || ids.has(pedido.id))
+        continue;
+      if (
+        typeof pedido.fecha !== "string" ||
+        !Array.isArray(pedido.items) ||
+        pedido.items.length === 0
       )
-      .slice(-50)
-      .map(limpiar);
+        continue;
+      const itemsValidos = pedido.items.every(
+        (item) =>
+          item &&
+          typeof item.id === "string" &&
+          typeof item.nombre === "string" &&
+          Number.isSafeInteger(item.cantidad) &&
+          item.cantidad > 0 &&
+          Number.isSafeInteger(item.precio) &&
+          item.precio >= 0,
+      );
+      if (!itemsValidos) continue;
+      ids.add(pedido.id);
+      pedidos.push(limpiar(pedido));
+    }
+    return pedidos.slice(-50);
   } catch {
     return [];
   }
