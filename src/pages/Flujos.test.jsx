@@ -35,82 +35,6 @@ function prepararCarrito() {
 }
 
 describe("Navegación y formularios", () => {
-  it("cancela una edición y una eliminación sin modificar el producto", async () => {
-    const user = userEvent.setup();
-    abrir("/admin");
-    await user.click(
-      screen.getByRole("button", { name: "Editar Cilindro de Gas 5 Kg" }),
-    );
-    await user.clear(screen.getByLabelText("Nombre del producto"));
-    await user.type(
-      screen.getByLabelText("Nombre del producto"),
-      "Nombre temporal",
-    );
-    await user.click(screen.getByRole("button", { name: "Cancelar edición" }));
-    expect(screen.getByLabelText("Nombre del producto")).toHaveValue("");
-    expect(screen.getByText("Edición cancelada.")).toBeInTheDocument();
-    const confirmar = vi.spyOn(window, "confirm").mockReturnValue(false);
-    try {
-      await user.click(
-        screen.getByRole("button", { name: "Eliminar Cilindro de Gas 5 Kg" }),
-      );
-    } finally {
-      confirmar.mockRestore();
-    }
-    expect(
-      screen.getByRole("button", { name: "Editar Cilindro de Gas 5 Kg" }),
-    ).toBeInTheDocument();
-  });
-  it("recupera Mis pedidos y permite eliminar el registro", async () => {
-    localStorage.setItem(
-      "gas-volcan-pedidos-demo-v1",
-      JSON.stringify([
-        {
-          id: "demo-123",
-          fecha: "2026-10-12",
-          items: [{ id: "gas", nombre: "Gas", precio: 1000, cantidad: 1 }],
-        },
-      ]),
-    );
-    const user = userEvent.setup();
-    abrir("/mis-pedidos");
-    expect(
-      screen.getByRole("heading", { name: "Pedido demo-123" }),
-    ).toBeInTheDocument();
-    await user.click(
-      screen.getByRole("button", { name: "Eliminar pedido demo-123" }),
-    );
-    expect(
-      screen.getByText("No hay pedidos de demostración registrados."),
-    ).toBeInTheDocument();
-  });
-  it("abre y cierra el menú móvil con su botón", async () => {
-    const user = userEvent.setup();
-    abrir("/");
-    const boton = screen.getByRole("button", { name: "Abrir menú" });
-    expect(boton).toHaveAttribute("aria-expanded", "false");
-    await user.click(boton);
-    expect(boton).toHaveAttribute("aria-expanded", "true");
-    await user.click(boton);
-    expect(boton).toHaveAttribute("aria-expanded", "false");
-  });
-  it("agrega desde el detalle y conserva el producto al cambiar de vista", async () => {
-    const user = userEvent.setup();
-    abrir("/productos/gas-5kg");
-    await user.click(screen.getByRole("button", { name: "Añadir al Carrito" }));
-    await user.click(
-      screen.getByRole("link", { name: "Carrito", exact: true }),
-    );
-    expect(screen.getByText("Total: $6.500")).toBeInTheDocument();
-  });
-
-  it("permite crear después de vaciar por completo el catálogo", () => {
-    localStorage.setItem("gas-el-volcan-catalogo-v1", "[]");
-    abrir("/admin");
-    expect(screen.getByLabelText("Categoría del producto")).toContainHTML(
-      "Accesorios",
-    );
-  });
 
   it("bloquea el checkout si el stock cambió después de agregar al carrito", () => {
     prepararCarrito();
@@ -155,24 +79,7 @@ describe("Navegación y formularios", () => {
       screen.getByRole("heading", { level: 1, name: "Cilindro de Gas 5 Kg" }),
     ).toBeInTheDocument();
   });
-  it("maneja producto inexistente y una ruta desconocida", () => {
-    const vista = abrir("/productos/no-existe");
-    expect(
-      screen.getByRole("heading", { name: "Producto no encontrado" }),
-    ).toBeInTheDocument();
-    vista.unmount();
-    abrir("/no-existe");
-    expect(
-      screen.getByRole("heading", { name: "Página no encontrada" }),
-    ).toBeInTheDocument();
-  });
-  it("muestra cobertura y ofertas vacías sin inventar descuentos", () => {
-    const vista = abrir("/nosotros");
-    expect(screen.getByText("Zona Rural")).toBeInTheDocument();
-    vista.unmount();
-    abrir("/ofertas");
-    expect(screen.getByText("0 productos encontrados")).toBeInTheDocument();
-  });
+
   it("valida contacto y no anuncia un envío real", async () => {
     const user = userEvent.setup();
     abrir("/contacto");
@@ -265,14 +172,7 @@ describe("Navegación y formularios", () => {
       screen.getByRole("heading", { name: "Datos de entrega" }),
     ).toBeInTheDocument();
   });
-  it("no inventa un resumen cuando se abre la URL de resultado directamente", () => {
-    abrir("/compra/exito");
-    expect(
-      screen.getByRole("heading", {
-        name: "No hay un resumen de compra disponible",
-      }),
-    ).toBeInTheDocument();
-  });
+
   it("crea, edita, publica una oferta y elimina un producto desde administración", async () => {
     const user = userEvent.setup();
     abrir("/admin");

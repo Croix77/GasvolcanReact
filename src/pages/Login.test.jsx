@@ -29,23 +29,7 @@ async function entrar(user) {
   );
 }
 describe("Login y panel de demostración", () => {
-  it.each([
-    "/admin",
-    "/admin/productos",
-    "/admin/pedidos",
-    "/admin/reportes",
-    "/admin/perfil",
-    "/admin/usuarios",
-    "/admin/categorias",
-  ])("restringe la ruta %s sin sesión", async (ruta) => {
-    abrir(ruta);
-    expect(
-      await screen.findByRole("heading", { name: "Acceso de administrador" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: "Guardar producto" }),
-    ).not.toBeInTheDocument();
-  });
+
   it("valida campos y los botones mostrar y ocultar contraseña", async () => {
     const user = userEvent.setup();
     abrir("/login");

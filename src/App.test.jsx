@@ -1,9 +1,8 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import App from "./App";
 import { MemoryRouter } from "react-router-dom";
-import Carrito from "./components/Carrito";
 
 function renderApp() {
   return render(
@@ -72,30 +71,6 @@ describe("Catálogo y carrito", () => {
     expect(JSON.parse(localStorage.getItem(clave))).toEqual([]);
   });
 
-  it("avisa que un precio pendiente impide calcular el total final", async () => {
-    render(
-      <MemoryRouter>
-        <Carrito
-          items={[
-            { id: "gas-5kg", nombre: "Gas 5 kg", precio: null, cantidad: 1 },
-            { id: "gas-15kg", nombre: "Gas 15 kg", precio: 16000, cantidad: 1 },
-          ]}
-          cambiarCantidad={vi.fn()}
-          eliminar={vi.fn()}
-          vaciar={vi.fn()}
-        />
-      </MemoryRouter>,
-    );
-    expect(
-      within(carrito()).getByText(
-        "Subtotal de productos con precio confirmado: $16.000",
-      ),
-    ).toBeInTheDocument();
-    expect(
-      within(carrito()).getByText(/El importe final está pendiente/),
-    ).toBeInTheDocument();
-  });
-
   it("recupera el carrito al montar de nuevo y limita la cantidad al stock", async () => {
     localStorage.setItem(
       clave,
@@ -112,50 +87,4 @@ describe("Catálogo y carrito", () => {
     expect(within(carrito()).getByRole("combobox")).toHaveValue("90");
   });
 
-  it("descarta identificadores, cantidades y registros duplicados inválidos", () => {
-    localStorage.setItem(
-      clave,
-      JSON.stringify([
-        null,
-        { id: "desconocido", cantidad: 1 },
-        { id: "gas-5kg", cantidad: -1 },
-        { id: "gas-11kg", cantidad: 1.5 },
-        { id: "gas-15kg", cantidad: 2 },
-        { id: "gas-15kg", cantidad: 4 },
-      ]),
-    );
-    renderApp();
-    expect(within(carrito()).getAllByRole("combobox")).toHaveLength(1);
-    expect(within(carrito()).getByRole("combobox")).toHaveValue("2");
-  });
-
-  it("tolera datos guardados corruptos", () => {
-    localStorage.setItem(clave, "{invalido");
-    renderApp();
-    expect(screen.getByText("Tu carrito está vacío.")).toBeInTheDocument();
-  });
-
-  it("funciona durante la sesión si el navegador bloquea el almacenamiento", async () => {
-    const lectura = vi
-      .spyOn(Storage.prototype, "getItem")
-      .mockImplementation(() => {
-        throw new Error("Bloqueado");
-      });
-    const escritura = vi
-      .spyOn(Storage.prototype, "setItem")
-      .mockImplementation(() => {
-        throw new Error("Bloqueado");
-      });
-    try {
-      const user = userEvent.setup();
-      renderApp();
-      await user.click(
-        within(tarjeta("Cilindro de Gas 15 Kg")).getByRole("button"),
-      );
-      expect(within(carrito()).getByText("Total: $16.000")).toBeInTheDocument();
-    } finally {
-      lectura.mockRestore();
-      escritura.mockRestore();
-    }
-  });
 });

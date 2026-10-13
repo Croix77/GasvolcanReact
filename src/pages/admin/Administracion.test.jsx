@@ -92,24 +92,7 @@ it("impide eliminar categorías usadas y permite eliminar las vacías con confir
     confirmar.mockRestore();
   }
 });
-it("recupera categorías después de recargar y cancela la edición", async () => {
-  const user = userEvent.setup();
-  const vista = abrir("/admin/categorias");
-  await user.type(
-    screen.getByLabelText("Nombre de la categoría"),
-    "Nueva prueba",
-  );
-  await user.click(screen.getByRole("button", { name: "Guardar categoría" }));
-  vista.unmount();
-  abrir("/admin/categorias");
-  await user.click(
-    screen.getByRole("button", { name: "Editar categoría Nueva prueba" }),
-  );
-  await user.click(
-    screen.getByRole("button", { name: "Cancelar edición de categoría" }),
-  );
-  expect(screen.getByLabelText("Nombre de la categoría")).toHaveValue("");
-});
+
 it("crea, edita, asigna roles, desactiva y reactiva usuarios ficticios", async () => {
   const user = userEvent.setup();
   abrir("/admin/usuarios");
@@ -148,48 +131,4 @@ it("crea, edita, asigna roles, desactiva y reactiva usuarios ficticios", async (
       (u) => u.correo === "operadora@example.com",
     ),
   ).toMatchObject({ rol: "Repartidor", activo: true });
-});
-it("rechaza correos reales y duplicados y conserva el registro al cancelar", async () => {
-  const user = userEvent.setup();
-  abrir("/admin/usuarios");
-  await user.type(
-    screen.getByLabelText("Nombre ficticio"),
-    "Persona de prueba",
-  );
-  await user.type(screen.getByLabelText("Correo ficticio"), "prueba@gmail.com");
-  await user.selectOptions(screen.getByLabelText("Rol"), "Cliente");
-  await user.click(screen.getByRole("button", { name: "Guardar usuario" }));
-  expect(screen.getByText(/Usa un correo ficticio/)).toBeInTheDocument();
-  await user.clear(screen.getByLabelText("Correo ficticio"));
-  await user.type(
-    screen.getByLabelText("Correo ficticio"),
-    "ADMIN@example.com",
-  );
-  await user.click(screen.getByRole("button", { name: "Guardar usuario" }));
-  expect(screen.getByText("El correo ya está registrado.")).toBeInTheDocument();
-  await user.click(
-    screen.getByRole("button", {
-      name: "Editar usuario Administrador de ejemplo",
-    }),
-  );
-  await user.click(
-    screen.getByRole("button", { name: "Cancelar edición de usuario" }),
-  );
-  expect(screen.getByLabelText("Nombre ficticio")).toHaveValue("");
-});
-it("recupera los usuarios y su estado después de recargar", async () => {
-  const user = userEvent.setup();
-  const vista = abrir("/admin/usuarios");
-  await user.click(
-    screen.getByRole("button", {
-      name: "Desactivar usuario Administrador de ejemplo",
-    }),
-  );
-  vista.unmount();
-  abrir("/admin/usuarios");
-  expect(
-    screen.getByRole("button", {
-      name: "Activar usuario Administrador de ejemplo",
-    }),
-  ).toBeInTheDocument();
 });

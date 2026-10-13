@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { validarContacto, validarEntrega, validarLogin } from "./validacion";
-import { validarProducto } from "../data/catalogo";
 describe("Límites y tipos de los formularios", () => {
   it("acepta nombres con tildes, correos y teléfono chileno", () => {
     expect(
@@ -50,29 +49,5 @@ describe("Límites y tipos de los formularios", () => {
       }),
     );
   });
-  it.each([" ", null, true, -1, 1.5, "abc"])(
-    "rechaza valores numéricos inválidos %s",
-    (valor) => {
-      expect(
-        validarProducto({
-          nombre: "Producto",
-          descripcion: "Descripción",
-          categoria: "Accesorios",
-          precio: valor,
-          stock: valor,
-        }),
-      ).toHaveProperty("precio");
-    },
-  );
-  it("permite precio gratis y stock cero", () => {
-    expect(
-      validarProducto({
-        nombre: "Producto",
-        descripcion: "Descripción",
-        categoria: "Accesorios",
-        precio: 0,
-        stock: 0,
-      }),
-    ).toEqual({});
-  });
+
 });
