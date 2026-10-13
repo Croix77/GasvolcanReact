@@ -1,6 +1,6 @@
-import gas5kg from "../assets/img/gas-5kg.png";
-import gas11kg from "../assets/img/gas-11kg.png";
-import gas15kg from "../assets/img/gas-15kg.png";
+const gas5kg = '/img/gas-5kg.png';
+const gas11kg = '/img/gas-11kg.png';
+const gas15kg = '/img/gas-15kg.png';
 
 const imagenes = {
   "gas-5kg": gas5kg,

@@ -1,4 +1,4 @@
-import bannerImage from "../assets/img/banner-gas-el-volcan.png";
+const bannerImage = '/img/banner-gas-el-volcan.png';
 function Bienvenida() {
   const nombreProyecto = "Gas el Volcan";
 

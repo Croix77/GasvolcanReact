@@ -2,25 +2,38 @@ import { productos } from "./productos";
 
 export function validarProducto(producto) {
   const errores = {};
-  if (!producto.nombre?.trim())
+  if (
+    typeof producto.nombre !== "string" ||
+    !producto.nombre.trim() ||
+    producto.nombre.trim().length > 100
+  )
     errores.nombre = "Escribe el nombre del producto.";
-  if (!producto.descripcion?.trim())
+  if (
+    typeof producto.descripcion !== "string" ||
+    !producto.descripcion.trim() ||
+    producto.descripcion.trim().length > 500
+  )
     errores.descripcion = "Escribe una descripción.";
-  if (!producto.categoria?.trim())
+  if (
+    typeof producto.categoria !== "string" ||
+    !producto.categoria.trim() ||
+    producto.categoria.trim().length > 80
+  )
     errores.categoria = "Selecciona una categoría.";
-  if (
-    producto.precio === "" ||
-    !Number.isSafeInteger(Number(producto.precio)) ||
-    Number(producto.precio) <= 0
-  )
-    errores.precio = "El precio debe ser un entero mayor que cero.";
-  if (
-    producto.stock === "" ||
-    !Number.isSafeInteger(Number(producto.stock)) ||
-    Number(producto.stock) < 0
-  )
+  if (!enteroNoNegativo(producto.precio))
+    errores.precio = "El precio debe ser un entero desde cero.";
+  if (!enteroNoNegativo(producto.stock))
     errores.stock = "El stock debe ser un entero desde cero.";
   return errores;
+}
+
+function enteroNoNegativo(valor) {
+  return (
+    (typeof valor === "number" ||
+      (typeof valor === "string" && /^\d+$/.test(valor.trim()))) &&
+    Number.isSafeInteger(Number(valor)) &&
+    Number(valor) >= 0
+  );
 }
 
 function preparar(producto) {

@@ -36,7 +36,11 @@ function ProductCard({
         <h3 className="h5">{nombre}</h3>
         <p className="card-text">{descripcion}</p>
         <p className="fw-bold text-primary fs-4">
-          {precio == null ? "Precio por confirmar" : moneda(precio)}
+          {precio == null
+            ? "Precio por confirmar"
+            : precio === 0
+              ? "Gratis"
+              : moneda(precio)}
         </p>
         <p className="mb-3">{stock === 0 ? "Agotado" : `Stock: ${stock}`}</p>
         {stock > 0 && stock <= stockCritico && (

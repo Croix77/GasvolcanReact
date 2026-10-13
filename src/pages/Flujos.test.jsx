@@ -5,6 +5,13 @@ import { describe, expect, it, vi } from "vitest";
 import App from "../App";
 
 function abrir(ruta) {
+  if (ruta === "/admin") {
+    sessionStorage.setItem(
+      "gas-volcan-sesion-demo",
+      JSON.stringify({ rol: "administrador", vence: Date.now() + 1800000 }),
+    );
+    ruta = "/admin/productos";
+  }
   return render(
     <MemoryRouter initialEntries={[ruta]}>
       <App />
@@ -28,6 +35,65 @@ function prepararCarrito() {
 }
 
 describe("Navegación y formularios", () => {
+  it("cancela una edición y una eliminación sin modificar el producto", async () => {
+    const user = userEvent.setup();
+    abrir("/admin");
+    await user.click(
+      screen.getByRole("button", { name: "Editar Cilindro de Gas 5 Kg" }),
+    );
+    await user.clear(screen.getByLabelText("Nombre del producto"));
+    await user.type(
+      screen.getByLabelText("Nombre del producto"),
+      "Nombre temporal",
+    );
+    await user.click(screen.getByRole("button", { name: "Cancelar edición" }));
+    expect(screen.getByLabelText("Nombre del producto")).toHaveValue("");
+    expect(screen.getByText("Edición cancelada.")).toBeInTheDocument();
+    const confirmar = vi.spyOn(window, "confirm").mockReturnValue(false);
+    try {
+      await user.click(
+        screen.getByRole("button", { name: "Eliminar Cilindro de Gas 5 Kg" }),
+      );
+    } finally {
+      confirmar.mockRestore();
+    }
+    expect(
+      screen.getByRole("button", { name: "Editar Cilindro de Gas 5 Kg" }),
+    ).toBeInTheDocument();
+  });
+  it("recupera Mis pedidos y permite eliminar el registro", async () => {
+    localStorage.setItem(
+      "gas-volcan-pedidos-demo-v1",
+      JSON.stringify([
+        {
+          id: "demo-123",
+          fecha: "2026-10-12",
+          items: [{ id: "gas", nombre: "Gas", precio: 1000, cantidad: 1 }],
+        },
+      ]),
+    );
+    const user = userEvent.setup();
+    abrir("/mis-pedidos");
+    expect(
+      screen.getByRole("heading", { name: "Pedido demo-123" }),
+    ).toBeInTheDocument();
+    await user.click(
+      screen.getByRole("button", { name: "Eliminar pedido demo-123" }),
+    );
+    expect(
+      screen.getByText("No hay pedidos de demostración registrados."),
+    ).toBeInTheDocument();
+  });
+  it("abre y cierra el menú móvil con su botón", async () => {
+    const user = userEvent.setup();
+    abrir("/");
+    const boton = screen.getByRole("button", { name: "Abrir menú" });
+    expect(boton).toHaveAttribute("aria-expanded", "false");
+    await user.click(boton);
+    expect(boton).toHaveAttribute("aria-expanded", "true");
+    await user.click(boton);
+    expect(boton).toHaveAttribute("aria-expanded", "false");
+  });
   it("agrega desde el detalle y conserva el producto al cambiar de vista", async () => {
     const user = userEvent.setup();
     abrir("/productos/gas-5kg");
@@ -158,6 +224,20 @@ describe("Navegación y formularios", () => {
     expect(localStorage.getItem("gas-el-volcan-carrito")).toBe("[]");
     expect(JSON.stringify(localStorage)).not.toContain("Dirección ficticia");
     await user.click(screen.getByRole("link", { name: "Administración" }));
+    await user.type(
+      screen.getByLabelText("Correo del administrador"),
+      "admin@example.com",
+    );
+    await user.type(
+      screen.getByLabelText("Contraseña", { exact: true }),
+      "VolcanDemo123!",
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Iniciar sesión de demostración" }),
+    );
+    await user.click(
+      screen.getByRole("link", { name: "Pedidos", exact: true }),
+    );
     expect(screen.getByText(/Confirmado \(simulación\)/)).toBeInTheDocument();
   });
   it("conserva el carrito al simular una compra fallida", async () => {
@@ -229,6 +309,7 @@ describe("Navegación y formularios", () => {
       screen.getByRole("heading", { name: "Accesorio de prueba" }),
     ).toBeInTheDocument();
     await user.click(screen.getByRole("link", { name: "Administración" }));
+    await user.click(screen.getByRole("link", { name: "Gestionar productos" }));
     const confirmar = vi.spyOn(window, "confirm").mockReturnValue(true);
     try {
       await user.click(

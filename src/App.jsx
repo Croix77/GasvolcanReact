@@ -14,12 +14,23 @@ import Checkout from "./pages/Checkout";
 import ResultadoCompra from "./pages/ResultadoCompra";
 import Administracion from "./pages/admin/AdminProductos";
 import NoEncontrada from "./pages/NoEncontrada";
+import AuthProvider from "./contexts/AuthProvider";
+import RutaAdministrador from "./components/auth/RutaAdministrador";
+import Login from "./pages/Login";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminInicio from "./pages/admin/AdminInicio";
+import AdminPerfil from "./pages/admin/AdminPerfil";
+import AdminReportes from "./pages/admin/AdminReportes";
+import MisPedidos from "./pages/MisPedidos";
+import ListaPedidos from "./components/pedidos/ListaPedidos";
+import { usePedidos } from "./hooks/usePedidos";
 
-function App() {
+function ContenidoApp() {
   const catalogo = useCatalogo();
   const carrito = useCarrito(catalogo.productos);
   const [mensaje, setMensaje] = useState("");
-  const [pedidos, setPedidos] = useState([]);
+  const historial = usePedidos();
+  const pedidos = historial.pedidos;
 
   function agregarProducto(producto) {
     carrito.agregar(producto.id);
@@ -83,23 +94,55 @@ function App() {
           <Route path="/carrito" element={<Carrito {...carrito} />} />
           <Route path="/nosotros" element={<Nosotros />} />
           <Route path="/contacto" element={<Contacto />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/mis-pedidos" element={<MisPedidos {...historial} />} />
           <Route
             path="/checkout"
             element={
               <Checkout
                 items={carrito.items}
                 vaciar={carrito.vaciar}
-                onPedido={(pedido) =>
-                  setPedidos((actual) => [...actual, pedido])
-                }
+                onPedido={historial.agregar}
               />
             }
           />
           <Route path="/compra/:resultado" element={<ResultadoCompra />} />
-          <Route
-            path="/admin"
-            element={<Administracion {...catalogo} pedidos={pedidos} />}
-          />
+          <Route element={<RutaAdministrador />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route
+                index
+                element={
+                  <AdminInicio
+                    productos={catalogo.productos}
+                    pedidos={pedidos}
+                  />
+                }
+              />
+              <Route
+                path="productos"
+                element={<Administracion {...catalogo} pedidos={pedidos} />}
+              />
+              <Route
+                path="pedidos"
+                element={
+                  <section>
+                    <h1>Pedidos de demostración</h1>
+                    <ListaPedidos pedidos={pedidos} />
+                  </section>
+                }
+              />
+              <Route
+                path="reportes"
+                element={
+                  <AdminReportes
+                    productos={catalogo.productos}
+                    pedidos={pedidos}
+                  />
+                }
+              />
+              <Route path="perfil" element={<AdminPerfil />} />
+            </Route>
+          </Route>
           <Route path="*" element={<NoEncontrada />} />
         </Routes>
         <p role="status" className="mt-3">
@@ -112,3 +155,10 @@ function App() {
 }
 
 export default App;
+function App() {
+  return (
+    <AuthProvider>
+      <ContenidoApp />
+    </AuthProvider>
+  );
+}

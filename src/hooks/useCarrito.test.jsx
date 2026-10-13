@@ -3,6 +3,17 @@ import { describe, expect, it } from "vitest";
 import { useCarrito } from "./useCarrito";
 
 describe("Carrito con catálogo administrable", () => {
+  it("migra pedidos del avance remoto sin crear duplicados", () => {
+    localStorage.setItem(
+      "pedidosGas",
+      JSON.stringify([{ codigo: "CL001" }, { codigo: "CL001" }]),
+    );
+    const { result } = renderHook(() =>
+      useCarrito([{ id: "gas-5kg", codigo: "CL001", precio: 6500, stock: 80 }]),
+    );
+    expect(result.current.items).toHaveLength(1);
+    expect(result.current.items[0].cantidad).toBe(1);
+  });
   const lista = [{ id: "nuevo", nombre: "Nuevo", precio: 1000, stock: 2 }];
   it("recupera un producto creado en administración y rechaza cantidades inválidas", () => {
     localStorage.setItem(

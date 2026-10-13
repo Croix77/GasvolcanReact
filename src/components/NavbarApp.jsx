@@ -1,7 +1,11 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { NavLink, Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import { useState } from "react";
 
 function NavbarApp({ totalPedidos = 0 }) {
+  const { sesion } = useAuth();
+  const [expandido, setExpandido] = useState(false);
   return (
     <Navbar
       collapseOnSelect
@@ -9,12 +13,18 @@ function NavbarApp({ totalPedidos = 0 }) {
       bg="dark"
       data-bs-theme="dark"
       sticky="top"
+      expanded={expandido}
+      onToggle={setExpandido}
     >
       <Container>
         <Navbar.Brand as={Link} to="/">
           🔥 Gas El Volcán
         </Navbar.Brand>
-        <Navbar.Toggle aria-controls="menu-principal" label="Abrir menú" />
+        <Navbar.Toggle
+          aria-controls="menu-principal"
+          label="Abrir menú"
+          aria-expanded={expandido}
+        />
         <Navbar.Collapse id="menu-principal">
           <Nav className="ms-auto">
             {[
@@ -23,9 +33,11 @@ function NavbarApp({ totalPedidos = 0 }) {
               ["/categorias", "Categorías"],
               ["/ofertas", "Ofertas"],
               ["/carrito", "Carrito"],
+              ["/mis-pedidos", "Mis pedidos"],
               ["/nosotros", "Nosotros"],
               ["/contacto", "Contacto"],
               ["/admin", "Administración"],
+              ...(!sesion ? [["/login", "Iniciar sesión"]] : []),
             ].map(([ruta, nombre]) => (
               <Nav.Link
                 key={ruta}
@@ -33,7 +45,7 @@ function NavbarApp({ totalPedidos = 0 }) {
                 to={ruta}
                 end={ruta === "/"}
                 eventKey={ruta}
-                aria-label={ruta === '/carrito' ? 'Carrito' : undefined}
+                aria-label={ruta === "/carrito" ? "Carrito" : undefined}
               >
                 {nombre}
                 {ruta === "/carrito" && totalPedidos > 0 && (

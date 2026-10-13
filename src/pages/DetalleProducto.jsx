@@ -26,7 +26,7 @@ function DetalleProducto({ productos, onAgregar }) {
         <div className="col-md-7">
           <p>{producto.descripcionLarga || producto.descripcion}</p>
           <p>Categoría: {producto.categoria}</p>
-          <p className="fs-3 fw-bold">{moneda(producto.precio)}</p>
+          <p className="fs-3 fw-bold">{producto.precio === 0 ? 'Gratis' : moneda(producto.precio)}</p>
           <p>Stock: {producto.stock}</p>
           <button
             className="btn btn-primary"

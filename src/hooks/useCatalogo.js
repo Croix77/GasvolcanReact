@@ -26,14 +26,10 @@ export function useCatalogo() {
   }, [productos]);
   return {
     productos,
-    crear: (producto) =>
-      setProductos((lista) =>
-        crearProducto(lista, {
-          ...producto,
-          id: crypto.randomUUID(),
-          imagen: "",
-        }),
-      ),
+    crear: (producto) => {
+      const nuevo = { ...producto, id: crypto.randomUUID(), imagen: '' };
+      setProductos((lista) => crearProducto(lista, nuevo));
+    },
     actualizar: (id, producto) =>
       setProductos((lista) => actualizarProducto(lista, id, producto)),
     eliminar: (id) => setProductos((lista) => eliminarProducto(lista, id)),

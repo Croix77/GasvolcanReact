@@ -1,21 +1,33 @@
 export function validarContacto(datos) {
   const errores = {};
-  if (datos.nombre.trim().length < 2)
+  if (!nombreValido(datos.nombre))
     errores.nombre = "Escribe un nombre de al menos 2 caracteres.";
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datos.correo.trim()))
-    errores.correo = "Escribe un correo válido.";
-  if (datos.mensaje.trim().length < 10)
+  if (!correoValido(datos.correo)) errores.correo = "Escribe un correo válido.";
+  if (
+    typeof datos.mensaje !== "string" ||
+    datos.mensaje.trim().length < 10 ||
+    datos.mensaje.trim().length > 1000
+  )
     errores.mensaje = "Escribe un mensaje de al menos 10 caracteres.";
   return errores;
 }
 
 export function validarEntrega(datos) {
   const errores = {};
-  if (datos.nombre.trim().length < 2)
+  if (!nombreValido(datos.nombre))
     errores.nombre = "Escribe el nombre de quien recibe.";
-  if (!/^\+?\d{9,12}$/.test(datos.telefono.replace(/[\s()-]/g, "")))
-    errores.telefono = "Escribe un teléfono válido de 9 a 12 dígitos.";
-  if (datos.direccion.trim().length < 5)
+  if (
+    typeof datos.telefono !== "string" ||
+    !/^(?:\+?56)?[2-9]\d{8}$/.test(datos.telefono.replace(/[\s()-]/g, ""))
+  )
+    errores.telefono =
+      "Escribe un teléfono chileno válido, por ejemplo +56 9 1234 5678.";
+  if (
+    typeof datos.direccion !== "string" ||
+    datos.direccion.trim().length < 5 ||
+    datos.direccion.trim().length > 200 ||
+    !/[\p{L}\p{N}]/u.test(datos.direccion)
+  )
     errores.direccion = "Escribe la dirección de entrega.";
   if (
     ![
@@ -29,5 +41,33 @@ export function validarEntrega(datos) {
     ].includes(datos.comuna)
   )
     errores.comuna = "Selecciona una comuna de cobertura.";
+  return errores;
+}
+
+function nombreValido(nombre) {
+  return (
+    typeof nombre === "string" &&
+    nombre.trim().length >= 2 &&
+    nombre.trim().length <= 100 &&
+    /^[\p{L}\p{M}\s.'’-]+$/u.test(nombre.trim()) &&
+    /\p{L}/u.test(nombre)
+  );
+}
+function correoValido(correo) {
+  return (
+    typeof correo === "string" &&
+    correo.trim().length <= 150 &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo.trim())
+  );
+}
+export function validarLogin(datos) {
+  const errores = {};
+  if (!correoValido(datos.correo)) errores.correo = "Escribe un correo válido.";
+  if (
+    typeof datos.clave !== "string" ||
+    datos.clave.length < 8 ||
+    datos.clave.length > 128
+  )
+    errores.clave = "La contraseña debe tener entre 8 y 128 caracteres.";
   return errores;
 }
