@@ -12,7 +12,7 @@ import Nosotros from "./pages/Nosotros";
 import Contacto from "./pages/Contacto";
 import Checkout from "./pages/Checkout";
 import ResultadoCompra from "./pages/ResultadoCompra";
-import Administracion from "./pages/Administracion";
+import Administracion from "./pages/admin/AdminProductos";
 import NoEncontrada from "./pages/NoEncontrada";
 
 function App() {

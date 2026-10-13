@@ -1,8 +1,8 @@
 import { useState } from "react";
-import CampoFormulario from "../components/CampoFormulario";
-import { validarProducto } from "../data/catalogo";
-import { moneda } from "../utils/moneda";
-import { productos as productosIniciales } from "../data/productos";
+import CampoFormulario from "../../components/CampoFormulario";
+import { validarProducto } from "../../data/catalogo";
+import { moneda } from "../../utils/moneda";
+import { productos as productosIniciales } from "../../data/productos";
 const inicial = {
   nombre: "",
   descripcion: "",
