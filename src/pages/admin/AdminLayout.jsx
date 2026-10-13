@@ -15,6 +15,7 @@ function AdminLayout() {
             ["/admin/pedidos", "Pedidos"],
             ["/admin/reportes", "Reportes"],
             ["/admin/perfil", "Perfil"],
+            ["/admin/pruebas", "Configuración de demostración"],
           ].map(([ruta, nombre]) => (
             <NavLink
               key={ruta}

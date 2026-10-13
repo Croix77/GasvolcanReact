@@ -20,8 +20,7 @@ function Contacto() {
     <section className="formulario-pagina">
       <h1>Contacto</h1>
       <p>
-        Prepara tu consulta sobre productos y despacho. Este formulario de
-        demostración valida los datos; todavía no envía mensajes.
+        Prepara tu consulta sobre productos y despacho.
       </p>
       <form noValidate onSubmit={validar}>
         <CampoFormulario

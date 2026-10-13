@@ -4,7 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useState } from "react";
 
 function NavbarApp({ totalPedidos = 0 }) {
-  const { sesion } = useAuth();
+  const { sesion, salir } = useAuth();
   const [expandido, setExpandido] = useState(false);
   return (
     <Navbar
@@ -36,7 +36,9 @@ function NavbarApp({ totalPedidos = 0 }) {
               ["/mis-pedidos", "Mis pedidos"],
               ["/nosotros", "Nosotros"],
               ["/contacto", "Contacto"],
-              ["/admin", "Administración"],
+              ...(sesion?.rol === "administrador"
+                ? [["/admin", "Administración"]]
+                : []),
               ...(!sesion ? [["/login", "Iniciar sesión"]] : []),
             ].map(([ruta, nombre]) => (
               <Nav.Link
@@ -58,6 +60,15 @@ function NavbarApp({ totalPedidos = 0 }) {
                 )}
               </Nav.Link>
             ))}
+            {sesion?.rol === "cliente" && (
+              <button
+                className="btn btn-outline-light"
+                type="button"
+                onClick={salir}
+              >
+                Cerrar sesión
+              </button>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Container>

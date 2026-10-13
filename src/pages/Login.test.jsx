@@ -1,13 +1,9 @@
-import { act, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import App from "../App";
-import {
-  cuentaDemo,
-  iniciarSesionDemo,
-  recuperarSesionDemo,
-} from "../services/authDemo";
+import { cuentaDemo, cuentaCliente } from "../services/authDemo";
 function abrir(ruta) {
   return render(
     <MemoryRouter initialEntries={[ruta]}>
@@ -17,25 +13,20 @@ function abrir(ruta) {
 }
 async function entrar(user) {
   await user.type(
-    screen.getByLabelText("Correo del administrador"),
+    screen.getByLabelText("Correo electrónico"),
     cuentaDemo.correo,
   );
   await user.type(
     screen.getByLabelText("Contraseña", { exact: true }),
     cuentaDemo.clave,
   );
-  await user.click(
-    screen.getByRole("button", { name: "Iniciar sesión de demostración" }),
-  );
+  await user.click(screen.getByRole("button", { name: "Iniciar sesión" }));
 }
 describe("Login y panel de demostración", () => {
-
   it("valida campos y los botones mostrar y ocultar contraseña", async () => {
     const user = userEvent.setup();
     abrir("/login");
-    await user.click(
-      screen.getByRole("button", { name: "Iniciar sesión de demostración" }),
-    );
+    await user.click(screen.getByRole("button", { name: "Iniciar sesión" }));
     expect(screen.getByText("Escribe un correo válido.")).toBeInTheDocument();
     expect(
       screen.getByLabelText("Contraseña", { exact: true }),
@@ -57,16 +48,14 @@ describe("Login y panel de demostración", () => {
     const user = userEvent.setup();
     abrir("/login");
     await user.type(
-      screen.getByLabelText("Correo del administrador"),
+      screen.getByLabelText("Correo electrónico"),
       "otro@example.com",
     );
     await user.type(
       screen.getByLabelText("Contraseña", { exact: true }),
       "Incorrecta123",
     );
-    await user.click(
-      screen.getByRole("button", { name: "Iniciar sesión de demostración" }),
-    );
+    await user.click(screen.getByRole("button", { name: "Iniciar sesión" }));
     expect(screen.getByRole("alert")).toHaveTextContent(
       "Correo o contraseña incorrectos",
     );
@@ -89,64 +78,97 @@ describe("Login y panel de demostración", () => {
     ).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Cerrar sesión" }));
     expect(
-      screen.getByRole("heading", { name: "Acceso de administrador" }),
+      screen.getByRole("heading", { name: "Iniciar sesión" }),
     ).toBeInTheDocument();
     expect(sessionStorage.getItem("gas-volcan-sesion-demo")).toBeNull();
-    await user.click(screen.getByRole("link", { name: "Administración" }));
     expect(
-      screen.getByRole("heading", { name: "Acceso de administrador" }),
-    ).toBeInTheDocument();
+      screen.queryByRole("link", { name: "Administración" }),
+    ).not.toBeInTheDocument();
   });
-  it("rechaza sesiones corruptas, con rol incorrecto o vencidas", () => {
-    for (const dato of [
-      "{",
-      JSON.stringify({ rol: "cliente", vence: Date.now() + 10000 }),
-      JSON.stringify({ rol: "administrador", vence: Date.now() - 1 }),
-    ]) {
-      sessionStorage.setItem("gas-volcan-sesion-demo", dato);
-      expect(recuperarSesionDemo()).toBeNull();
-    }
-    expect(() =>
-      iniciarSesionDemo(cuentaDemo.correo, cuentaDemo.clave + " "),
-    ).toThrow();
-  });
-  it("vence automáticamente una sesión activa", () => {
-    vi.useFakeTimers();
-    try {
+});
+
+it("restringe administración sin sesión y con sesión cliente, incluso por URL directa", () => {
+  for (const rol of [null, "cliente"]) {
+    if (rol)
       sessionStorage.setItem(
         "gas-volcan-sesion-demo",
-        JSON.stringify({ rol: "administrador", vence: Date.now() + 1000 }),
+        JSON.stringify({ rol, vence: Date.now() + 60000 }),
       );
-      abrir("/admin/perfil");
-      act(() => vi.advanceTimersByTime(1001));
+    for (const ruta of [
+      "/admin",
+      "/admin/productos",
+      "/admin/usuarios",
+      "/admin/categorias",
+      "/admin/pruebas",
+    ]) {
+      const vista = abrir(ruta);
       expect(
-        screen.getByRole("heading", { name: "Acceso de administrador" }),
+        screen.queryByRole("navigation", { name: "Menú administrativo" }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByLabelText("Resultado de la compra"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", {
+          name: rol ? "Catálogo de productos" : "Iniciar sesión",
+        }),
       ).toBeInTheDocument();
-    } finally {
-      vi.useRealTimers();
+      vista.unmount();
     }
-  });
-  it("navega por el panel general, reportes y pedidos", async () => {
-    sessionStorage.setItem(
-      "gas-volcan-sesion-demo",
-      JSON.stringify({ rol: "administrador", vence: Date.now() + 1800000 }),
-    );
-    const user = userEvent.setup();
-    abrir("/admin");
-    expect(
-      screen.getByRole("heading", { name: "Panel de administración" }),
-    ).toBeInTheDocument();
-    await user.click(
-      screen.getByRole("link", { name: "Reportes", exact: true }),
-    );
-    expect(
-      screen.getByRole("heading", { name: "Reportes de demostración" }),
-    ).toBeInTheDocument();
-    await user.click(
-      screen.getByRole("link", { name: "Pedidos", exact: true }),
-    );
-    expect(
-      screen.getByText("No hay pedidos de demostración registrados."),
-    ).toBeInTheDocument();
-  });
+  }
+});
+it("permite entrar como cliente sin publicar credenciales ni controles administrativos", async () => {
+  const user = userEvent.setup();
+  const vista = abrir("/login");
+  expect(screen.queryByText(cuentaCliente.correo)).not.toBeInTheDocument();
+  expect(screen.queryByText(cuentaDemo.clave)).not.toBeInTheDocument();
+  await user.type(
+    screen.getByLabelText("Correo electrónico"),
+    cuentaCliente.correo,
+  );
+  await user.type(
+    screen.getByLabelText("Contraseña", { exact: true }),
+    cuentaCliente.clave,
+  );
+  await user.click(screen.getByRole("button", { name: "Iniciar sesión" }));
+  expect(
+    JSON.parse(sessionStorage.getItem("gas-volcan-sesion-demo")),
+  ).toMatchObject({ rol: "cliente" });
+  expect(
+    screen.queryByRole("link", { name: "Administración" }),
+  ).not.toBeInTheDocument();
+  vista.unmount();
+  abrir("/catalogo");
+  expect(
+    screen.getByRole("button", { name: "Cerrar sesión" }),
+  ).toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Cerrar sesión" }));
+  expect(sessionStorage.getItem("gas-volcan-sesion-demo")).toBeNull();
+});
+it("configura la compra solo desde el panel y conserva el escenario al cambiar de cuenta", async () => {
+  const user = userEvent.setup();
+  sessionStorage.setItem(
+    "gas-volcan-sesion-demo",
+    JSON.stringify({ rol: "administrador", vence: Date.now() + 60000 }),
+  );
+  abrir("/admin/pruebas");
+  expect(screen.getByText(cuentaCliente.correo)).toBeInTheDocument();
+  await user.selectOptions(
+    screen.getByLabelText("Resultado de la compra"),
+    "error",
+  );
+  await user.click(screen.getByRole("button", { name: "Cerrar sesión" }));
+  await user.type(
+    screen.getByLabelText("Correo electrónico"),
+    cuentaCliente.correo,
+  );
+  await user.type(
+    screen.getByLabelText("Contraseña", { exact: true }),
+    cuentaCliente.clave,
+  );
+  await user.click(screen.getByRole("button", { name: "Iniciar sesión" }));
+  expect(sessionStorage.getItem("gas-volcan-resultado-compra")).toBe("error");
+  expect(
+    screen.queryByText("Configuración de demostración"),
+  ).not.toBeInTheDocument();
 });

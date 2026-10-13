@@ -86,5 +86,4 @@ describe("Catálogo y carrito", () => {
     renderApp();
     expect(within(carrito()).getByRole("combobox")).toHaveValue("90");
   });
-
 });

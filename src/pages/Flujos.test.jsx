@@ -35,7 +35,6 @@ function prepararCarrito() {
 }
 
 describe("Navegación y formularios", () => {
-
   it("bloquea el checkout si el stock cambió después de agregar al carrito", () => {
     prepararCarrito();
     localStorage.setItem(
@@ -53,7 +52,7 @@ describe("Navegación y formularios", () => {
     );
     abrir("/checkout");
     expect(
-      screen.getByRole("button", { name: "Confirmar compra simulada" }),
+      screen.getByRole("button", { name: "Confirmar compra" }),
     ).toBeDisabled();
     expect(screen.getByRole("alert")).toHaveTextContent("stock insuficiente");
   });
@@ -112,56 +111,60 @@ describe("Navegación y formularios", () => {
     abrir("/checkout");
     await userEvent
       .setup()
-      .click(screen.getByRole("button", { name: "Confirmar compra simulada" }));
+      .click(screen.getByRole("button", { name: "Confirmar compra" }));
     expect(
       screen.getByText("Escribe la dirección de entrega."),
     ).toBeInTheDocument();
   });
   it("completa una compra simulada y vacía el carrito sin almacenar datos personales", async () => {
     prepararCarrito();
+    sessionStorage.setItem(
+      "gas-volcan-sesion-demo",
+      JSON.stringify({ rol: "cliente", vence: Date.now() + 60000 }),
+    );
     const user = userEvent.setup();
     abrir("/checkout");
-    await entrega(user);
-    await user.click(
-      screen.getByRole("button", { name: "Confirmar compra simulada" }),
-    );
     expect(
-      screen.getByRole("heading", { name: "Compra simulada confirmada" }),
+      screen.queryByRole("combobox", { name: /Resultado/ }),
+    ).not.toBeInTheDocument();
+    await entrega(user);
+    await user.click(screen.getByRole("button", { name: "Confirmar compra" }));
+    expect(
+      screen.getByRole("heading", { name: "Compra confirmada" }),
     ).toBeInTheDocument();
     expect(localStorage.getItem("gas-el-volcan-carrito")).toBe("[]");
     expect(JSON.stringify(localStorage)).not.toContain("Dirección ficticia");
-    await user.click(screen.getByRole("link", { name: "Administración" }));
+    await user.click(screen.getByRole("link", { name: "Mis pedidos" }));
+    expect(
+      screen.getByRole("heading", { name: "Mis pedidos", exact: true }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Confirmado/)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Cerrar sesión" }));
+    await user.click(screen.getByRole("link", { name: "Iniciar sesión" }));
     await user.type(
-      screen.getByLabelText("Correo del administrador"),
+      screen.getByLabelText("Correo electrónico"),
       "admin@example.com",
     );
     await user.type(
       screen.getByLabelText("Contraseña", { exact: true }),
       "VolcanDemo123!",
     );
-    await user.click(
-      screen.getByRole("button", { name: "Iniciar sesión de demostración" }),
-    );
+    await user.click(screen.getByRole("button", { name: "Iniciar sesión" }));
     await user.click(
       screen.getByRole("link", { name: "Pedidos", exact: true }),
     );
-    expect(screen.getByText(/Confirmado \(simulación\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Confirmado/)).toBeInTheDocument();
   });
   it("conserva el carrito al simular una compra fallida", async () => {
     prepararCarrito();
     const user = userEvent.setup();
+    sessionStorage.setItem("gas-volcan-resultado-compra", "error");
     abrir("/checkout");
     await entrega(user);
-    await user.selectOptions(
-      screen.getByLabelText("Resultado de la compra de demostración"),
-      "error",
-    );
-    await user.click(
-      screen.getByRole("button", { name: "Confirmar compra simulada" }),
-    );
+    await user.click(screen.getByRole("button", { name: "Confirmar compra" }));
     expect(
       screen.getByRole("heading", {
-        name: "No se pudo completar la compra simulada",
+        name: "No se pudo completar la compra",
       }),
     ).toBeInTheDocument();
     expect(

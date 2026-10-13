@@ -21,6 +21,7 @@ function AuthProvider({ children }) {
     const nueva = iniciarSesionDemo(correo, clave);
     guardarSesionDemo(nueva);
     setSesion(nueva);
+    return nueva;
   }
   function salir() {
     guardarSesionDemo(null);

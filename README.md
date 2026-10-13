@@ -20,7 +20,7 @@ npm run lint
 npm run build
 ```
 
-La cobertura se genera en `coverage/`, excluida de Git. `npm run test:watch` ejecuta las pruebas durante el desarrollo.
+La suite contiene 30 casos automatizados de funciones, componentes e integración de flujos. La cobertura se genera en `coverage/`, excluida de Git. `npm run test:watch` ejecuta las pruebas durante el desarrollo.
 
 ## Funciones
 
@@ -38,11 +38,11 @@ La cobertura se genera en `coverage/`, excluida de Git. `npm run test:watch` eje
 
 El panel administrativo requiere una sesión de demostración. Este control vive en el navegador y no constituye autenticación real de servidor. No debe usarse con información real. Los datos de contacto y dirección no se guardan en almacenamiento persistente. No se recopilan contraseñas o tarjetas. El checkout usa precios residenciales y no incluye una tarifa de despacho; no existe una tarifa verificada en los documentos.
 
-No se implementaron aún backend Spring Boot, cuentas y roles reales, mapas de reparto, base de datos o despliegue AWS. El login actual está identificado como demostración. Los informes de evaluación se entregan por separado.
+No se implementaron aún backend Spring Boot, cuentas y roles reales, mapas de reparto, base de datos o despliegue AWS. El alcance de demostración se explica dentro del panel administrativo. Los informes de evaluación se entregan por separado.
 
 ## Rutas
 
-`/`, `/catalogo`, `/categorias`, `/ofertas`, `/productos/:id`, `/carrito`, `/nosotros`, `/contacto`, `/checkout`, `/compra/:resultado`, `/mis-pedidos`, `/login`, `/admin`, `/admin/productos`, `/admin/pedidos`, `/admin/reportes`, `/admin/perfil`.
+`/`, `/catalogo`, `/categorias`, `/ofertas`, `/productos/:id`, `/carrito`, `/nosotros`, `/contacto`, `/checkout`, `/compra/:resultado`, `/mis-pedidos`, `/login`, `/admin`, `/admin/productos`, `/admin/pedidos`, `/admin/reportes`, `/admin/perfil`, `/admin/categorias`, `/admin/usuarios`, `/admin/pruebas`.
 
 Al publicar con BrowserRouter, el servidor debe dirigir las rutas internas a `index.html`. Vite permite comprobar las URL directas en desarrollo. El entorno de producción debe configurar esa regla.
 
@@ -52,7 +52,7 @@ Al publicar con BrowserRouter, el servidor debe dirigir las rutas internas a `in
 
 ## Login de demostración
 
-En `/login`, usar `admin@example.com` y `VolcanDemo123!`. Son credenciales públicas y ficticias destinadas a esta entrega frontend. No introducir contraseñas reales. La sesión dura 30 minutos, se conserva en sessionStorage sin la contraseña y termina con Cerrar sesión. Las rutas administrativas redirigen al login si no hay sesión. Este mecanismo es manipulable por el usuario del navegador y debe reemplazarse por autorización de servidor antes de producción.
+En `/login`, usar `admin@example.com` y `VolcanDemo123!` para administración, o `cliente@example.com` y `ClienteDemo123!` para el recorrido de cliente. Las credenciales no aparecen en el login público. El cliente no accede al panel administrativo. En `/admin/pruebas` se configura el resultado exitoso o fallido de compra para la misma pestaña, conservado al cerrar sesión y entrar como cliente. El selector no aparece en el checkout. Son credenciales públicas y ficticias destinadas a esta entrega frontend. No introducir contraseñas reales. La sesión dura 30 minutos, se conserva en sessionStorage sin la contraseña y termina con Cerrar sesión. Las rutas administrativas redirigen al login si no hay sesión. Este mecanismo es manipulable por el usuario del navegador y debe reemplazarse por autorización de servidor antes de producción.
 
 ## Distribución de carpetas
 

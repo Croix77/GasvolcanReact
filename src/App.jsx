@@ -1,3 +1,4 @@
+import AdminPruebas from "./pages/admin/AdminPruebas";
 import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import NavbarApp from "./components/NavbarApp";
@@ -150,6 +151,7 @@ function ContenidoApp() {
                 }
               />
               <Route path="perfil" element={<AdminPerfil />} />
+              <Route path="pruebas" element={<AdminPruebas />} />
               <Route
                 path="categorias"
                 element={<AdminCategorias {...catalogo} />}

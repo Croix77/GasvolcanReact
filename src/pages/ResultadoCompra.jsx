@@ -15,12 +15,12 @@ function ResultadoCompra() {
     <section>
       <h1>
         {resultado === "exito"
-          ? "Compra simulada confirmada"
-          : "No se pudo completar la compra simulada"}
+          ? "Compra confirmada"
+          : "No se pudo completar la compra"}
       </h1>
       <p>
         {resultado === "exito"
-          ? "Se registró un pedido de demostración. No se realizará ningún cobro ni despacho."
+          ? "Puedes consultar el resumen en Mis pedidos."
           : "Tu carrito se conserva para intentar nuevamente."}
       </p>
       <h2>Resumen</h2>

@@ -42,7 +42,7 @@ function limpiar(pedido) {
     fecha: pedido.fecha,
     items,
     total: items.reduce((suma, item) => suma + item.precio * item.cantidad, 0),
-    estado: "Confirmado (simulación)",
+    estado: "Confirmado",
   };
 }
 export function usePedidos() {

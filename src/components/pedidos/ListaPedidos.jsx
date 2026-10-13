@@ -1,14 +1,14 @@
 import { moneda } from "../../utils/moneda";
 function ListaPedidos({ pedidos, eliminar }) {
   if (!pedidos.length)
-    return <p>No hay pedidos de demostración registrados.</p>;
+    return <p>No hay pedidos registrados.</p>;
   return (
     <ul className="list-group">
       {pedidos.map((pedido) => (
         <li className="list-group-item" key={pedido.id}>
           <h2 className="h5">Pedido {pedido.id.slice(0, 8)}</h2>
           <p>
-            {pedido.estado} · {moneda(pedido.total)}
+            {pedido.estado.replace(" (simulación)", "")} · {moneda(pedido.total)}
           </p>
           <ul>
             {pedido.items.map((item) => (
@@ -24,7 +24,7 @@ function ListaPedidos({ pedidos, eliminar }) {
               onClick={() => eliminar(pedido.id)}
               aria-label={`Eliminar pedido ${pedido.id.slice(0, 8)}`}
             >
-              Eliminar registro de demostración
+              Eliminar del historial
             </button>
           )}
         </li>

@@ -1,3 +1,4 @@
+import { leerEscenarioCompra } from "../services/escenarioCompra";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import CampoFormulario from "../components/CampoFormulario";
@@ -21,7 +22,6 @@ function Checkout({ items, vaciar, onPedido }) {
     comuna: "",
   });
   const [errores, setErrores] = useState({});
-  const [resultado, setResultado] = useState("exito");
   const total = items.reduce(
     (suma, item) => suma + (item.precio ?? 0) * item.cantidad,
     0,
@@ -45,6 +45,7 @@ function Checkout({ items, vaciar, onPedido }) {
     const nuevosErrores = validarEntrega(datos);
     setErrores(nuevosErrores);
     if (Object.keys(nuevosErrores).length || noDisponible) return;
+    const resultado = leerEscenarioCompra();
     const pedido = {
       id: crypto.randomUUID(),
       fecha: new Date().toISOString(),
@@ -58,8 +59,8 @@ function Checkout({ items, vaciar, onPedido }) {
       comuna: datos.comuna,
       estado:
         resultado === "exito"
-          ? "Confirmado (simulación)"
-          : "Fallido (simulación)",
+          ? "Confirmado"
+          : "Fallido",
     };
     if (resultado === "exito") {
       onPedido(pedido);
@@ -70,10 +71,6 @@ function Checkout({ items, vaciar, onPedido }) {
   return (
     <section>
       <h1>Datos de entrega</h1>
-      <p>
-        Compra de demostración: usa datos ficticios. No se realizará ningún
-        cobro ni despacho.
-      </p>
       <div className="row g-4">
         <div className="col-12 col-lg-7">
           <form noValidate onSubmit={enviar}>
@@ -114,24 +111,12 @@ function Checkout({ items, vaciar, onPedido }) {
               error={errores.comuna}
               required
             />
-            <label className="form-label" htmlFor="resultado">
-              Resultado de la compra de demostración
-            </label>
-            <select
-              id="resultado"
-              className="form-select mb-3"
-              value={resultado}
-              onChange={(evento) => setResultado(evento.target.value)}
-            >
-              <option value="exito">Compra exitosa</option>
-              <option value="error">Compra fallida</option>
-            </select>
             <button
               className="btn btn-primary"
               type="submit"
               disabled={noDisponible}
             >
-              Confirmar compra simulada
+              Confirmar compra
             </button>
           </form>
         </div>

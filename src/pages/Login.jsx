@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { cuentaDemo } from "../services/authDemo";
 import { validarLogin } from "../utils/validacion";
 import CampoFormulario from "../components/CampoFormulario";
 
@@ -16,7 +15,13 @@ function Login() {
   const [errores, setErrores] = useState({});
   const [error, setError] = useState("");
   const [visible, setVisible] = useState(false);
-  if (sesion) return <Navigate to={destino} replace />;
+  if (sesion)
+    return (
+      <Navigate
+        to={sesion.rol === "administrador" ? destino : "/catalogo"}
+        replace
+      />
+    );
   function cambiar(evento) {
     setDatos({ ...datos, [evento.target.name]: evento.target.value });
     setError("");
@@ -28,29 +33,22 @@ function Login() {
     setError("");
     if (Object.keys(resultado).length) return;
     try {
-      entrar(datos.correo, datos.clave);
+      const nueva = entrar(datos.correo, datos.clave);
       setDatos({ correo: "", clave: "" });
-      navegar(destino, { replace: true });
+      navegar(nueva.rol === "administrador" ? destino : "/catalogo", {
+        replace: true,
+      });
     } catch (fallo) {
       setError(fallo.message);
     }
   }
   return (
     <section className="formulario-pagina">
-      <h1>Acceso de administrador</h1>
-      <p>
-        Login de demostración para la entrega frontend. Utiliza solo esta cuenta
-        ficticia; no introduzcas credenciales reales.
-      </p>
-      <p>
-        Correo: <code>{cuentaDemo.correo}</code>
-        <br />
-        Contraseña de demostración: <code>{cuentaDemo.clave}</code>
-      </p>
+      <h1>Iniciar sesión</h1>
       <form noValidate onSubmit={enviar}>
         <CampoFormulario
           nombre="correo"
-          etiqueta="Correo del administrador"
+          etiqueta="Correo electrónico"
           tipo="email"
           valor={datos.correo}
           onChange={cambiar}
@@ -85,7 +83,7 @@ function Login() {
         )}
         <div>
           <button type="submit" className="btn btn-primary">
-            Iniciar sesión de demostración
+            Iniciar sesión
           </button>
         </div>
       </form>
