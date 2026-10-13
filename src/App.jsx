@@ -24,6 +24,9 @@ import AdminReportes from "./pages/admin/AdminReportes";
 import MisPedidos from "./pages/MisPedidos";
 import ListaPedidos from "./components/pedidos/ListaPedidos";
 import { usePedidos } from "./hooks/usePedidos";
+import { useUsuariosDemo } from "./hooks/useUsuariosDemo";
+import AdminCategorias from "./pages/admin/AdminCategorias";
+import AdminUsuarios from "./pages/admin/AdminUsuarios";
 
 function ContenidoApp() {
   const catalogo = useCatalogo();
@@ -31,13 +34,18 @@ function ContenidoApp() {
   const [mensaje, setMensaje] = useState("");
   const historial = usePedidos();
   const pedidos = historial.pedidos;
+  const usuariosDemo = useUsuariosDemo();
 
   function agregarProducto(producto) {
     carrito.agregar(producto.id);
     setMensaje(`${producto.nombre}: carrito actualizado.`);
   }
   const listado = (
-    <Catalogo productos={catalogo.productos} onAgregar={agregarProducto} />
+    <Catalogo
+      productos={catalogo.productos}
+      categoriasDisponibles={catalogo.categorias}
+      onAgregar={agregarProducto}
+    />
   );
   return (
     <>
@@ -67,6 +75,7 @@ function ContenidoApp() {
                 productos={catalogo.productos}
                 onAgregar={agregarProducto}
                 titulo="Categorías"
+                categoriasDisponibles={catalogo.categorias}
               />
             }
           />
@@ -141,6 +150,14 @@ function ContenidoApp() {
                 }
               />
               <Route path="perfil" element={<AdminPerfil />} />
+              <Route
+                path="categorias"
+                element={<AdminCategorias {...catalogo} />}
+              />
+              <Route
+                path="usuarios"
+                element={<AdminUsuarios {...usuariosDemo} />}
+              />
             </Route>
           </Route>
           <Route path="*" element={<NoEncontrada />} />

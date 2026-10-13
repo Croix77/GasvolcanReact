@@ -1,12 +1,17 @@
 import { useState } from "react";
 import ProductCard from "../components/ProductCard";
 
-function Catalogo({ productos, onAgregar, titulo = "Catálogo de productos" }) {
+function Catalogo({
+  productos,
+  onAgregar,
+  categoriasDisponibles,
+  titulo = "Catálogo de productos",
+}) {
   const [busqueda, setBusqueda] = useState("");
   const [categoria, setCategoria] = useState("");
-  const categorias = [
-    ...new Set(productos.map((producto) => producto.categoria)),
-  ];
+  const categorias = categoriasDisponibles?.map(
+    (categoria) => categoria.nombre,
+  ) || [...new Set(productos.map((producto) => producto.categoria))];
   const visibles = productos.filter(
     (producto) =>
       (!categoria || producto.categoria === categoria) &&

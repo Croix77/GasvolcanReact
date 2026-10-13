@@ -35,6 +35,8 @@ describe("Login y panel de demostración", () => {
     "/admin/pedidos",
     "/admin/reportes",
     "/admin/perfil",
+    "/admin/usuarios",
+    "/admin/categorias",
   ])("restringe la ruta %s sin sesión", async (ruta) => {
     abrir(ruta);
     expect(

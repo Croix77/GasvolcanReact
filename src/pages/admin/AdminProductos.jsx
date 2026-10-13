@@ -1,15 +1,16 @@
 import { useState } from "react";
 import FormProducto from "../../components/admin/FormProducto";
 import TablaProductos from "../../components/admin/TablaProductos";
-import { productos as iniciales } from "../../data/productos";
-function AdminProductos({ productos, crear, actualizar, eliminar }) {
+function AdminProductos({
+  productos,
+  categorias: categoriasRegistradas,
+  crear,
+  actualizar,
+  eliminar,
+}) {
   const [edicion, setEdicion] = useState(null);
   const [mensaje, setMensaje] = useState("");
-  const categorias = [
-    ...new Set(
-      [...iniciales, ...productos].map((producto) => producto.categoria),
-    ),
-  ];
+  const categorias = categoriasRegistradas.map((categoria) => categoria.nombre);
   function guardar(datos) {
     if (edicion) actualizar(edicion.id, datos);
     else crear(datos);

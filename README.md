@@ -67,3 +67,13 @@ En `/login`, usar `admin@example.com` y `VolcanDemo123!`. Son credenciales públ
 - `src/test`: preparación compartida del entorno; las pruebas se colocan junto a la función o vista que verifican.
 
 Los precios y stocks se validan como enteros no negativos; un precio cero se presenta como Gratis. El catálogo del caso conserva sus tarifas originales. El historial de Mis pedidos elimina datos personales y evita duplicar identificadores. No se deben usar datos reales en la demostración.
+
+## Categorías y usuarios ficticios
+
+El panel incorpora `/admin/categorias` y `/admin/usuarios` dentro de las rutas de demostración restringidas.
+
+Las categorías tienen persistencia y nombre único (sin distinguir mayúsculas). Renombrarlas actualiza los productos asignados en el mismo estado. Solo se pueden eliminar categorías sin productos. El registro administrable alimenta los filtros públicos y el formulario de productos, incluidos nombres nuevos y categorías vacías.
+
+Los usuarios se pueden crear, editar, asignar a roles y activar o desactivar. Se admiten únicamente correos ficticios de los dominios reservados example.com, example.org y example.net. No se recopilan contraseñas. Estos registros no crean cuentas de acceso ni cambian el login fijo de demostración; la autenticación y autorización de servidor se dejan para la futura integración con backend.
+
+El catálogo y sus categorías se guardan juntos en `gas-volcan-catalogo-v2`. Se conserva lectura y escritura compatible con el catálogo anterior. Los números recuperados se normalizan, y un registro inconsistente recupera los datos anteriores. Los usuarios ficticios se guardan en `gas-volcan-usuarios-demo-v1`.

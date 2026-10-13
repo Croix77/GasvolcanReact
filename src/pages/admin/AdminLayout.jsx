@@ -10,6 +10,8 @@ function AdminLayout() {
           {[
             ["/admin", "Panel general"],
             ["/admin/productos", "Productos"],
+            ["/admin/categorias", "Categorías"],
+            ["/admin/usuarios", "Usuarios"],
             ["/admin/pedidos", "Pedidos"],
             ["/admin/reportes", "Reportes"],
             ["/admin/perfil", "Perfil"],

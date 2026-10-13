@@ -25,6 +25,12 @@ function Carrito({ items, cambiarCantidad, eliminar, vaciar }) {
                 <div className="me-auto text-start">
                   <h3 className="h5">{item.nombre}</h3>
                   <p>
+                    Precio unitario:{" "}
+                    {item.precio == null
+                      ? "Por confirmar"
+                      : moneda(item.precio)}
+                  </p>
+                  <p>
                     {item.precio == null
                       ? "Precio por confirmar"
                       : moneda(item.precio * item.cantidad)}
