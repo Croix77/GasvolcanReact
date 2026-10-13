@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import App from "./App";
 import { MemoryRouter } from "react-router-dom";
 
@@ -38,6 +38,7 @@ describe("Catálogo y carrito", () => {
   it("agrupa productos repetidos, calcula el total y guarda solo id y cantidad", async () => {
     const user = userEvent.setup();
     renderApp();
+    const espia = vi.spyOn(Storage.prototype, "setItem");
     const boton = within(tarjeta("Cilindro de Gas 15 Kg")).getByRole("button");
     await user.click(boton);
     await user.click(boton);
@@ -46,6 +47,10 @@ describe("Catálogo y carrito", () => {
     expect(JSON.parse(localStorage.getItem(clave))).toEqual([
       { id: "gas-15kg", cantidad: 2 },
     ]);
+    expect(espia).toHaveBeenCalledWith(
+      clave,
+      JSON.stringify([{ id: "gas-15kg", cantidad: 2 }]),
+    );
   });
 
   it("permite cambiar cantidad, eliminar y vaciar", async () => {

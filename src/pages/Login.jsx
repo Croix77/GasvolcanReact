@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { validarLogin } from "../utils/validacion";
+import { validarLogin, enfocarPrimerError } from "../utils/validacion";
 import CampoFormulario from "../components/CampoFormulario";
 
 function Login() {
@@ -23,7 +23,9 @@ function Login() {
       />
     );
   function cambiar(evento) {
-    setDatos({ ...datos, [evento.target.name]: evento.target.value });
+    const nuevosDatos = { ...datos, [evento.target.name]: evento.target.value };
+    setDatos(nuevosDatos);
+    if (Object.keys(errores).length > 0) setErrores(validarLogin(nuevosDatos));
     setError("");
   }
   function enviar(evento) {
@@ -31,7 +33,10 @@ function Login() {
     const resultado = validarLogin(datos);
     setErrores(resultado);
     setError("");
-    if (Object.keys(resultado).length) return;
+    if (Object.keys(resultado).length) {
+      enfocarPrimerError(resultado);
+      return;
+    }
     try {
       const nueva = entrar(datos.correo, datos.clave);
       setDatos({ correo: "", clave: "" });

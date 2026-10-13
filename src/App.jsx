@@ -50,13 +50,20 @@ function ContenidoApp() {
   );
   return (
     <>
+      <a className="saltar-contenido" href="#contenido">
+        Saltar al contenido
+      </a>
       <NavbarApp
         totalPedidos={carrito.items.reduce(
           (suma, item) => suma + item.cantidad,
           0,
         )}
       />
-      <main id="contenido" className="container contenido-principal">
+      <main
+        tabIndex={-1}
+        id="contenido"
+        className="container contenido-principal"
+      >
         <Routes>
           <Route
             path="/"
@@ -68,7 +75,17 @@ function ContenidoApp() {
               </>
             }
           />
-          <Route path="/catalogo" element={listado} />
+          <Route
+            path="/catalogo"
+            element={
+              <Catalogo
+                esPagina
+                productos={catalogo.productos}
+                categoriasDisponibles={catalogo.categorias}
+                onAgregar={agregarProducto}
+              />
+            }
+          />
           <Route
             path="/categorias"
             element={
@@ -76,6 +93,7 @@ function ContenidoApp() {
                 productos={catalogo.productos}
                 onAgregar={agregarProducto}
                 titulo="Categorías"
+                esPagina
                 categoriasDisponibles={catalogo.categorias}
               />
             }
@@ -89,6 +107,7 @@ function ContenidoApp() {
                 )}
                 onAgregar={agregarProducto}
                 titulo="Ofertas"
+                esPagina
               />
             }
           />
@@ -101,7 +120,7 @@ function ContenidoApp() {
               />
             }
           />
-          <Route path="/carrito" element={<Carrito {...carrito} />} />
+          <Route path="/carrito" element={<Carrito {...carrito} esPagina />} />
           <Route path="/nosotros" element={<Nosotros />} />
           <Route path="/contacto" element={<Contacto />} />
           <Route path="/login" element={<Login />} />

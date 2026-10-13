@@ -79,3 +79,9 @@ Los usuarios se pueden crear, editar, asignar a roles y activar o desactivar. Se
 El catálogo y sus categorías se guardan juntos en `gas-volcan-catalogo-v2`. `src/services/catalogoLocal.js` concentra la lectura y el guardado. Solo se escribe este formato; los datos del catálogo anterior se pueden recuperar para conservar cambios existentes. Los números recuperados se normalizan y los registros inválidos utilizan el catálogo anterior o inicial. Los usuarios ficticios se guardan en `gas-volcan-usuarios-demo-v1`.
 
 El carrito y el historial de pedidos pertenecen al navegador de demostración. No están aislados por cuenta de usuario. El módulo Usuarios administra registros ficticios independientes de las dos cuentas de acceso.
+
+## Validación y acceso al contenido
+
+Los seis formularios usan noValidate y funciones del proyecto, con mensajes por campo, aria-invalid, aria-describedby y foco en el primer error. Tras un envío inválido, los mensajes se actualizan al corregir los campos. Los atributos required, type y maxlength se conservan como información y ayuda de entrada, pero el bloqueo de envío y los mensajes se controlan en React.
+
+La cuenta cliente completa el checkout con el perfil ficticio de src/data/perfilClienteDemo.js. Los datos se pueden editar y no se guardan en la sesión ni en el resumen persistente del pedido. Catálogo y carrito reciben esPagina para utilizar h1 en su ruta propia y h2 dentro de Inicio. El enlace Saltar al contenido permite omitir el menú usando teclado.

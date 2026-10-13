@@ -1,3 +1,5 @@
+import { validarCategoria } from "../../services/categorias";
+import { enfocarPrimerError } from "../../utils/validacion";
 import { useState } from "react";
 import CampoFormulario from "../../components/CampoFormulario";
 function AdminCategorias({
@@ -18,7 +20,12 @@ function AdminCategorias({
   }
   function guardar(evento) {
     evento.preventDefault();
-    setError("");
+    const errorNombre = validarCategoria(nombre, categorias, edicion);
+    setError(errorNombre);
+    if (errorNombre) {
+      enfocarPrimerError({ "categoria-nombre": errorNombre });
+      return;
+    }
     try {
       if (edicion) actualizarCategoria(edicion, nombre);
       else crearCategoria(nombre);
@@ -47,7 +54,11 @@ function AdminCategorias({
           nombre="categoria-nombre"
           etiqueta="Nombre de la categoría"
           valor={nombre}
-          onChange={(evento) => setNombre(evento.target.value)}
+          onChange={(evento) => {
+            const valor = evento.target.value;
+            setNombre(valor);
+            if (error) setError(validarCategoria(valor, categorias, edicion));
+          }}
           error={error}
           required
           maxLength={80}

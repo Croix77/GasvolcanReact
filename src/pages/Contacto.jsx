@@ -1,19 +1,23 @@
 import { useState } from "react";
 import CampoFormulario from "../components/CampoFormulario";
-import { validarContacto } from "../utils/validacion";
+import { validarContacto, enfocarPrimerError } from "../utils/validacion";
 const inicial = { nombre: "", correo: "", mensaje: "" };
 function Contacto() {
   const [datos, setDatos] = useState(inicial);
   const [errores, setErrores] = useState({});
   const [validado, setValidado] = useState(false);
   function cambiar(evento) {
-    setDatos({ ...datos, [evento.target.name]: evento.target.value });
+    const nuevosDatos = { ...datos, [evento.target.name]: evento.target.value };
+    setDatos(nuevosDatos);
+    if (Object.keys(errores).length > 0)
+      setErrores(validarContacto(nuevosDatos));
     setValidado(false);
   }
   function validar(evento) {
     evento.preventDefault();
     const resultado = validarContacto(datos);
     setErrores(resultado);
+    enfocarPrimerError(resultado);
     setValidado(Object.keys(resultado).length === 0);
   }
   return (

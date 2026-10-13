@@ -45,7 +45,7 @@ function CampoFormulario({
       </label>
       {campo}
       {error && (
-        <p id={`${nombre}-error`} className="invalid-feedback">
+        <p id={`${nombre}-error`} role="alert" className="invalid-feedback">
           {error}
         </p>
       )}

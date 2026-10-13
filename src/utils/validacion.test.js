@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { validarProducto } from "../services/catalogo";
 import { validarContacto, validarEntrega, validarLogin } from "./validacion";
 describe("Límites y tipos de los formularios", () => {
   it("acepta nombres con tildes, correos y teléfono chileno", () => {
@@ -32,6 +33,17 @@ describe("Límites y tipos de los formularios", () => {
     expect(validarLogin({ correo: " ", clave: "corta" })).toHaveProperty(
       "clave",
     );
+    for (const valor of [" ", null, true, -1, 1.5, "abc"]) {
+      expect(
+        validarProducto({
+          nombre: "Gas",
+          descripcion: "Cilindro",
+          categoria: "Gas",
+          precio: valor,
+          stock: valor,
+        }),
+      ).toHaveProperty("precio");
+    }
   });
   it("rechaza teléfonos imposibles, direcciones vacías y comunas fuera de cobertura", () => {
     expect(

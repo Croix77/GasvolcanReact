@@ -22,7 +22,8 @@ function AdminPruebas() {
       </p>
       <p>
         Cierra la sesión administrativa e ingresa con esta cuenta desde el mismo
-        login para recorrer catálogo, carrito, compra y Mis pedidos.
+        login para recorrer catálogo, carrito, compra y Mis pedidos. Los datos
+        ficticios de entrega se completan automáticamente y se pueden editar.
       </p>
       <label htmlFor="escenario-compra" className="form-label">
         Resultado de la compra

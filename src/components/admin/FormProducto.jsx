@@ -1,3 +1,4 @@
+import { enfocarPrimerError } from "../../utils/validacion";
 import { useState } from "react";
 import CampoFormulario from "../CampoFormulario";
 import { validarProducto } from "../../services/catalogo";
@@ -13,19 +14,25 @@ function FormProducto({ producto, categorias, onGuardar, onCancelar }) {
   const [datos, setDatos] = useState(() => producto || inicial);
   const [errores, setErrores] = useState({});
   function cambiar(evento) {
-    setDatos({
+    const nuevosDatos = {
       ...datos,
       [evento.target.name]:
         evento.target.type === "checkbox"
           ? evento.target.checked
           : evento.target.value,
-    });
+    };
+    setDatos(nuevosDatos);
+    if (Object.keys(errores).length > 0)
+      setErrores(validarProducto(nuevosDatos));
   }
   function guardar(evento) {
     evento.preventDefault();
     const resultado = validarProducto(datos);
     setErrores(resultado);
-    if (Object.keys(resultado).length) return;
+    if (Object.keys(resultado).length) {
+      enfocarPrimerError(resultado, { categoria: "categoria-admin" });
+      return;
+    }
     onGuardar(datos);
     setDatos(inicial);
     setErrores({});
@@ -56,9 +63,12 @@ function FormProducto({ producto, categorias, onGuardar, onCancelar }) {
         etiqueta="Categoría del producto"
         opciones={categorias}
         valor={datos.categoria}
-        onChange={(evento) =>
-          setDatos({ ...datos, categoria: evento.target.value })
-        }
+        onChange={(evento) => {
+          const nuevosDatos = { ...datos, categoria: evento.target.value };
+          setDatos(nuevosDatos);
+          if (Object.keys(errores).length > 0)
+            setErrores(validarProducto(nuevosDatos));
+        }}
         error={errores.categoria}
         required
       />

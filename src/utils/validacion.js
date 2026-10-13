@@ -71,3 +71,10 @@ export function validarLogin(datos) {
     errores.clave = "La contraseña debe tener entre 8 y 128 caracteres.";
   return errores;
 }
+
+export function enfocarPrimerError(errores, nombres = {}) {
+  const primerCampo = Object.keys(errores)[0];
+  if (!primerCampo) return;
+  const nombre = nombres[primerCampo] || primerCampo;
+  document.getElementsByName(nombre)[0]?.focus();
+}

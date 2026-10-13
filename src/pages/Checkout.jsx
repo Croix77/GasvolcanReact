@@ -1,8 +1,10 @@
 import { leerEscenarioCompra } from "../services/escenarioCompra";
+import { useAuth } from "../hooks/useAuth";
+import { perfilClienteDemo } from "../data/perfilClienteDemo";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import CampoFormulario from "../components/CampoFormulario";
-import { validarEntrega } from "../utils/validacion";
+import { validarEntrega, enfocarPrimerError } from "../utils/validacion";
 import { moneda } from "../utils/moneda";
 const comunas = [
   "Chillán",
@@ -15,12 +17,12 @@ const comunas = [
 ];
 function Checkout({ items, vaciar, onPedido }) {
   const navegar = useNavigate();
-  const [datos, setDatos] = useState({
-    nombre: "",
-    telefono: "",
-    direccion: "",
-    comuna: "",
-  });
+  const { sesion } = useAuth();
+  const [datos, setDatos] = useState(() =>
+    sesion?.rol === "cliente"
+      ? { ...perfilClienteDemo }
+      : { nombre: "", telefono: "", direccion: "", comuna: "" },
+  );
   const [errores, setErrores] = useState({});
   const total = items.reduce(
     (suma, item) => suma + (item.precio ?? 0) * item.cantidad,
@@ -38,13 +40,19 @@ function Checkout({ items, vaciar, onPedido }) {
       </section>
     );
   function cambiar(evento) {
-    setDatos({ ...datos, [evento.target.name]: evento.target.value });
+    const nuevosDatos = { ...datos, [evento.target.name]: evento.target.value };
+    setDatos(nuevosDatos);
+    if (Object.keys(errores).length > 0)
+      setErrores(validarEntrega(nuevosDatos));
   }
   function enviar(evento) {
     evento.preventDefault();
     const nuevosErrores = validarEntrega(datos);
     setErrores(nuevosErrores);
-    if (Object.keys(nuevosErrores).length || noDisponible) return;
+    if (Object.keys(nuevosErrores).length || noDisponible) {
+      enfocarPrimerError(nuevosErrores);
+      return;
+    }
     const resultado = leerEscenarioCompra();
     const pedido = {
       id: crypto.randomUUID(),

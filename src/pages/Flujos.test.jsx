@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import App from "../App";
+import { perfilClienteDemo } from "../data/perfilClienteDemo";
 
 function abrir(ruta) {
   if (ruta === "/admin") {
@@ -19,6 +20,9 @@ function abrir(ruta) {
   );
 }
 async function entrega(user) {
+  await user.clear(screen.getByLabelText("Nombre de quien recibe"));
+  await user.clear(screen.getByLabelText("Teléfono"));
+  await user.clear(screen.getByLabelText("Dirección"));
   await user.type(
     screen.getByLabelText("Nombre de quien recibe"),
     "Cliente ficticio",
@@ -87,6 +91,8 @@ describe("Navegación y formularios", () => {
     abrir("/contacto");
     await user.click(screen.getByRole("button", { name: "Validar consulta" }));
     expect(screen.getByText("Escribe un correo válido.")).toBeInTheDocument();
+    expect(screen.getByLabelText("Nombre").form).toHaveAttribute("novalidate");
+    expect(screen.getByLabelText("Nombre")).toHaveFocus();
     await user.type(screen.getByLabelText("Nombre"), "Cliente ficticio");
     await user.type(
       screen.getByLabelText("Correo electrónico"),
@@ -118,8 +124,12 @@ describe("Navegación y formularios", () => {
     expect(
       screen.getByText("Escribe la dirección de entrega."),
     ).toBeInTheDocument();
+    expect(screen.getByLabelText("Nombre de quien recibe")).toHaveFocus();
+    expect(
+      screen.getByLabelText("Nombre de quien recibe").form,
+    ).toHaveAttribute("novalidate");
   });
-  it("completa una compra simulada y vacía el carrito sin almacenar datos personales", async () => {
+  it("autocompleta datos del cliente, permite editarlos y completa la compra sin persistir datos personales", async () => {
     prepararCarrito();
     sessionStorage.setItem(
       "gas-volcan-sesion-demo",
@@ -130,13 +140,29 @@ describe("Navegación y formularios", () => {
     expect(
       screen.queryByRole("combobox", { name: /Resultado/ }),
     ).not.toBeInTheDocument();
+    for (const [etiqueta, campo] of [
+      ["Nombre de quien recibe", "nombre"],
+      ["Teléfono", "telefono"],
+      ["Dirección", "direccion"],
+      ["Comuna", "comuna"],
+    ]) {
+      expect(screen.getByLabelText(etiqueta)).toHaveValue(
+        perfilClienteDemo[campo],
+      );
+    }
     await entrega(user);
+    expect(screen.getByLabelText("Nombre de quien recibe")).toHaveValue(
+      "Cliente ficticio",
+    );
     await user.click(screen.getByRole("button", { name: "Confirmar compra" }));
     expect(
       screen.getByRole("heading", { name: "Compra confirmada" }),
     ).toBeInTheDocument();
     expect(localStorage.getItem("gas-el-volcan-carrito")).toBe("[]");
     expect(JSON.stringify(localStorage)).not.toContain("Dirección ficticia");
+    expect(JSON.stringify(sessionStorage)).not.toContain(
+      perfilClienteDemo.direccion,
+    );
     await user.click(screen.getByRole("link", { name: "Mis pedidos" }));
     expect(
       screen.getByRole("heading", { name: "Mis pedidos", exact: true }),
@@ -233,4 +259,19 @@ describe("Navegación y formularios", () => {
       ),
     ).toBe(false);
   });
+});
+
+it("muestra producto inexistente y página 404 sin romper la navegación", () => {
+  const vista = abrir("/productos/no-existe");
+  expect(
+    screen.getByRole("heading", { level: 1, name: "Producto no encontrado" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole("link", { name: "Volver al catálogo" }),
+  ).toHaveAttribute("href", "/catalogo");
+  vista.unmount();
+  abrir("/ruta-no-existe");
+  expect(
+    screen.getByRole("heading", { level: 1, name: "Página no encontrada" }),
+  ).toBeInTheDocument();
 });

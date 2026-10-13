@@ -6,6 +6,7 @@ function Catalogo({
   onAgregar,
   categoriasDisponibles,
   titulo = "Catálogo de productos",
+  esPagina = false,
 }) {
   const [busqueda, setBusqueda] = useState("");
   const [categoria, setCategoria] = useState("");
@@ -19,12 +20,13 @@ function Catalogo({
         .toLocaleLowerCase("es")
         .includes(busqueda.trim().toLocaleLowerCase("es")),
   );
+  const Titulo = esPagina ? "h1" : "h2";
   return (
     <section aria-labelledby="titulo-catalogo" className="catalogo">
       <div className="catalogo-cabecera">
         <div>
           <p className="sobre-titulo">TODO LO QUE NECESITAS</p>
-          <h2 id="titulo-catalogo">{titulo}</h2>
+          <Titulo id="titulo-catalogo">{titulo}</Titulo>
         </div>
         <p>
           Cilindros y accesorios.

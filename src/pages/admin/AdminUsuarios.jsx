@@ -1,3 +1,4 @@
+import { enfocarPrimerError } from "../../utils/validacion";
 import { useState } from "react";
 import CampoFormulario from "../../components/CampoFormulario";
 import { rolesDemo } from "../../data/usuariosDemo";
@@ -9,7 +10,10 @@ function AdminUsuarios({ usuarios, guardar, alternar }) {
   const [errores, setErrores] = useState({});
   const [mensaje, setMensaje] = useState("");
   function cambiar(evento) {
-    setDatos({ ...datos, [evento.target.name]: evento.target.value });
+    const nuevosDatos = { ...datos, [evento.target.name]: evento.target.value };
+    setDatos(nuevosDatos);
+    if (Object.keys(errores).length > 0)
+      setErrores(validarUsuario(nuevosDatos, usuarios, edicion));
   }
   function cancelar() {
     setDatos(inicial);
@@ -20,7 +24,10 @@ function AdminUsuarios({ usuarios, guardar, alternar }) {
     evento.preventDefault();
     const resultado = validarUsuario(datos, usuarios, edicion);
     setErrores(resultado);
-    if (Object.keys(resultado).length) return;
+    if (Object.keys(resultado).length) {
+      enfocarPrimerError(resultado);
+      return;
+    }
     guardar(datos, edicion);
     setMensaje(edicion ? "Usuario actualizado." : "Usuario ficticio creado.");
     cancelar();

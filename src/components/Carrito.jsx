@@ -1,7 +1,13 @@
 import { moneda } from "../utils/moneda";
 import { Link } from "react-router-dom";
 
-function Carrito({ items, cambiarCantidad, eliminar, vaciar }) {
+function Carrito({
+  items,
+  cambiarCantidad,
+  eliminar,
+  vaciar,
+  esPagina = false,
+}) {
   const cantidad = items.reduce((suma, item) => suma + item.cantidad, 0);
   const total = items.reduce(
     (suma, item) => suma + (item.precio ?? 0) * item.cantidad,
@@ -9,13 +15,15 @@ function Carrito({ items, cambiarCantidad, eliminar, vaciar }) {
   );
   const pendientes = items.some((item) => item.precio == null);
 
+  const Titulo = esPagina ? "h1" : "h2";
+  const TituloProducto = esPagina ? "h2" : "h3";
   return (
     <section
       id="carrito"
       aria-labelledby="titulo-carrito"
       className="carrito-panel"
     >
-      <h2 id="titulo-carrito">Carrito ({cantidad})</h2>
+      <Titulo id="titulo-carrito">Carrito ({cantidad})</Titulo>
       {items.length === 0 ? (
         <div className="carrito-vacio">
           <span aria-hidden="true" className="carrito-vacio-icono">
@@ -33,7 +41,7 @@ function Carrito({ items, cambiarCantidad, eliminar, vaciar }) {
                 className="list-group-item d-flex flex-wrap align-items-center gap-3"
               >
                 <div className="me-auto text-start">
-                  <h3 className="h5">{item.nombre}</h3>
+                  <TituloProducto className="h5">{item.nombre}</TituloProducto>
                   <p>
                     Precio unitario:{" "}
                     {item.precio == null

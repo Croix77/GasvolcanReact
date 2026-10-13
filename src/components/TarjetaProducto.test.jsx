@@ -42,3 +42,41 @@ it("deshabilita el botón cuando el producto está agotado", async () => {
     .click(screen.getByRole("button", { name: "Añadir al Carrito" }));
   expect(agregar).not.toHaveBeenCalled();
 });
+
+it("muestra aviso de stock crítico en el límite y lo oculta con stock suficiente", () => {
+  const vista = render(
+    <MemoryRouter>
+      <TarjetaProducto
+        id="critico"
+        nombre="Cilindro"
+        descripcion="Gas"
+        categoria="Cilindros de Gas"
+        imagen="/img/gas-5kg.png"
+        precio={6500}
+        stock={5}
+        stockCritico={5}
+        onAgregar={vi.fn()}
+      />
+    </MemoryRouter>,
+  );
+  expect(
+    screen.getByText("Stock crítico: quedan pocas unidades."),
+  ).toBeInTheDocument();
+  expect(screen.getByText("Cilindros de Gas")).toBeInTheDocument();
+  vista.rerender(
+    <MemoryRouter>
+      <TarjetaProducto
+        id="critico"
+        nombre="Cilindro"
+        descripcion="Gas"
+        precio={6500}
+        stock={6}
+        stockCritico={5}
+        onAgregar={vi.fn()}
+      />
+    </MemoryRouter>,
+  );
+  expect(
+    screen.queryByText("Stock crítico: quedan pocas unidades."),
+  ).not.toBeInTheDocument();
+});
