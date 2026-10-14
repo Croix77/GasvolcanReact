@@ -6,7 +6,7 @@ function Catalogo({
   productos,
   onAgregar,
   categoriasDisponibles,
-  titulo = "CatÃ¡logo de productos",
+  titulo = "Catálogo de productos",
   esPagina = false,
 }) {
   const [busqueda, setBusqueda] = useState("");
@@ -55,7 +55,7 @@ function Catalogo({
           />
         </div>
         <div className="col-12 col-md-5">
-          <label htmlFor="categoria">CategorÃ­a</label>
+          <label htmlFor="categoria">Categoría</label>
           <select
             id="categoria"
             className="form-select"

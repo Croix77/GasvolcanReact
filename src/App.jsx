@@ -153,7 +153,7 @@ function ContenidoApp() {
                 path="pedidos"
                 element={
                   <section>
-                    <h1>Pedidos de demostraciÃ³n</h1>
+                    <h1>Pedidos de demostración</h1>
                     <ListaPedidos pedidos={pedidos} />
                   </section>
                 }

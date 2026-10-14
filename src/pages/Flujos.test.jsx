@@ -21,15 +21,15 @@ function abrir(ruta) {
 }
 async function entrega(user) {
   await user.clear(screen.getByLabelText("Nombre de quien recibe"));
-  await user.clear(screen.getByLabelText("TelÃ©fono"));
-  await user.clear(screen.getByLabelText("DirecciÃ³n"));
+  await user.clear(screen.getByLabelText("Teléfono"));
+  await user.clear(screen.getByLabelText("Dirección"));
   await user.type(
     screen.getByLabelText("Nombre de quien recibe"),
     "Cliente ficticio",
   );
-  await user.type(screen.getByLabelText("TelÃ©fono"), "912345678");
-  await user.type(screen.getByLabelText("DirecciÃ³n"), "DirecciÃ³n ficticia 123");
-  await user.selectOptions(screen.getByLabelText("Comuna"), "ChillÃ¡n");
+  await user.type(screen.getByLabelText("Teléfono"), "912345678");
+  await user.type(screen.getByLabelText("Dirección"), "Dirección ficticia 123");
+  await user.selectOptions(screen.getByLabelText("Comuna"), "Chillán");
 }
 function prepararCarrito() {
   localStorage.setItem(
@@ -38,8 +38,8 @@ function prepararCarrito() {
   );
 }
 
-describe("NavegaciÃ³n y formularios", () => {
-  it("bloquea el checkout si el stock cambiÃ³ despuÃ©s de agregar al carrito", () => {
+describe("Navegación y formularios", () => {
+  it("bloquea el checkout si el stock cambió después de agregar al carrito", () => {
     prepararCarrito();
     localStorage.setItem(
       "gas-el-volcan-catalogo-v1",
@@ -63,7 +63,7 @@ describe("NavegaciÃ³n y formularios", () => {
     expect(guardado.productos[0].stock).toBe(0);
     expect(guardado.productos[0].imagen).toMatch(/^\/img\//);
   });
-  it("filtra por bÃºsqueda y categorÃ­a y muestra el estado vacÃ­o", async () => {
+  it("filtra por búsqueda y categoría y muestra el estado vacío", async () => {
     const user = userEvent.setup();
     abrir("/categorias");
     expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
@@ -72,7 +72,7 @@ describe("NavegaciÃ³n y formularios", () => {
     expect(screen.getAllByRole("article")).toHaveLength(3);
     await user.selectOptions(screen.getByRole("combobox"), "");
     expect(screen.getAllByRole("article")).toHaveLength(14);
-    await user.selectOptions(screen.getByLabelText("CategorÃ­a"), "Reguladores");
+    await user.selectOptions(screen.getByLabelText("Categoría"), "Reguladores");
     expect(screen.getAllByRole("article")).toHaveLength(3);
     await user.type(screen.getByLabelText("Buscar productos"), "inexistente");
     expect(screen.queryAllByRole("article")).toHaveLength(0);
@@ -92,31 +92,31 @@ describe("NavegaciÃ³n y formularios", () => {
     ).toBeInTheDocument();
   });
 
-  it("valida contacto y no anuncia un envÃ­o real", async () => {
+  it("valida contacto y no anuncia un envío real", async () => {
     const user = userEvent.setup();
     abrir("/contacto");
     await user.click(screen.getByRole("button", { name: "Validar consulta" }));
-    expect(screen.getByText("Escribe un correo vÃ¡lido.")).toBeInTheDocument();
+    expect(screen.getByText("Escribe un correo válido.")).toBeInTheDocument();
     expect(screen.getByLabelText("Nombre").form).toHaveAttribute("novalidate");
     expect(screen.getByLabelText("Nombre")).toHaveFocus();
     await user.type(screen.getByLabelText("Nombre"), "Cliente ficticio");
     await user.type(
-      screen.getByLabelText("Correo electrÃ³nico"),
+      screen.getByLabelText("Correo electrónico"),
       "demo@example.com",
     );
     await user.type(
       screen.getByLabelText("Mensaje"),
-      "Consulta de demostraciÃ³n sobre un cilindro.",
+      "Consulta de demostración sobre un cilindro.",
     );
     await user.click(screen.getByRole("button", { name: "Validar consulta" }));
     expect(
-      screen.getByText("Consulta validada. No se ha enviado ningÃºn mensaje."),
+      screen.getByText("Consulta validada. No se ha enviado ningún mensaje."),
     ).toBeInTheDocument();
     expect(
-      screen.queryByText("Escribe un correo vÃ¡lido."),
+      screen.queryByText("Escribe un correo válido."),
     ).not.toBeInTheDocument();
   });
-  it("rechaza checkout vacÃ­o y datos de entrega invÃ¡lidos", async () => {
+  it("rechaza checkout vacío y datos de entrega inválidos", async () => {
     const vista = abrir("/checkout");
     expect(
       screen.getByText("Agrega productos antes de continuar."),
@@ -128,7 +128,7 @@ describe("NavegaciÃ³n y formularios", () => {
       .setup()
       .click(screen.getByRole("button", { name: "Confirmar compra" }));
     expect(
-      screen.getByText("Escribe la direcciÃ³n de entrega."),
+      screen.getByText("Escribe la dirección de entrega."),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Nombre de quien recibe")).toHaveFocus();
     expect(
@@ -148,8 +148,8 @@ describe("NavegaciÃ³n y formularios", () => {
     ).not.toBeInTheDocument();
     for (const [etiqueta, campo] of [
       ["Nombre de quien recibe", "nombre"],
-      ["TelÃ©fono", "telefono"],
-      ["DirecciÃ³n", "direccion"],
+      ["Teléfono", "telefono"],
+      ["Dirección", "direccion"],
       ["Comuna", "comuna"],
     ]) {
       expect(screen.getByLabelText(etiqueta)).toHaveValue(
@@ -165,7 +165,7 @@ describe("NavegaciÃ³n y formularios", () => {
       screen.getByRole("heading", { name: "Compra confirmada" }),
     ).toBeInTheDocument();
     expect(localStorage.getItem("gas-el-volcan-carrito")).toBe("[]");
-    expect(JSON.stringify(localStorage)).not.toContain("DirecciÃ³n ficticia");
+    expect(JSON.stringify(localStorage)).not.toContain("Dirección ficticia");
     expect(JSON.stringify(sessionStorage)).not.toContain(
       perfilClienteDemo.direccion,
     );
@@ -174,17 +174,17 @@ describe("NavegaciÃ³n y formularios", () => {
       screen.getByRole("heading", { name: "Mis pedidos", exact: true }),
     ).toBeInTheDocument();
     expect(screen.getByText(/Confirmado/)).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Cerrar sesiÃ³n" }));
-    await user.click(screen.getByRole("link", { name: "Iniciar sesiÃ³n" }));
+    await user.click(screen.getByRole("button", { name: "Cerrar sesión" }));
+    await user.click(screen.getByRole("link", { name: "Iniciar sesión" }));
     await user.type(
-      screen.getByLabelText("Correo electrÃ³nico"),
+      screen.getByLabelText("Correo electrónico"),
       "admin@example.com",
     );
     await user.type(
-      screen.getByLabelText("ContraseÃ±a", { exact: true }),
+      screen.getByLabelText("Contraseña", { exact: true }),
       "VolcanDemo123!",
     );
-    await user.click(screen.getByRole("button", { name: "Iniciar sesiÃ³n" }));
+    await user.click(screen.getByRole("button", { name: "Iniciar sesión" }));
     await user.click(
       screen.getByRole("link", { name: "Pedidos", exact: true }),
     );
@@ -211,7 +211,7 @@ describe("NavegaciÃ³n y formularios", () => {
     ).toBeInTheDocument();
   });
 
-  it("crea, edita, publica una oferta y elimina un producto desde administraciÃ³n", async () => {
+  it("crea, edita, publica una oferta y elimina un producto desde administración", async () => {
     const user = userEvent.setup();
     abrir("/admin");
     await user.click(screen.getByRole("button", { name: "Guardar producto" }));
@@ -223,11 +223,11 @@ describe("NavegaciÃ³n y formularios", () => {
       "Accesorio de prueba",
     );
     await user.type(
-      screen.getByLabelText("DescripciÃ³n"),
-      "DescripciÃ³n del accesorio ficticio",
+      screen.getByLabelText("Descripción"),
+      "Descripción del accesorio ficticio",
     );
     await user.selectOptions(
-      screen.getByLabelText("CategorÃ­a del producto"),
+      screen.getByLabelText("Categoría del producto"),
       "Accesorios",
     );
     await user.type(screen.getByLabelText("Precio residencial (CLP)"), "1000");
@@ -246,7 +246,7 @@ describe("NavegaciÃ³n y formularios", () => {
     expect(
       screen.getByRole("heading", { name: "Accesorio de prueba" }),
     ).toBeInTheDocument();
-    await user.click(screen.getByRole("link", { name: "AdministraciÃ³n" }));
+    await user.click(screen.getByRole("link", { name: "Administración" }));
     await user.click(screen.getByRole("link", { name: "Gestionar productos" }));
     const confirmar = vi.spyOn(window, "confirm").mockReturnValue(true);
     try {
@@ -267,17 +267,17 @@ describe("NavegaciÃ³n y formularios", () => {
   });
 });
 
-it("muestra producto inexistente y pÃ¡gina 404 sin romper la navegaciÃ³n", () => {
+it("muestra producto inexistente y página 404 sin romper la navegación", () => {
   const vista = abrir("/productos/no-existe");
   expect(
     screen.getByRole("heading", { level: 1, name: "Producto no encontrado" }),
   ).toBeInTheDocument();
   expect(
-    screen.getByRole("link", { name: "Volver al catÃ¡logo" }),
+    screen.getByRole("link", { name: "Volver al catálogo" }),
   ).toHaveAttribute("href", "/catalogo");
   vista.unmount();
   abrir("/ruta-no-existe");
   expect(
-    screen.getByRole("heading", { level: 1, name: "PÃ¡gina no encontrada" }),
+    screen.getByRole("heading", { level: 1, name: "Página no encontrada" }),
   ).toBeInTheDocument();
 });
