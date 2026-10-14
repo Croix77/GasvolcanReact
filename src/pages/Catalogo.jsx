@@ -1,18 +1,27 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import TarjetaProducto from "../components/TarjetaProducto";
 
 function Catalogo({
   productos,
   onAgregar,
   categoriasDisponibles,
-  titulo = "Catálogo de productos",
+  titulo = "CatÃ¡logo de productos",
   esPagina = false,
 }) {
   const [busqueda, setBusqueda] = useState("");
-  const [categoria, setCategoria] = useState("");
+  const [parametros, setParametros] = useSearchParams();
+  const categoriaSolicitada = parametros.get("categoria") || "";
   const categorias = categoriasDisponibles?.map(
     (categoria) => categoria.nombre,
   ) || [...new Set(productos.map((producto) => producto.categoria))];
+  const categoria = categorias.includes(categoriaSolicitada) ? categoriaSolicitada : "";
+  function cambiarCategoria(nombre) {
+    const nuevos = new URLSearchParams(parametros);
+    if (nombre) nuevos.set("categoria", nombre);
+    else nuevos.delete("categoria");
+    setParametros(nuevos);
+  }
   const visibles = productos.filter(
     (producto) =>
       (!categoria || producto.categoria === categoria) &&
@@ -46,12 +55,12 @@ function Catalogo({
           />
         </div>
         <div className="col-12 col-md-5">
-          <label htmlFor="categoria">Categoría</label>
+          <label htmlFor="categoria">CategorÃ­a</label>
           <select
             id="categoria"
             className="form-select"
             value={categoria}
-            onChange={(evento) => setCategoria(evento.target.value)}
+            onChange={(evento) => cambiarCategoria(evento.target.value)}
           >
             <option value="">Todas</option>
             {categorias.map((nombre) => (

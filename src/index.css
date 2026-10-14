@@ -1,4 +1,4 @@
-/* Colores y elementos compartidos de Gas El Volcán. */
+/* Colores y elementos compartidos de Gas El VolcÃ¡n. */
 :root {
   --volcan: #bd3f14;
   --volcan-oscuro: #96300d;
@@ -727,3 +727,16 @@ label {
     font-size: 1.65rem;
   }
 }
+
+.tarjeta-categoria {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1.75rem;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: 1rem;
+}
+.tarjeta-categoria h2 { font-size: 1.4rem; }
+.tarjeta-categoria .btn { margin-top: auto; }

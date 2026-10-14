@@ -8,6 +8,7 @@ import Carrito from "./components/Carrito";
 import { useCarrito } from "./hooks/useCarrito";
 import { useCatalogo } from "./hooks/useCatalogo";
 import Catalogo from "./pages/Catalogo";
+import Categorias from "./pages/Categorias";
 import DetalleProducto from "./pages/DetalleProducto";
 import Nosotros from "./pages/Nosotros";
 import Contacto from "./pages/Contacto";
@@ -89,12 +90,9 @@ function ContenidoApp() {
           <Route
             path="/categorias"
             element={
-              <Catalogo
+              <Categorias
                 productos={catalogo.productos}
-                onAgregar={agregarProducto}
-                titulo="Categorías"
-                esPagina
-                categoriasDisponibles={catalogo.categorias}
+                categorias={catalogo.categorias}
               />
             }
           />
@@ -155,7 +153,7 @@ function ContenidoApp() {
                 path="pedidos"
                 element={
                   <section>
-                    <h1>Pedidos de demostración</h1>
+                    <h1>Pedidos de demostraciÃ³n</h1>
                     <ListaPedidos pedidos={pedidos} />
                   </section>
                 }
