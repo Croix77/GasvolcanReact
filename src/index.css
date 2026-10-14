@@ -751,3 +751,23 @@ label {
   font-size: 0.85rem;
   font-weight: 600;
 }
+
+.precio-y-oferta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1rem;
+}
+.precio-y-oferta .precio-producto { margin-bottom: 0; }
+.producto-gratis { color: #166534; }
+.producto-oferta {
+  margin-left: auto;
+  padding: 0.25rem 0.65rem;
+  border-radius: 0.5rem;
+  background: #dcfce7;
+  color: #166534;
+  font-weight: 700;
+  font-size: 0.9rem;
+}

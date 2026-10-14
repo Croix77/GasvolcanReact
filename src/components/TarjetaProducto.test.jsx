@@ -12,12 +12,14 @@ it("muestra Gratis y ejecuta la función del botón recibida por props", async (
         nombre="Accesorio gratuito"
         descripcion="Prueba"
         precio={0}
+        oferta
         stock={2}
         onAgregar={agregar}
       />
     </MemoryRouter>,
   );
-  expect(screen.getByText("Gratis")).toBeInTheDocument();
+  expect(screen.getByText("Gratis")).toHaveClass("producto-gratis");
+  expect(screen.getByText("En oferta")).toHaveClass("producto-oferta");
   await userEvent
     .setup()
     .click(screen.getByRole("button", { name: "Añadir al Carrito" }));
@@ -52,6 +54,7 @@ it("muestra aviso de stock crítico en el límite y lo oculta con stock suficien
         descripcion="Gas"
         categoria="Cilindros de Gas"
         imagen="/img/gas-5kg.png"
+        oferta
         precio={6500}
         stock={5}
         stockCritico={5}
@@ -59,6 +62,7 @@ it("muestra aviso de stock crítico en el límite y lo oculta con stock suficien
       />
     </MemoryRouter>,
   );
+  expect(screen.getByText("En oferta")).toBeInTheDocument();
   expect(
     screen.getByText("Stock crítico: quedan pocas unidades."),
   ).toBeInTheDocument();
@@ -76,6 +80,7 @@ it("muestra aviso de stock crítico en el límite y lo oculta con stock suficien
       />
     </MemoryRouter>,
   );
+  expect(screen.queryByText("En oferta")).not.toBeInTheDocument();
   expect(
     screen.queryByText("Stock crítico: quedan pocas unidades."),
   ).not.toBeInTheDocument();

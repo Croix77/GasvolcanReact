@@ -1,4 +1,4 @@
-import { moneda } from "../utils/moneda";
+import PrecioProducto from "./PrecioProducto";
 import { Link } from "react-router-dom";
 
 function TarjetaProducto({
@@ -6,6 +6,7 @@ function TarjetaProducto({
   nombre,
   descripcion,
   precio,
+  oferta = false,
   imagen,
   stock,
   categoria,
@@ -41,13 +42,7 @@ function TarjetaProducto({
         </span>
         <Titulo className="h5">{nombre}</Titulo>
         <p className="card-text">{descripcion}</p>
-        <p className="precio-producto">
-          {precio == null
-            ? "Precio por confirmar"
-            : precio === 0
-              ? "Gratis"
-              : moneda(precio)}
-        </p>
+        <PrecioProducto precio={precio} oferta={oferta} />
         <p className="stock-producto mb-3">
           {stock === 0 ? "Agotado" : `Stock: ${stock}`}
         </p>

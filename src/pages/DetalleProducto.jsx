@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { moneda } from "../utils/moneda";
+import PrecioProducto from "../components/PrecioProducto";
 function DetalleProducto({ productos, onAgregar }) {
   const { id } = useParams();
   const producto = productos.find((item) => item.id === id);
@@ -37,9 +37,7 @@ function DetalleProducto({ productos, onAgregar }) {
         <div className="col-md-7 detalle-informacion">
           <p>{producto.descripcionLarga || producto.descripcion}</p>
           <p>Categoría: {producto.categoria}</p>
-          <p className="precio-producto">
-            {producto.precio === 0 ? "Gratis" : moneda(producto.precio)}
-          </p>
+          <PrecioProducto precio={producto.precio} oferta={producto.oferta} />
           <p>Stock: {producto.stock}</p>
           <button
             className="btn btn-primary"
