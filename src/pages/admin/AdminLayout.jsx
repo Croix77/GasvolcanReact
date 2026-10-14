@@ -1,8 +1,5 @@
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
+import { NavLink, Outlet } from "react-router-dom";
 function AdminLayout() {
-  const { salir } = useAuth();
-  const navegar = useNavigate();
   return (
     <div className="row g-4 administracion-layout">
       <aside className="col-12 col-lg-3">
@@ -32,16 +29,7 @@ function AdminLayout() {
               {nombre}
             </NavLink>
           ))}
-          <button
-            type="button"
-            className="list-group-item list-group-item-action text-danger"
-            onClick={() => {
-              salir();
-              navegar("/login", { replace: true });
-            }}
-          >
-            Cerrar sesión
-          </button>
+
         </nav>
       </aside>
       <div className="col-12 col-lg-9 administracion-contenido">

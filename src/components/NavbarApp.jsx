@@ -62,7 +62,12 @@ function NavbarApp({ totalPedidos = 0 }) {
                 )}
               </Nav.Link>
             ))}
-            {sesion?.rol === "cliente" && (
+            {sesion && (
+              <span className="sesion-rol">
+                Conectado: {sesion.rol === "administrador" ? "Administrador" : "Cliente"}
+              </span>
+            )}
+            {sesion && (
               <button
                 className="btn btn-outline-secondary"
                 type="button"

@@ -65,6 +65,8 @@ describe("Login y panel de demostración", () => {
     const user = userEvent.setup();
     const vista = abrir("/admin/productos");
     await entrar(user);
+    expect(screen.getByText("Conectado: Administrador")).toBeInTheDocument();
+    expect(screen.getByText("Sesión iniciada como administrador.")).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Administración del catálogo" }),
     ).toBeInTheDocument();
@@ -80,6 +82,8 @@ describe("Login y panel de demostración", () => {
     expect(
       screen.getByRole("heading", { name: "Iniciar sesión" }),
     ).toBeInTheDocument();
+    expect(screen.getByText("Sesión cerrada. Ahora estás fuera de tu cuenta.")).toBeInTheDocument();
+    expect(screen.queryByText("Conectado: Administrador")).not.toBeInTheDocument();
     expect(sessionStorage.getItem("gas-volcan-sesion-demo")).toBeNull();
     expect(
       screen.queryByRole("link", { name: "Administración" }),
@@ -137,6 +141,10 @@ it("permite entrar como cliente sin publicar credenciales ni controles administr
   expect(
     screen.queryByRole("link", { name: "Administración" }),
   ).not.toBeInTheDocument();
+  expect(screen.getByText("Conectado: Cliente")).toBeInTheDocument();
+  expect(screen.getByText("Sesión iniciada como cliente.")).toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Cerrar aviso de sesión" }));
+  expect(screen.queryByText("Sesión iniciada como cliente.")).not.toBeInTheDocument();
   vista.unmount();
   abrir("/catalogo");
   expect(

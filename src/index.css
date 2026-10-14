@@ -740,3 +740,14 @@ label {
 }
 .tarjeta-categoria h2 { font-size: 1.4rem; }
 .tarjeta-categoria .btn { margin-top: auto; }
+
+.sesion-rol {
+  align-self: center;
+  padding: 0.4rem 0.7rem;
+  margin: 0.3rem;
+  border-radius: 0.5rem;
+  background: #fff0df;
+  color: var(--volcan-oscuro);
+  font-size: 0.85rem;
+  font-weight: 600;
+}

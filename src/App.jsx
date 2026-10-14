@@ -5,6 +5,7 @@ import NavbarApp from "./components/NavbarApp";
 import PiePagina from "./components/PiePagina";
 import Bienvenida from "./components/Bienvenida";
 import Carrito from "./components/Carrito";
+import { useAuth } from "./hooks/useAuth";
 import { useCarrito } from "./hooks/useCarrito";
 import { useCatalogo } from "./hooks/useCatalogo";
 import Catalogo from "./pages/Catalogo";
@@ -31,6 +32,7 @@ import AdminCategorias from "./pages/admin/AdminCategorias";
 import AdminUsuarios from "./pages/admin/AdminUsuarios";
 
 function ContenidoApp() {
+  const { aviso, cerrarAviso } = useAuth();
   const catalogo = useCatalogo();
   const carrito = useCarrito(catalogo.productos);
   const [mensaje, setMensaje] = useState("");
@@ -65,6 +67,14 @@ function ContenidoApp() {
         id="contenido"
         className="container contenido-principal"
       >
+        <div role="status" aria-live="polite" aria-atomic="true">
+          {aviso && (
+            <div className="alert alert-success d-flex align-items-center justify-content-between gap-3">
+              <span>{aviso}</span>
+              <button type="button" className="btn-close" aria-label="Cerrar aviso de sesión" onClick={cerrarAviso} />
+            </div>
+          )}
+        </div>
         <Routes>
           <Route
             path="/"
