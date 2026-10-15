@@ -4,7 +4,8 @@ import { Route, Routes } from "react-router-dom";
 import NavbarApp from "./components/NavbarApp";
 import PiePagina from "./components/PiePagina";
 import Bienvenida from "./components/Bienvenida";
-import Carrito from "./components/Carrito";
+import CarritoSidebar from "./components/CarritoSidebar";
+import Toast from "./components/Toast";
 import { useAuth } from "./hooks/useAuth";
 import { useCarrito } from "./hooks/useCarrito";
 import { useCatalogo } from "./hooks/useCatalogo";
@@ -35,15 +36,16 @@ function ContenidoApp() {
   const { aviso, cerrarAviso } = useAuth();
   const catalogo = useCatalogo();
   const carrito = useCarrito(catalogo.productos);
-  const [mensaje, setMensaje] = useState("");
+  const [toast, setToast] = useState({ visible: false, mensaje: "" });
   const historial = usePedidos();
   const pedidos = historial.pedidos;
   const usuariosDemo = useUsuariosDemo();
 
   function agregarProducto(producto) {
     carrito.agregar(producto.id);
-    setMensaje(`${producto.nombre}: carrito actualizado.`);
+    setToast({ visible: true, mensaje: `${producto.nombre} añadido al carrito` });
   }
+  const totalItems = carrito.items.reduce((suma, item) => suma + item.cantidad, 0);
   const listado = (
     <Catalogo
       productos={catalogo.productos}
@@ -56,11 +58,13 @@ function ContenidoApp() {
       <a className="saltar-contenido" href="#contenido">
         Saltar al contenido
       </a>
-      <NavbarApp
-        totalPedidos={carrito.items.reduce(
-          (suma, item) => suma + item.cantidad,
-          0,
-        )}
+      <NavbarApp totalPedidos={totalItems} />
+      <CarritoSidebar
+        items={carrito.items}
+        cambiarCantidad={carrito.cambiarCantidad}
+        eliminar={carrito.eliminar}
+        vaciar={carrito.vaciar}
+        totalItems={totalItems}
       />
       <main
         tabIndex={-1}
@@ -75,6 +79,7 @@ function ContenidoApp() {
             </div>
           )}
         </div>
+        <Toast mensaje={toast.mensaje} visible={toast.visible} onClose={() => setToast({ visible: false, mensaje: "" })} />
         <Routes>
           <Route
             path="/"
@@ -82,7 +87,6 @@ function ContenidoApp() {
               <>
                 <Bienvenida />
                 {listado}
-                <Carrito {...carrito} />
               </>
             }
           />
@@ -128,7 +132,6 @@ function ContenidoApp() {
               />
             }
           />
-          <Route path="/carrito" element={<Carrito {...carrito} esPagina />} />
           <Route path="/nosotros" element={<Nosotros />} />
           <Route path="/contacto" element={<Contacto />} />
           <Route path="/login" element={<Login />} />
@@ -191,9 +194,6 @@ function ContenidoApp() {
           </Route>
           <Route path="*" element={<NoEncontrada />} />
         </Routes>
-        <p role="status" className="mt-3">
-          {mensaje}
-        </p>
       </main>
       <PiePagina />
     </>
