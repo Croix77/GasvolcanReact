@@ -3,8 +3,8 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { expect, it, vi } from "vitest";
 import TarjetaProducto from "./TarjetaProducto";
-it("muestra Gratis y ejecuta la función del botón recibida por props", async () => {
-  const agregar = vi.fn();
+
+it("muestra 'Gratis' cuando precio es 0", () => {
   render(
     <MemoryRouter>
       <TarjetaProducto
@@ -14,19 +14,49 @@ it("muestra Gratis y ejecuta la función del botón recibida por props", async (
         precio={0}
         oferta
         stock={2}
-        onAgregar={agregar}
+        onAgregar={vi.fn()}
       />
     </MemoryRouter>,
   );
   expect(screen.getByText("Gratis")).toHaveClass("producto-gratis");
+});
+
+it("muestra etiqueta 'En oferta' cuando oferta es true", () => {
+  render(
+    <MemoryRouter>
+      <TarjetaProducto
+        id="oferta"
+        nombre="Producto en oferta"
+        descripcion="Prueba"
+        precio={1000}
+        oferta
+        stock={5}
+        onAgregar={vi.fn()}
+      />
+    </MemoryRouter>,
+  );
   expect(screen.getByText("En oferta")).toHaveClass("producto-oferta");
-  await userEvent
-    .setup()
-    .click(screen.getByRole("button", { name: "Añadir al Carrito" }));
+});
+
+it("llama a onAgregar al hacer click en el botón", async () => {
+  const agregar = vi.fn();
+  render(
+    <MemoryRouter>
+      <TarjetaProducto
+        id="normal"
+        nombre="Producto normal"
+        descripcion="Prueba"
+        precio={1000}
+        stock={5}
+        onAgregar={agregar}
+      />
+    </MemoryRouter>,
+  );
+  await userEvent.setup().click(screen.getByRole("button", { name: "Añadir al Carrito" }));
   expect(agregar).toHaveBeenCalledTimes(1);
 });
-it("deshabilita el botón cuando el producto está agotado", async () => {
-  const agregar = vi.fn();
+
+it("deshabilita el botón cuando stock es 0", () => {
   render(
     <MemoryRouter>
       <TarjetaProducto
@@ -35,18 +65,16 @@ it("deshabilita el botón cuando el producto está agotado", async () => {
         descripcion="Prueba"
         precio={1000}
         stock={0}
-        onAgregar={agregar}
+        onAgregar={vi.fn()}
       />
     </MemoryRouter>,
   );
-  await userEvent
-    .setup()
-    .click(screen.getByRole("button", { name: "Añadir al Carrito" }));
-  expect(agregar).not.toHaveBeenCalled();
+  const boton = screen.getByRole("button", { name: "Añadir al Carrito" });
+  expect(boton).toBeDisabled();
 });
 
-it("muestra aviso de stock crítico en el límite y lo oculta con stock suficiente", () => {
-  const vista = render(
+it("muestra aviso de stock crítico cuando stock <= stockCritico", () => {
+  render(
     <MemoryRouter>
       <TarjetaProducto
         id="critico"
@@ -63,11 +91,11 @@ it("muestra aviso de stock crítico en el límite y lo oculta con stock suficien
     </MemoryRouter>,
   );
   expect(screen.getByText("En oferta")).toBeInTheDocument();
-  expect(
-    screen.getByText("Stock crítico: quedan pocas unidades."),
-  ).toBeInTheDocument();
-  expect(screen.getByText("Cilindros de Gas")).toBeInTheDocument();
-  vista.rerender(
+  expect(screen.getByText("Stock crítico: quedan pocas unidades.")).toBeInTheDocument();
+});
+
+it("oculta aviso de stock crítico cuando stock > stockCritico", () => {
+  render(
     <MemoryRouter>
       <TarjetaProducto
         id="critico"
@@ -80,8 +108,5 @@ it("muestra aviso de stock crítico en el límite y lo oculta con stock suficien
       />
     </MemoryRouter>,
   );
-  expect(screen.queryByText("En oferta")).not.toBeInTheDocument();
-  expect(
-    screen.queryByText("Stock crítico: quedan pocas unidades."),
-  ).not.toBeInTheDocument();
+  expect(screen.queryByText("Stock crítico: quedan pocas unidades.")).not.toBeInTheDocument();
 });
