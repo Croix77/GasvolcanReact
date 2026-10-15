@@ -1,5 +1,10 @@
 import { Link } from "react-router-dom";
+import { useCatalogo } from "../hooks/useCatalogo";
+import OfertasCarousel from "./OfertasCarousel";
+
 function Bienvenida() {
+  const { productos } = useCatalogo();
+  const ofertas = productos.filter((p) => p.oferta);
   return (
     <>
       <section className="bienvenida" aria-labelledby="titulo-bienvenida">
@@ -42,6 +47,7 @@ function Bienvenida() {
           </span>
         </div>
       </section>
+      <OfertasCarousel productos={ofertas} onAgregar={() => {}} />
       <div className="servicios-franja">
         <div>
           <span className="servicio-numero" aria-hidden="true">
