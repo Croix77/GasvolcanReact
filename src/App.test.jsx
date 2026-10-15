@@ -1,8 +1,8 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
-import App from "./App";
 import { MemoryRouter } from "react-router-dom";
+import { expect, it, vi } from "vitest";
+import App from "./App";
 
 function renderApp() {
   return render(
@@ -12,83 +12,74 @@ function renderApp() {
   );
 }
 
-const clave = "gas-el-volcan-carrito";
-
-function tarjeta(nombre) {
-  return within(screen.getByRole("region", { name: "Catálogo de productos" }))
-    .getByRole("heading", { name: nombre, level: 3 })
-    .closest("article");
+function getProductCard(nombre) {
+  const catalogo = screen.getByRole("region", { name: "Catálogo de productos" });
+  return within(catalogo).getByRole("heading", { name: nombre, level: 3 }).closest("article");
 }
 
-function carrito() {
-  return screen.getByRole("region", { name: /Carrito \(/ });
+function getSidebar() {
+  return screen.getByRole("complementary", { name: "Carrito de compras" });
 }
 
-describe("Catálogo y carrito", () => {
-  it("muestra los tres cilindros con imágenes y un carrito vacío", () => {
-    renderApp();
-    for (const peso of [5, 11, 15]) {
-      expect(
-        within(tarjeta(`Cilindro de Gas ${peso} Kg`)).getByRole("img"),
-      ).toHaveAttribute("src");
-    }
-    expect(screen.getByText("Tu carrito está vacío.")).toBeInTheDocument();
-  });
+function getFloatingCartButton() {
+  return screen.getByRole("button", { name: /Carrito \(\d+ items?\)/ });
+}
 
-  it("agrupa productos repetidos, calcula el total y guarda solo id y cantidad", async () => {
-    const user = userEvent.setup();
-    renderApp();
-    const espia = vi.spyOn(Storage.prototype, "setItem");
-    const boton = within(tarjeta("Cilindro de Gas 15 Kg")).getByRole("button");
-    await user.click(boton);
-    await user.click(boton);
-    expect(within(carrito()).getByRole("combobox")).toHaveValue("2");
-    expect(within(carrito()).getByText("Total: $32.000")).toBeInTheDocument();
-    expect(JSON.parse(localStorage.getItem(clave))).toEqual([
-      { id: "gas-15kg", cantidad: 2 },
-    ]);
-    expect(espia).toHaveBeenCalledWith(
-      clave,
-      JSON.stringify([{ id: "gas-15kg", cantidad: 2 }]),
-    );
-  });
+it("muestra tres cilindros con imágenes y botón flotante de carrito vacío al inicio", () => {
+  renderApp();
+  for (const peso of [5, 11, 15]) {
+    const card = getProductCard(`Cilindro de Gas ${peso} Kg`);
+    expect(within(card).getByRole("img")).toHaveAttribute("src");
+  }
+  const btn = getFloatingCartButton();
+  expect(btn).toHaveTextContent("0");
+});
 
-  it("permite cambiar cantidad, eliminar y vaciar", async () => {
-    const user = userEvent.setup();
-    renderApp();
-    await user.click(
-      within(tarjeta("Cilindro de Gas 15 Kg")).getByRole("button"),
-    );
-    await user.selectOptions(within(carrito()).getByRole("combobox"), "3");
-    expect(within(carrito()).getByText("Total: $48.000")).toBeInTheDocument();
-    await user.click(
-      within(carrito()).getByRole("button", {
-        name: "Eliminar Cilindro de Gas 15 Kg",
-      }),
-    );
-    expect(screen.getByText("Tu carrito está vacío.")).toBeInTheDocument();
-    await user.click(
-      within(tarjeta("Cilindro de Gas 5 Kg")).getByRole("button"),
-    );
-    await user.click(
-      within(carrito()).getByRole("button", { name: "Vaciar carrito" }),
-    );
-    expect(JSON.parse(localStorage.getItem(clave))).toEqual([]);
-  });
+it("agrega productos y muestra sidebar con numeración", async () => {
+  const user = userEvent.setup();
+  renderApp();
+  const espia = vi.spyOn(Storage.prototype, "setItem");
+  const card = getProductCard("Cilindro de Gas 15 Kg");
+  await user.click(within(card).getByRole("button", { name: "Añadir al Carrito" }));
+  await user.click(within(card).getByRole("button", { name: "Añadir al Carrito" }));
 
-  it("recupera el carrito al montar de nuevo y limita la cantidad al stock", async () => {
-    localStorage.setItem(
-      clave,
-      JSON.stringify([{ id: "gas-15kg", cantidad: 90 }]),
-    );
-    const user = userEvent.setup();
-    const vista = renderApp();
-    await user.click(
-      within(tarjeta("Cilindro de Gas 15 Kg")).getByRole("button"),
-    );
-    expect(within(carrito()).getByRole("combobox")).toHaveValue("90");
-    vista.unmount();
-    renderApp();
-    expect(within(carrito()).getByRole("combobox")).toHaveValue("90");
-  });
+  const sidebar = getSidebar();
+  expect(within(sidebar).getByText("1")).toBeInTheDocument(); // badge número
+  expect(within(sidebar).getByText("Cilindro de Gas 15 Kg")).toBeInTheDocument();
+  expect(within(sidebar).getAllByText("$32.000")).toHaveLength(2); // item + total
+  expect(JSON.parse(localStorage.getItem("gas-el-volcan-carrito"))).toEqual([{ id: "gas-15kg", cantidad: 2 }]);
+  expect(espia).toHaveBeenCalledWith("gas-el-volcan-carrito", JSON.stringify([{ id: "gas-15kg", cantidad: 2 }]));
+});
+
+it("permite eliminar y vaciar carrito desde sidebar", async () => {
+  const user = userEvent.setup();
+  renderApp();
+  const card = getProductCard("Cilindro de Gas 15 Kg");
+  await user.click(within(card).getByRole("button", { name: "Añadir al Carrito" }));
+
+  const sidebar = getSidebar();
+  await user.click(within(sidebar).getByRole("button", { name: "Eliminar Cilindro de Gas 15 Kg" }));
+  // tras eliminar, vuelve al botón flotante
+  expect(getFloatingCartButton()).toHaveTextContent("0");
+
+  const card5 = getProductCard("Cilindro de Gas 5 Kg");
+  await user.click(within(card5).getByRole("button", { name: "Añadir al Carrito" }));
+  const sidebar2 = getSidebar();
+  await user.click(within(sidebar2).getByRole("button", { name: "Vaciar carrito" }));
+  expect(JSON.parse(localStorage.getItem("gas-el-volcan-carrito"))).toEqual([]);
+  expect(getFloatingCartButton()).toHaveTextContent("0");
+});
+
+it("recupera carrito al recargar y muestra cantidad en badge", async () => {
+  localStorage.setItem("gas-el-volcan-carrito", JSON.stringify([{ id: "gas-15kg", cantidad: 90 }]));
+  const user = userEvent.setup();
+  const vista = renderApp();
+  const card = getProductCard("Cilindro de Gas 15 Kg");
+  await user.click(within(card).getByRole("button", { name: "Añadir al Carrito" }));
+
+  const sidebar = getSidebar();
+  expect(within(sidebar).getByText("(90)")).toBeInTheDocument(); // badge en header
+  vista.unmount();
+  renderApp();
+  expect(within(getSidebar()).getByText("(90)")).toBeInTheDocument();
 });

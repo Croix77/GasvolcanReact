@@ -19,7 +19,7 @@ const datos = [
     precio: 6500,
     precioComercial: 6000,
     stock: 80,
-    oferta: false,
+    oferta: true,
   },
   {
     id: "gas-11kg",
@@ -67,7 +67,7 @@ const datos = [
     precio: 8990,
     precioComercial: 8200,
     stock: 45,
-    oferta: false,
+    oferta: true,
   },
   {
     id: "rg002",
@@ -174,7 +174,7 @@ const datos = [
     precio: 19990,
     precioComercial: 17000,
     stock: 8,
-    oferta: false,
+    oferta: true,
   },
 ];
 
