@@ -781,22 +781,18 @@ label {
   border-bottom: 1px solid var(--borde);
   margin: 1.5rem 0;
 }
+.ofertas-ventana {
+  overflow: hidden;
+}
 .ofertas-track {
   display: flex;
-  width: 300%;
+  width: 100%;
   transition: transform 0.5s ease-in-out;
 }
 .oferta-slide {
-  flex: 0 0 33.333%;
+  flex: 0 0 100%;
+  min-width: 0;
   padding: 0 1rem;
-}
-@media (max-width: 767px) {
-  .oferta-slide {
-    flex: 0 0 100%;
-  }
-  .ofertas-track {
-    width: 100%;
-  }
 }
 
 .carrito-sidebar {

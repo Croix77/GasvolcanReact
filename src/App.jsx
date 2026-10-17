@@ -74,7 +74,7 @@ function ContenidoApp() {
         </div>
         <Toast mensaje={toast.mensaje} visible={toast.visible} onClose={() => setToast({ visible: false, mensaje: "" })} />
         <Routes>
-          <Route path="/" element={<Bienvenida />} />
+          <Route path="/" element={<Bienvenida productos={catalogo.productos} onAgregar={agregarProducto} />} />
           <Route
             path="/catalogo"
             element={
