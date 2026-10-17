@@ -897,3 +897,16 @@ label {
   .ofertas-carousel .cilindro-pequeno { height: 125px; }
   .ofertas-carousel > .detalle-enlace { margin-top: 0.4rem; font-size: 0.8rem; }
 }
+
+.navegacion .navbar-toggler {
+  background-color: var(--volcan);
+  border-color: var(--volcan);
+  color: #fff;
+}
+.navegacion .navbar-toggler:hover {
+  background-color: var(--volcan-oscuro);
+  border-color: var(--volcan-oscuro);
+}
+.navegacion .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%23fff' stroke-linecap='round' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
