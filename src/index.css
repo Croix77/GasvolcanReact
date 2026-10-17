@@ -102,7 +102,7 @@ a:hover {
 }
 .marca-banner {
   display: block;
-  width: clamp(150px, 18vw, 208px);
+  width: clamp(180px, 21vw, 250px);
   height: auto;
 }
 .navegacion .nav-link {
