@@ -46,13 +46,6 @@ function ContenidoApp() {
     setToast({ visible: true, mensaje: `${producto.nombre} añadido al carrito` });
   }
   const totalItems = carrito.items.reduce((suma, item) => suma + item.cantidad, 0);
-  const listado = (
-    <Catalogo
-      productos={catalogo.productos}
-      categoriasDisponibles={catalogo.categorias}
-      onAgregar={agregarProducto}
-    />
-  );
   return (
     <>
       <a className="saltar-contenido" href="#contenido">
@@ -81,15 +74,7 @@ function ContenidoApp() {
         </div>
         <Toast mensaje={toast.mensaje} visible={toast.visible} onClose={() => setToast({ visible: false, mensaje: "" })} />
         <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <Bienvenida />
-                {listado}
-              </>
-            }
-          />
+          <Route path="/" element={<Bienvenida />} />
           <Route
             path="/catalogo"
             element={

@@ -4,9 +4,9 @@ import { MemoryRouter } from "react-router-dom";
 import { expect, it, vi } from "vitest";
 import App from "./App";
 
-function renderApp() {
+function renderApp(ruta = "/catalogo") {
   return render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={[ruta]}>
       <App />
     </MemoryRouter>,
   );
@@ -14,7 +14,7 @@ function renderApp() {
 
 function getProductCard(nombre) {
   const catalogo = screen.getByRole("region", { name: "Catálogo de productos" });
-  return within(catalogo).getByRole("heading", { name: nombre, level: 3 }).closest("article");
+  return within(catalogo).getByRole("heading", { name: nombre, level: 2 }).closest("article");
 }
 
 function getSidebar() {
@@ -25,8 +25,14 @@ function getFloatingCartButton() {
   return screen.getByRole("button", { name: /Carrito \(\d+ items?\)/ });
 }
 
-it("muestra tres cilindros con imágenes y botón flotante de carrito vacío al inicio", () => {
-  renderApp();
+it("Inicio no muestra el catalogo y permite abrirlo con Ver productos", async () => {
+  const user = userEvent.setup();
+  renderApp("/");
+  expect(screen.queryByRole("region", { name: "Catálogo de productos" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
+  expect(getFloatingCartButton()).toHaveTextContent("0");
+  await user.click(screen.getByRole("link", { name: "Ver productos" }));
+  expect(screen.getByRole("heading", { level: 1, name: "Catálogo de productos" })).toBeInTheDocument();
   for (const peso of [5, 11, 15]) {
     const card = getProductCard(`Cilindro de Gas ${peso} Kg`);
     expect(within(card).getByRole("img")).toHaveAttribute("src");
