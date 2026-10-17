@@ -8,9 +8,12 @@ function Login() {
   const { sesion, entrar } = useAuth();
   const { state } = useLocation();
   const navegar = useNavigate();
-  const destino = /^\/admin(?:\/|$)/.test(state?.desde || "")
-    ? state.desde
-    : "/admin";
+  function destinoPara(rol) {
+    if (state?.desde === "/mis-pedidos") return "/mis-pedidos";
+    if (rol === "administrador")
+      return /^\/admin(?:\/|$)/.test(state?.desde || "") ? state.desde : "/admin";
+    return "/catalogo";
+  }
   const [datos, setDatos] = useState({ correo: "", clave: "" });
   const [errores, setErrores] = useState({});
   const [error, setError] = useState("");
@@ -18,7 +21,7 @@ function Login() {
   if (sesion)
     return (
       <Navigate
-        to={sesion.rol === "administrador" ? destino : "/catalogo"}
+        to={destinoPara(sesion.rol)}
         replace
       />
     );
@@ -40,7 +43,7 @@ function Login() {
     try {
       const nueva = entrar(datos.correo, datos.clave);
       setDatos({ correo: "", clave: "" });
-      navegar(nueva.rol === "administrador" ? destino : "/catalogo", {
+      navegar(destinoPara(nueva.rol), {
         replace: true,
       });
     } catch (fallo) {

@@ -38,7 +38,7 @@ function NavbarApp({ totalPedidos = 0 }) {
               ["/categorias", "Categorías"],
               ["/ofertas", "Ofertas"],
               ["/carrito", "Carrito"],
-              ["/mis-pedidos", "Mis pedidos"],
+              ...(sesion ? [["/mis-pedidos", "Historial de pedidos"]] : []),
               ["/nosotros", "Nosotros"],
               ["/contacto", "Contacto"],
               ...(sesion?.rol === "administrador"
