@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import NavbarApp from "./components/NavbarApp";
 import PiePagina from "./components/PiePagina";
 import Bienvenida from "./components/Bienvenida";
+import Carrito from "./components/Carrito";
 import CarritoSidebar from "./components/CarritoSidebar";
 import Toast from "./components/Toast";
 import { useAuth } from "./hooks/useAuth";
@@ -117,6 +118,7 @@ function ContenidoApp() {
               />
             }
           />
+          <Route path="/carrito" element={<Carrito {...carrito} esPagina />} />
           <Route path="/nosotros" element={<Nosotros />} />
           <Route path="/contacto" element={<Contacto />} />
           <Route path="/login" element={<Login />} />

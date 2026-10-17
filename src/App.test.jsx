@@ -25,6 +25,29 @@ function getFloatingCartButton() {
   return screen.getByRole("button", { name: /Carrito \(\d+ items?\)/ });
 }
 
+it("abre la pagina Carrito desde el menu y muestra su estado vacio", async () => {
+  const user = userEvent.setup();
+  renderApp("/");
+  await user.click(screen.getByRole("link", { name: "Carrito", exact: true }));
+  expect(screen.getByRole("heading", { level: 1, name: "Carrito (0)" })).toBeInTheDocument();
+  expect(screen.getByText("Tu carrito está vacío.")).toBeInTheDocument();
+});
+
+it("recupera productos en la ruta Carrito y permite cambiar cantidad y vaciar", async () => {
+  localStorage.setItem("gas-el-volcan-carrito", JSON.stringify([{ id: "gas-15kg", cantidad: 1 }]));
+  const user = userEvent.setup();
+  renderApp("/carrito");
+  const pagina = screen.getByRole("region", { name: "Carrito (1)" });
+  expect(within(pagina).getByRole("heading", { name: "Cilindro de Gas 15 Kg" })).toBeInTheDocument();
+  await user.selectOptions(within(pagina).getByRole("combobox"), "2");
+  expect(within(pagina).getByText("Total: $32.000")).toBeInTheDocument();
+  expect(within(getSidebar()).getByText("(2)")).toBeInTheDocument();
+  expect(within(pagina).getByRole("link", { name: "Continuar compra" })).toHaveAttribute("href", "/checkout");
+  await user.click(within(pagina).getByRole("button", { name: "Vaciar carrito" }));
+  expect(within(pagina).getByText("Tu carrito está vacío.")).toBeInTheDocument();
+  expect(JSON.parse(localStorage.getItem("gas-el-volcan-carrito"))).toEqual([]);
+});
+
 it("Inicio no muestra el catalogo y permite abrirlo con Ver productos", async () => {
   const user = userEvent.setup();
   renderApp("/");
