@@ -30,11 +30,6 @@ function Bienvenida({ productos, onAgregar }) {
           </p>
         </div>
         <div className="bienvenida-visual">
-          <img
-            className="bienvenida-logo"
-            src="/img/banner-gas-el-volcan.png"
-            alt="Gas El Volcán, distribución de gas a domicilio"
-          />
           <div className="bienvenida-cilindros" aria-hidden="true">
             <img className="cilindro-pequeno" src="/img/gas-5kg.png" alt="" />
             <img className="cilindro-grande" src="/img/gas-15kg.png" alt="" />

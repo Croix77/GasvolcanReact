@@ -16,11 +16,14 @@ function NavbarApp({ totalPedidos = 0 }) {
       onToggle={setExpandido}
     >
       <Container>
-        <Navbar.Brand as={Link} to="/">
-          <span className="marca-icono" aria-hidden="true">
-            🔥
-          </span>{" "}
-          Gas El Volcán
+        <Navbar.Brand as={Link} to="/" aria-label="Gas El Volcán - Inicio">
+          <img
+            className="marca-banner"
+            src="/img/banner-gas-el-volcan.png"
+            alt="Gas El Volcán, distribución de gas a domicilio"
+            width="208"
+            height="78"
+          />
         </Navbar.Brand>
         <Navbar.Toggle
           aria-controls="menu-principal"

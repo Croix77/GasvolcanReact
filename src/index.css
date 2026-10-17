@@ -100,14 +100,10 @@ a:hover {
   color: var(--tinta);
   white-space: nowrap;
 }
-.marca-icono {
-  display: inline-grid;
-  place-items: center;
-  background: #fff0de;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 0.6rem;
-  margin-right: 0.3rem;
+.marca-banner {
+  display: block;
+  width: clamp(150px, 18vw, 208px);
+  height: auto;
 }
 .navegacion .nav-link {
   color: var(--texto-suave);
@@ -161,10 +157,6 @@ a:hover {
   text-align: center;
   padding: 1.5rem 1rem;
   overflow: hidden;
-}
-.bienvenida-logo {
-  width: min(280px, 80%);
-  mix-blend-mode: multiply;
 }
 .bienvenida-cilindros {
   display: flex;
