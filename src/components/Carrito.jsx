@@ -1,3 +1,4 @@
+import { MAX_UNIDADES_POR_PRODUCTO } from "../utils/compra";
 import { moneda } from "../utils/moneda";
 import { Link } from "react-router-dom";
 
@@ -24,6 +25,7 @@ function Carrito({
       className="carrito-panel"
     >
       <Titulo id="titulo-carrito">Carrito ({cantidad})</Titulo>
+      <p className="small text-muted">Máximo {MAX_UNIDADES_POR_PRODUCTO} unidades por producto en cada compra.</p>
       {items.length === 0 ? (
         <div className="carrito-vacio">
           <span aria-hidden="true" className="carrito-vacio-icono">
@@ -67,7 +69,7 @@ function Carrito({
                       {
                         length: Math.max(
                           item.cantidad,
-                          Math.min(99, item.stock ?? 99),
+                          Math.min(MAX_UNIDADES_POR_PRODUCTO, item.stock ?? MAX_UNIDADES_POR_PRODUCTO),
                         ),
                       },
                       (_, indice) => indice + 1,

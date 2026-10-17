@@ -1,3 +1,4 @@
+import { MAX_UNIDADES_POR_PRODUCTO } from "../utils/compra";
 import { useEffect, useState } from "react";
 import { productos } from "../data/productos";
 
@@ -27,14 +28,13 @@ function leerCarrito(catalogo) {
           !catalogo.some((producto) => producto.id === item.id) ||
           !Number.isSafeInteger(item.cantidad) ||
           item.cantidad < 1 ||
-          item.cantidad > 99 ||
           ids.has(item.id)
         )
           return false;
         ids.add(item.id);
         return true;
       })
-      .map(({ id, cantidad }) => ({ id, cantidad }));
+      .map(({ id, cantidad }) => ({ id, cantidad: Math.min(cantidad, MAX_UNIDADES_POR_PRODUCTO) }));
   } catch {
     return [];
   }
@@ -61,8 +61,8 @@ export function useCarrito(catalogo = productos) {
               ? {
                   ...item,
                   cantidad: Math.min(
-                    99,
-                    producto.stock ?? 99,
+                    MAX_UNIDADES_POR_PRODUCTO,
+                    producto.stock ?? MAX_UNIDADES_POR_PRODUCTO,
                     item.cantidad + 1,
                   ),
                 }
@@ -78,7 +78,7 @@ export function useCarrito(catalogo = productos) {
       !producto ||
       !Number.isSafeInteger(cantidad) ||
       cantidad < 1 ||
-      cantidad > Math.min(99, producto.stock ?? 99)
+      cantidad > Math.min(MAX_UNIDADES_POR_PRODUCTO, producto.stock ?? MAX_UNIDADES_POR_PRODUCTO)
     )
       return;
     setCarrito((actual) =>

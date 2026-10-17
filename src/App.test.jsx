@@ -125,7 +125,7 @@ it("permite eliminar y vaciar carrito desde sidebar", async () => {
   expect(getFloatingCartButton()).toHaveTextContent("0");
 });
 
-it("recupera carrito al recargar y muestra cantidad en badge", async () => {
+it("limita a tres unidades el carrito guardado y los clics adicionales", async () => {
   localStorage.setItem("gas-el-volcan-carrito", JSON.stringify([{ id: "gas-15kg", cantidad: 90 }]));
   const user = userEvent.setup();
   const vista = renderApp();
@@ -134,9 +134,9 @@ it("recupera carrito al recargar y muestra cantidad en badge", async () => {
 
   await user.click(getFloatingCartButton());
   const sidebar = getSidebar();
-  expect(within(sidebar).getByText("(90)")).toBeInTheDocument(); // badge en header
+  expect(within(sidebar).getByText("(3)")).toBeInTheDocument(); // badge en header
   vista.unmount();
   renderApp();
   await user.click(getFloatingCartButton());
-  expect(within(getSidebar()).getByText("(90)")).toBeInTheDocument();
+  expect(within(getSidebar()).getByText("(3)")).toBeInTheDocument();
 });

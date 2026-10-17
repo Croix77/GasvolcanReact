@@ -1,0 +1,1 @@
+export const MAX_UNIDADES_POR_PRODUCTO = 3;

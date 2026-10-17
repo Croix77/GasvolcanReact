@@ -1,3 +1,4 @@
+import { MAX_UNIDADES_POR_PRODUCTO } from "../utils/compra";
 import { leerEscenarioCompra } from "../services/escenarioCompra";
 import { useAuth } from "../hooks/useAuth";
 import { perfilClienteDemo } from "../data/perfilClienteDemo";
@@ -29,7 +30,7 @@ function Checkout({ items, vaciar, onPedido }) {
     0,
   );
   const noDisponible = items.some(
-    (item) => item.precio == null || item.cantidad > item.stock,
+    (item) => item.precio == null || item.cantidad > item.stock || !Number.isSafeInteger(item.cantidad) || item.cantidad < 1 || item.cantidad > MAX_UNIDADES_POR_PRODUCTO,
   );
   if (!items.length)
     return (
@@ -155,7 +156,7 @@ function Checkout({ items, vaciar, onPedido }) {
             {noDisponible && (
               <p role="alert">
                 Revisa el carrito: hay productos sin precio confirmado o con
-                stock insuficiente.
+                stock insuficiente o cantidades fuera del límite de {MAX_UNIDADES_POR_PRODUCTO} unidades por producto.
               </p>
             )}
             <Link to="/carrito">Volver al carrito</Link>

@@ -95,3 +95,5 @@ El catalogo inicial incluye tres descuentos ficticios para demostrar las ofertas
 public/img/regulador-domestico.png y public/img/detector-gas-bateria.png fueron generadas con la herramienta de imagenes de OpenAI para esta demostracion. Representan modelos genericos, sin marca. Los cilindros y el banner conservan sus archivos originales. Las imagenes ilustrativas se asignan por id y tambien se recuperan para los catalogos ya guardados en el navegador.
 
 Indicaciones de generacion: fotografia cuadrada de catalogo sobre blanco puro, producto generico aislado y centrado, iluminacion de estudio, sin marcas ni textos. Regulador: cuerpo redondo metalico plateado con conexiones de laton. Detector: carcasa rectangular blanca, rejilla, indicadores y boton, sin cable ni enchufe. Generacion integrada de imagenes, sin API externa.
+
+Cada compra admite un maximo de 3 unidades de un mismo producto, respetando tambien su stock. Los carritos anteriores con cantidades mayores se recuperan ajustados a tres. Esta regla es por producto y por compra, no un limite historico por usuario.

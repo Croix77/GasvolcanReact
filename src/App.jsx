@@ -1,3 +1,4 @@
+import { MAX_UNIDADES_POR_PRODUCTO } from "./utils/compra";
 import AdminPruebas from "./pages/admin/AdminPruebas";
 import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
@@ -43,6 +44,11 @@ function ContenidoApp() {
   const usuariosDemo = useUsuariosDemo();
 
   function agregarProducto(producto) {
+    const actual = carrito.items.find((item) => item.id === producto.id);
+    if (actual && actual.cantidad >= MAX_UNIDADES_POR_PRODUCTO) {
+      setToast({ visible: true, mensaje: `Máximo ${MAX_UNIDADES_POR_PRODUCTO} unidades de ${producto.nombre} por compra.` });
+      return;
+    }
     carrito.agregar(producto.id);
     setToast({ visible: true, mensaje: `${producto.nombre} añadido al carrito` });
   }
