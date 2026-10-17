@@ -871,3 +871,19 @@ label {
   .carrusel-formatos .cilindro-mediano { height: 185px; }
   .carrusel-formatos .cilindro-pequeno { height: 155px; }
 }
+
+/* En movil las ofertas aparecen primero, sin quedar bajo el texto de portada. */
+@media (max-width: 767px) {
+  .bienvenida { padding-top: 0; gap: 1.25rem; }
+  .bienvenida > .ofertas-carousel { order: -1; padding: 0.65rem; }
+  .ofertas-carousel .oferta-compacta,
+  .ofertas-carousel .carrusel-formatos { height: 300px; }
+  .oferta-compacta-imagen { height: 155px; }
+  .oferta-compacta-marcador { height: 140px; }
+  .oferta-compacta h3 { font-size: 1rem; }
+  .oferta-compacta .precio-producto { font-size: 1.2rem; }
+  .ofertas-carousel .bienvenida-cilindros { height: 205px; }
+  .ofertas-carousel .cilindro-grande { height: 205px; }
+  .ofertas-carousel .cilindro-mediano { height: 175px; }
+  .ofertas-carousel .cilindro-pequeno { height: 145px; }
+}
