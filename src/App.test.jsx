@@ -68,6 +68,12 @@ it("Inicio no muestra el catalogo y permite abrirlo con Ver productos", async ()
   renderApp("/");
   expect(screen.queryByRole("region", { name: "Catálogo de productos" })).not.toBeInTheDocument();
   expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
+  const cilindros = screen.getByRole("region", { name: "Cilindros de 5, 11 y 15 kg" });
+  expect(within(cilindros).getAllByRole("article")).toHaveLength(3);
+  for (const peso of [5, 11, 15]) {
+    expect(within(cilindros).getByRole("heading", { level: 2, name: `Cilindro de Gas ${peso} Kg` })).toBeInTheDocument();
+  }
+
   expect(getFloatingCartButton()).toHaveTextContent("0");
   await user.click(screen.getByRole("link", { name: "Ver productos" }));
   expect(screen.getByRole("heading", { level: 1, name: "Catálogo de productos" })).toBeInTheDocument();

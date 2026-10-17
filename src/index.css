@@ -854,15 +854,4 @@ label {
 }
 .carrusel-formatos .bienvenida-cilindros img { max-width: 100%; }
 
-.formatos-inicio {
-  max-width: 640px;
-  margin: 0 auto 2rem;
-  padding: 1.5rem;
-  text-align: center;
-  border: 1px solid var(--borde);
-  border-radius: 1.5rem;
-  background: #fff;
-}
-.formatos-inicio h2 { font-size: 1.6rem; }
-.formatos-inicio > p { color: var(--texto-suave); }
-.formatos-inicio .carrusel-formatos { height: auto; }
+.cilindros-inicio { margin-bottom: 2rem; }

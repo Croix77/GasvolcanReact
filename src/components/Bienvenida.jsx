@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import TarjetaProducto from "./TarjetaProducto";
 import FormatosCilindros from "./FormatosCilindros";
 import OfertasCarousel from "./OfertasCarousel";
 
@@ -65,10 +66,17 @@ function Bienvenida({ productos, onAgregar }) {
           </p>
         </div>
       </div>
-      <section className="formatos-inicio" aria-labelledby="titulo-formatos-inicio">
-        <h2 id="titulo-formatos-inicio">Encuentra tu cilindro</h2>
-        <p>Selecciona un formato para conocer sus detalles.</p>
-        <FormatosCilindros />
+      <section className="cilindros-inicio" aria-label="Cilindros de 5, 11 y 15 kg">
+        <div className="row g-4">
+          {["gas-5kg", "gas-11kg", "gas-15kg"].map((id) => {
+            const producto = productos.find((item) => item.id === id);
+            return producto ? (
+              <div className="col-12 col-md-6 col-lg-4" key={id}>
+                <TarjetaProducto {...producto} nivelTitulo="h2" onAgregar={() => onAgregar(producto)} />
+              </div>
+            ) : null;
+          })}
+        </div>
       </section>
     </>
   );
