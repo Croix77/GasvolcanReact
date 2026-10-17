@@ -6,6 +6,8 @@ const imagenes = {
   "gas-5kg": gas5kg,
   "gas-11kg": gas11kg,
   "gas-15kg": gas15kg,
+  rg001: "/img/regulador-domestico.png",
+  ac003: "/img/detector-gas-bateria.png",
 };
 
 const datos = [

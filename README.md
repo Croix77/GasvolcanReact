@@ -24,7 +24,7 @@ La suite contiene 30 casos automatizados de funciones, componentes e integració
 
 ## Funciones
 
-- Catálogo de 14 productos con precios residenciales y stock del catálogo Forma C. Los cilindros de 5, 11 y 15 kg reutilizan las imágenes originales; el resto no tiene fotografías disponibles.
+- Catálogo de 14 productos con precios residenciales y stock del catálogo Forma C. Los cilindros de 5, 11 y 15 kg reutilizan las imágenes originales; el regulador doméstico y el detector a batería usan imágenes ilustrativas generadas; los demás accesorios no tienen fotografías disponibles.
 - Búsqueda, filtro por categoría, detalle por identificador y vista de ofertas.
 - Carrito con cantidades, eliminación, vaciado, límite de stock y persistencia local.
 - Formulario de contacto controlado con validación. No envía correos.
@@ -89,3 +89,9 @@ La cuenta cliente completa el checkout con el perfil ficticio de src/data/perfil
 ## Ofertas de demostracion
 
 El catalogo inicial incluye tres descuentos ficticios para demostrar las ofertas: cilindro 5 kg (6500 a 5900), regulador domestico (8990 a 7990) y detector de gas (19990 a 17990). El precio anterior se muestra tachado solo si el producto esta en oferta y supera al actual. Estos descuentos son datos de demostracion, no un historial comercial verificado. El carrito utiliza el precio actual. El campo opcional Precio anterior permite configurar otras ofertas desde administracion. Los catalogos guardados en el navegador conservan los cambios existentes; sus precios se pueden editar desde el panel.
+
+## Imagenes ilustrativas de accesorios
+
+public/img/regulador-domestico.png y public/img/detector-gas-bateria.png fueron generadas con la herramienta de imagenes de OpenAI para esta demostracion. Representan modelos genericos, sin marca. Los cilindros y el banner conservan sus archivos originales. Las imagenes ilustrativas se asignan por id y tambien se recuperan para los catalogos ya guardados en el navegador.
+
+Indicaciones de generacion: fotografia cuadrada de catalogo sobre blanco puro, producto generico aislado y centrado, iluminacion de estudio, sin marcas ni textos. Regulador: cuerpo redondo metalico plateado con conexiones de laton. Detector: carcasa rectangular blanca, rejilla, indicadores y boton, sin cable ni enchufe. Generacion integrada de imagenes, sin API externa.
