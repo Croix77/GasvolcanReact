@@ -803,3 +803,10 @@ label {
   font-size: 2.5rem;
   color: var(--volcan);
 }
+
+.precio-anterior {
+  margin: 0 0 0.2rem;
+  font-size: 0.9rem;
+  color: var(--texto-suave);
+  font-weight: 400;
+}

@@ -7,6 +7,7 @@ const inicial = {
   descripcion: "",
   categoria: "",
   precio: "",
+  precioAnterior: "",
   stock: "",
   oferta: false,
 };
@@ -80,6 +81,16 @@ function FormProducto({ producto, categorias, onGuardar, onCancelar }) {
         onChange={cambiar}
         error={errores.precio}
         required
+        min={0}
+        step={1}
+      />
+      <CampoFormulario
+        nombre="precioAnterior"
+        etiqueta="Precio anterior (CLP, opcional)"
+        tipo="number"
+        valor={datos.precioAnterior ?? ""}
+        onChange={cambiar}
+        error={errores.precioAnterior}
         min={0}
         step={1}
       />

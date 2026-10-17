@@ -85,3 +85,7 @@ El carrito y el historial de pedidos pertenecen al navegador de demostración. N
 Los seis formularios usan noValidate y funciones del proyecto, con mensajes por campo, aria-invalid, aria-describedby y foco en el primer error. Tras un envío inválido, los mensajes se actualizan al corregir los campos. Los atributos required, type y maxlength se conservan como información y ayuda de entrada, pero el bloqueo de envío y los mensajes se controlan en React.
 
 La cuenta cliente completa el checkout con el perfil ficticio de src/data/perfilClienteDemo.js. Los datos se pueden editar y no se guardan en la sesión ni en el resumen persistente del pedido. Catálogo y carrito reciben esPagina para utilizar h1 en su ruta propia y h2 dentro de Inicio. El enlace Saltar al contenido permite omitir el menú usando teclado.
+
+## Ofertas de demostracion
+
+El catalogo inicial incluye tres descuentos ficticios para demostrar las ofertas: cilindro 5 kg (6500 a 5900), regulador domestico (8990 a 7990) y detector de gas (19990 a 17990). El precio anterior se muestra tachado solo si el producto esta en oferta y supera al actual. Estos descuentos son datos de demostracion, no un historial comercial verificado. El carrito utiliza el precio actual. El campo opcional Precio anterior permite configurar otras ofertas desde administracion. Los catalogos guardados en el navegador conservan los cambios existentes; sus precios se pueden editar desde el panel.

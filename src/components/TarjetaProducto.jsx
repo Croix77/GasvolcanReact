@@ -6,6 +6,7 @@ function TarjetaProducto({
   nombre,
   descripcion,
   precio,
+  precioAnterior,
   oferta = false,
   imagen,
   stock,
@@ -42,7 +43,7 @@ function TarjetaProducto({
         </span>
         <Titulo className="h5">{nombre}</Titulo>
         <p className="card-text">{descripcion}</p>
-        <PrecioProducto precio={precio} oferta={oferta} />
+        <PrecioProducto precio={precio} precioAnterior={precioAnterior} oferta={oferta} />
         <p className="stock-producto mb-3">
           {stock === 0 ? "Agotado" : `Stock: ${stock}`}
         </p>

@@ -49,11 +49,15 @@ it("llama onGuardar con datos válidos", async () => {
   await user.selectOptions(screen.getByLabelText("Categoría del producto"), "Accesorios");
   await user.type(screen.getByLabelText("Precio residencial (CLP)"), "1500");
   await user.type(screen.getByLabelText("Stock"), "10");
+  await user.type(screen.getByLabelText("Precio anterior (CLP, opcional)"), "2000");
+  await user.click(screen.getByLabelText("Destacar en ofertas"));
   await user.click(screen.getByRole("button", { name: "Guardar producto" }));
   expect(onGuardar).toHaveBeenCalledWith(expect.objectContaining({
     nombre: "Nuevo",
     categoria: "Accesorios",
     precio: "1500",
+    precioAnterior: "2000",
+    oferta: true,
     stock: "10",
   }));
 });

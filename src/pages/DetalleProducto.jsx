@@ -37,7 +37,7 @@ function DetalleProducto({ productos, onAgregar }) {
         <div className="col-md-7 detalle-informacion">
           <p>{producto.descripcionLarga || producto.descripcion}</p>
           <p>Categoría: {producto.categoria}</p>
-          <PrecioProducto precio={producto.precio} oferta={producto.oferta} />
+          <PrecioProducto precio={producto.precio} precioAnterior={producto.precioAnterior} oferta={producto.oferta} />
           <p>Stock: {producto.stock}</p>
           <button
             className="btn btn-primary"

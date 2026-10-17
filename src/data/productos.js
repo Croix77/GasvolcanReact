@@ -16,7 +16,8 @@ const datos = [
     nombre: "Cilindro de Gas 5 Kg",
     descripcion:
       "Cilindro de gas licuado de petróleo 5 kg. Para uso residencial (cocina, calefacción pequeña).",
-    precio: 6500,
+    precio: 5900,
+    precioAnterior: 6500,
     precioComercial: 6000,
     stock: 80,
     oferta: true,
@@ -64,7 +65,8 @@ const datos = [
     nombre: "Regulador doméstico estándar",
     descripcion:
       "Regulador de 1 etapa para cilindros 5, 11 y 15 kg. Presión de salida 28 mbar.",
-    precio: 8990,
+    precio: 7990,
+    precioAnterior: 8990,
     precioComercial: 8200,
     stock: 45,
     oferta: true,
@@ -171,7 +173,8 @@ const datos = [
     nombre: "Detector de gas a batería",
     descripcion:
       "Sensor electroquímico. Alarma sonora y visual ante fuga de gas GLP o metano.",
-    precio: 19990,
+    precio: 17990,
+    precioAnterior: 19990,
     precioComercial: 17000,
     stock: 8,
     oferta: true,

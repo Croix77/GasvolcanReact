@@ -22,6 +22,11 @@ export function validarProducto(producto) {
     errores.precio = "El precio debe ser un entero desde cero.";
   if (!enteroNoNegativo(producto.stock))
     errores.stock = "El stock debe ser un entero desde cero.";
+  if (producto.precioAnterior != null && producto.precioAnterior !== "") {
+    if (!enteroNoNegativo(producto.precioAnterior) ||
+        (producto.oferta && Number(producto.precioAnterior) <= Number(producto.precio)))
+      errores.precioAnterior = "El precio anterior debe ser un entero y mayor que el precio de oferta.";
+  }
   return errores;
 }
 
@@ -44,6 +49,7 @@ export function normalizarProducto(producto) {
     categoria: producto.categoria.trim(),
     precio: Number(producto.precio),
     stock: Number(producto.stock),
+    precioAnterior: producto.precioAnterior == null || producto.precioAnterior === "" ? null : Number(producto.precioAnterior),
     oferta: Boolean(producto.oferta),
   };
 }
