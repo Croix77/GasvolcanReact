@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, within, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { expect, it, vi } from "vitest";
@@ -18,12 +18,27 @@ function getProductCard(nombre) {
 }
 
 function getSidebar() {
-  return screen.getByRole("complementary", { name: "Carrito de compras" });
+  return screen.getByRole("dialog", { name: /Carrito de compras/ });
 }
 
 function getFloatingCartButton() {
   return screen.getByRole("button", { name: /Carrito \(\d+ items?\)/ });
 }
+
+it("mantiene el panel cerrado con productos y permite cerrarlo con Escape", async () => {
+  localStorage.setItem("gas-el-volcan-carrito", JSON.stringify([{ id: "gas-15kg", cantidad: 1 }]));
+  const user = userEvent.setup();
+  renderApp();
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  const boton = getFloatingCartButton();
+  await user.click(boton);
+  expect(getSidebar()).toBeInTheDocument();
+  expect(boton).toHaveAttribute("aria-expanded", "true");
+  await user.keyboard("{Escape}");
+  await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  expect(boton).toHaveAttribute("aria-expanded", "false");
+  expect(boton).toHaveFocus();
+});
 
 it("abre la pagina Carrito desde el menu y muestra su estado vacio", async () => {
   const user = userEvent.setup();
@@ -41,7 +56,7 @@ it("recupera productos en la ruta Carrito y permite cambiar cantidad y vaciar", 
   expect(within(pagina).getByRole("heading", { name: "Cilindro de Gas 15 Kg" })).toBeInTheDocument();
   await user.selectOptions(within(pagina).getByRole("combobox"), "2");
   expect(within(pagina).getByText("Total: $32.000")).toBeInTheDocument();
-  expect(within(getSidebar()).getByText("(2)")).toBeInTheDocument();
+  expect(getFloatingCartButton()).toHaveTextContent("2");
   expect(within(pagina).getByRole("link", { name: "Continuar compra" })).toHaveAttribute("href", "/checkout");
   await user.click(within(pagina).getByRole("button", { name: "Vaciar carrito" }));
   expect(within(pagina).getByText("Tu carrito está vacío.")).toBeInTheDocument();
@@ -72,6 +87,7 @@ it("agrega productos y muestra sidebar con numeración", async () => {
   await user.click(within(card).getByRole("button", { name: "Añadir al Carrito" }));
   await user.click(within(card).getByRole("button", { name: "Añadir al Carrito" }));
 
+  await user.click(getFloatingCartButton());
   const sidebar = getSidebar();
   expect(within(sidebar).getByText("1")).toBeInTheDocument(); // badge número
   expect(within(sidebar).getByText("Cilindro de Gas 15 Kg")).toBeInTheDocument();
@@ -86,16 +102,20 @@ it("permite eliminar y vaciar carrito desde sidebar", async () => {
   const card = getProductCard("Cilindro de Gas 15 Kg");
   await user.click(within(card).getByRole("button", { name: "Añadir al Carrito" }));
 
+  await user.click(getFloatingCartButton());
   const sidebar = getSidebar();
   await user.click(within(sidebar).getByRole("button", { name: "Eliminar Cilindro de Gas 15 Kg" }));
+  await user.click(screen.getByRole("button", { name: "Cerrar carrito" }));
   // tras eliminar, vuelve al botón flotante
   expect(getFloatingCartButton()).toHaveTextContent("0");
 
   const card5 = getProductCard("Cilindro de Gas 5 Kg");
   await user.click(within(card5).getByRole("button", { name: "Añadir al Carrito" }));
+  await user.click(getFloatingCartButton());
   const sidebar2 = getSidebar();
   await user.click(within(sidebar2).getByRole("button", { name: "Vaciar carrito" }));
   expect(JSON.parse(localStorage.getItem("gas-el-volcan-carrito"))).toEqual([]);
+  await user.click(screen.getByRole("button", { name: "Cerrar carrito" }));
   expect(getFloatingCartButton()).toHaveTextContent("0");
 });
 
@@ -106,9 +126,11 @@ it("recupera carrito al recargar y muestra cantidad en badge", async () => {
   const card = getProductCard("Cilindro de Gas 15 Kg");
   await user.click(within(card).getByRole("button", { name: "Añadir al Carrito" }));
 
+  await user.click(getFloatingCartButton());
   const sidebar = getSidebar();
   expect(within(sidebar).getByText("(90)")).toBeInTheDocument(); // badge en header
   vista.unmount();
   renderApp();
+  await user.click(getFloatingCartButton());
   expect(within(getSidebar()).getByText("(90)")).toBeInTheDocument();
 });
