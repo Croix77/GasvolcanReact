@@ -22,7 +22,9 @@ function OfertasCarousel({ productos, onAgregar, portada }) {
       contenido: (
         <article className="oferta-compacta">
           {producto.imagen ? (
-            <img className="oferta-compacta-imagen" src={producto.imagen} alt={producto.nombre} />
+            <Link className="oferta-imagen-enlace" to={`/productos/${producto.id}`} aria-label={`Ver ${producto.nombre}`}>
+              <img className="oferta-compacta-imagen" src={producto.imagen} alt={producto.nombre} />
+            </Link>
           ) : (
             <div className="oferta-compacta-marcador" aria-hidden="true">{producto.categoria || "Accesorios"}</div>
           )}

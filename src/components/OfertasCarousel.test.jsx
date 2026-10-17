@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { expect, it, vi } from "vitest";
 import OfertasCarousel from "./OfertasCarousel";
 
@@ -7,6 +7,17 @@ const productos = [1, 2, 3, 4].map((id) => ({
   id: String(id), nombre: `Oferta ${id}`, descripcion: "Producto",
   precio: 1000, stock: 20, oferta: true,
 }));
+
+it("abre el detalle del producto al pulsar su imagen", () => {
+  render(<MemoryRouter><Routes>
+    <Route path="/" element={<OfertasCarousel productos={[{ ...productos[0], imagen: "/img/gas-5kg.png" }]} onAgregar={vi.fn()} />} />
+    <Route path="/productos/1" element={<h1>Detalle seleccionado</h1>} />
+  </Routes></MemoryRouter>);
+  const enlace = screen.getByRole("link", { name: "Ver Oferta 1" });
+  expect(enlace.querySelector("img")).not.toBeNull();
+  fireEvent.click(enlace);
+  expect(screen.getByRole("heading", { name: "Detalle seleccionado" })).toBeInTheDocument();
+});
 
 it("incluye la portada de formatos y pausa la rotacion durante la interaccion", () => {
   vi.useFakeTimers();

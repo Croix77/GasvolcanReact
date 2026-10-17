@@ -787,16 +787,16 @@ label {
 .ofertas-carousel > .detalle-enlace { display: inline-block; margin-top: 0.75rem; }
 .ofertas-carousel .bienvenida-cilindros img { mix-blend-mode: normal; }
 .oferta-compacta, .carrusel-formatos {
-  height: 300px;
+  height: 365px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 .oferta-compacta-imagen {
-  width: 100%; height: 145px; object-fit: contain;
+  width: 100%; height: 210px; object-fit: contain;
 }
 .oferta-compacta-marcador {
-  height: 125px; display: grid; place-items: center; color: var(--volcan-oscuro);
+  height: 190px; display: grid; place-items: center; color: var(--volcan-oscuro);
 }
 .oferta-compacta h3 { font-size: 1.1rem; margin: 0.5rem 0; }
 .oferta-compacta .precio-y-oferta { margin-bottom: 0.5rem; }
@@ -843,3 +843,13 @@ label {
   color: var(--texto-suave);
   font-weight: 400;
 }
+
+.oferta-imagen-enlace { display: block; min-height: 0; }
+.oferta-imagen-enlace:focus-visible,
+.carrusel-formatos .bienvenida-cilindros a:focus-visible {
+  outline: 2px solid var(--volcan); outline-offset: -2px; border-radius: 0.5rem;
+}
+.carrusel-formatos .bienvenida-cilindros a {
+  width: 32%; display: flex; justify-content: center; align-items: flex-end;
+}
+.carrusel-formatos .bienvenida-cilindros img { max-width: 100%; }

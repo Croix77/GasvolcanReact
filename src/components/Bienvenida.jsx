@@ -34,10 +34,10 @@ function Bienvenida({ productos, onAgregar }) {
           onAgregar={onAgregar}
           portada={
             <div className="carrusel-formatos">
-              <div className="bienvenida-cilindros" aria-hidden="true">
-                <img className="cilindro-pequeno" src="/img/gas-5kg.png" alt="" />
-                <img className="cilindro-grande" src="/img/gas-15kg.png" alt="" />
-                <img className="cilindro-mediano" src="/img/gas-11kg.png" alt="" />
+              <div className="bienvenida-cilindros">
+                <Link to="/productos/gas-5kg" aria-label="Ver cilindro de 5 kg"><img className="cilindro-pequeno" src="/img/gas-5kg.png" alt="Cilindro de 5 kg" /></Link>
+                <Link to="/productos/gas-15kg" aria-label="Ver cilindro de 15 kg"><img className="cilindro-grande" src="/img/gas-15kg.png" alt="Cilindro de 15 kg" /></Link>
+                <Link to="/productos/gas-11kg" aria-label="Ver cilindro de 11 kg"><img className="cilindro-mediano" src="/img/gas-11kg.png" alt="Cilindro de 11 kg" /></Link>
               </div>
               <p className="bienvenida-etiqueta">5, 11 y 15 kg · Elige tu formato</p>
             </div>
