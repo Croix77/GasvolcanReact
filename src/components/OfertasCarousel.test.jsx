@@ -8,17 +8,19 @@ const productos = [1, 2, 3, 4].map((id) => ({
   precio: 1000, stock: 20, oferta: true,
 }));
 
-it("incluye la portada de formatos y permite pausar y reanudar las ofertas", () => {
+it("incluye la portada de formatos y pausa la rotacion durante la interaccion", () => {
   vi.useFakeTimers();
   try {
     const vista = render(<MemoryRouter><OfertasCarousel portada={<p>5, 11 y 15 kg</p>} productos={productos} onAgregar={vi.fn()} /></MemoryRouter>);
+    expect(screen.queryByRole("button", { name: "Pausar" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Ver todas las ofertas" })).toHaveAttribute("href", "/ofertas");
     expect(screen.getByText("5, 11 y 15 kg").closest(".oferta-slide")).toHaveAttribute("aria-hidden", "false");
     act(() => vi.advanceTimersByTime(4000));
     expect(screen.getByRole("heading", { name: "Oferta 1" })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Pausar" }));
+    fireEvent.mouseEnter(screen.getByRole("region"));
     act(() => vi.advanceTimersByTime(8000));
     expect(screen.getByRole("heading", { name: "Oferta 1" })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Reanudar" }));
+    fireEvent.mouseLeave(screen.getByRole("region"));
     act(() => vi.advanceTimersByTime(4000));
     expect(screen.getByRole("heading", { name: "Oferta 2" })).toBeInTheDocument();
     vista.unmount();

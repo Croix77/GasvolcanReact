@@ -40,8 +40,16 @@ function OfertasCarousel({ productos, onAgregar, portada }) {
   ];
 
   return (
-    <section className="ofertas-carousel bienvenida-visual" aria-labelledby="titulo-ofertas">
-      <h2 id="titulo-ofertas" className="sobre-titulo">{portada ? "FORMATOS Y OFERTAS" : "OFERTAS DESTACADAS"}</h2>
+    <section
+      className="ofertas-carousel bienvenida-visual"
+      aria-label="Formatos y ofertas"
+      onMouseEnter={() => setPausado(true)}
+      onMouseLeave={() => setPausado(false)}
+      onFocusCapture={() => setPausado(true)}
+      onBlurCapture={(evento) => {
+        if (!evento.currentTarget.contains(evento.relatedTarget)) setPausado(false);
+      }}
+    >
       <div className="ofertas-ventana">
         <div className="ofertas-track" style={{ transform: `translateX(-${indiceActual * 100}%)` }}>
           {diapositivas.map((slide, i) => (
@@ -53,14 +61,11 @@ function OfertasCarousel({ productos, onAgregar, portada }) {
       </div>
       <div className="d-flex gap-2 justify-content-center flex-wrap mt-2">
         {diapositivas.map((slide, i) => (
-          <button key={slide.id} type="button" className={`btn btn-sm ${i === indiceActual ? "btn-warning" : "btn-outline-secondary"}`}
+          <button key={slide.id} type="button" className={`carrusel-punto ${i === indiceActual ? "activo" : ""}`}
             onClick={() => setIndice(i)} aria-label={portada ? `Ver destacado ${i + 1}` : `Ver oferta ${i + 1}`}
-            aria-current={i === indiceActual ? "true" : "false"}>{i + 1}</button>
+            aria-current={i === indiceActual ? "true" : "false"} />
         ))}
-        {total > 1 && <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => setPausado(!pausado)}>{pausado ? "Reanudar" : "Pausar"}</button>}
       </div>
-      <p className="small text-muted my-2">{portada ? "Destacado" : "Oferta"} {indiceActual + 1} de {total}
-        {total > 1 && !pausado && " - Cambia automáticamente cada 4s"}</p>
       <Link to="/ofertas" className="detalle-enlace">Ver todas las ofertas</Link>
     </section>
   );
