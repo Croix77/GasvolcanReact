@@ -91,7 +91,7 @@ a:hover {
 .navegacion {
   background: #fff;
   border-bottom: 1px solid var(--borde);
-  padding: 1rem 0;
+  padding: 0.35rem 0;
 }
 .navbar-brand {
   font-weight: 800;
