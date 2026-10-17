@@ -899,13 +899,13 @@ label {
 }
 
 .navegacion .navbar-toggler {
-  background-color: #ffb86b;
-  border-color: #f5a653;
+  background-color: #ff922b;
+  border-color: #f58220;
   color: #76300c;
 }
 .navegacion .navbar-toggler:hover {
-  background-color: #ffa94d;
-  border-color: #ed963c;
+  background-color: #ff851b;
+  border-color: #ed7616;
 }
 .navegacion .navbar-toggler-icon {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%2376300c' stroke-linecap='round' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
