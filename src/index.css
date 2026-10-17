@@ -128,7 +128,7 @@ a:hover {
   grid-template-columns: 1.15fr 1fr;
   gap: 2rem;
   align-items: center;
-  padding: 2.6rem 0;
+  padding: 0.75rem 0;
 }
 .bienvenida h1 {
   font-size: clamp(2.8rem, 4.4vw, 4.5rem);
@@ -855,3 +855,19 @@ label {
 .carrusel-formatos .bienvenida-cilindros img { max-width: 100%; }
 
 .cilindros-inicio { margin-bottom: 2rem; }
+
+/* Mantener visibles las ofertas y sus controles en pantallas de poca altura. */
+@media (min-width: 768px) and (max-height: 800px) {
+  .bienvenida { padding: 0.25rem 0; }
+  .bienvenida h1 { font-size: clamp(2.3rem, 3.5vw, 3.5rem); }
+  .bienvenida-descripcion { margin-bottom: 1rem; }
+  .bienvenida-nota { margin-top: 0.75rem; }
+  .ofertas-carousel { padding: 0.75rem; }
+  .oferta-compacta, .carrusel-formatos { height: 300px; }
+  .oferta-compacta-imagen { height: 160px; }
+  .oferta-compacta-marcador { height: 145px; }
+  .carrusel-formatos .bienvenida-cilindros { height: 220px; }
+  .carrusel-formatos .cilindro-grande { height: 220px; }
+  .carrusel-formatos .cilindro-mediano { height: 185px; }
+  .carrusel-formatos .cilindro-pequeno { height: 155px; }
+}
