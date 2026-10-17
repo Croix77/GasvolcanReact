@@ -872,18 +872,28 @@ label {
   .carrusel-formatos .cilindro-pequeno { height: 155px; }
 }
 
-/* En movil las ofertas aparecen primero, sin quedar bajo el texto de portada. */
+/* Portada movil: texto primero y carrusel debajo con espaciado compacto. */
 @media (max-width: 767px) {
-  .bienvenida { padding-top: 0; gap: 1.25rem; }
-  .bienvenida > .ofertas-carousel { order: -1; padding: 0.65rem; }
+  .bienvenida { padding: 0; gap: 0.65rem; }
+  .bienvenida > .ofertas-carousel { padding: 0.5rem; }
+  .bienvenida .sobre-titulo { font-size: 0.65rem; margin-bottom: 0.35rem; }
+  .bienvenida h1 { font-size: 1.7rem; line-height: 1.08; margin-bottom: 0.5rem; }
+  .bienvenida-descripcion { font-size: 0.85rem; line-height: 1.35; margin-bottom: 0.5rem; }
+  .bienvenida-texto > .d-flex { gap: 0.5rem !important; }
+  .bienvenida-texto .btn { font-size: 0.75rem; padding: 0.4rem 0.65rem; }
+  .bienvenida-nota { font-size: 0.65rem; margin: 0.5rem 0 0; }
   .ofertas-carousel .oferta-compacta,
-  .ofertas-carousel .carrusel-formatos { height: 300px; }
-  .oferta-compacta-imagen { height: 155px; }
-  .oferta-compacta-marcador { height: 140px; }
-  .oferta-compacta h3 { font-size: 1rem; }
-  .oferta-compacta .precio-producto { font-size: 1.2rem; }
-  .ofertas-carousel .bienvenida-cilindros { height: 205px; }
-  .ofertas-carousel .cilindro-grande { height: 205px; }
-  .ofertas-carousel .cilindro-mediano { height: 175px; }
-  .ofertas-carousel .cilindro-pequeno { height: 145px; }
+  .ofertas-carousel .carrusel-formatos { height: 235px; }
+  .oferta-compacta-imagen { height: 105px; }
+  .oferta-compacta-marcador { height: 95px; }
+  .oferta-compacta h3 { font-size: 0.95rem; margin: 0.25rem 0; }
+  .oferta-compacta .precio-producto { font-size: 1.1rem; }
+  .oferta-compacta .precio-anterior { font-size: 0.75rem; }
+  .oferta-compacta .producto-oferta { font-size: 0.75rem; }
+  .oferta-compacta .btn { font-size: 0.75rem; }
+  .ofertas-carousel .bienvenida-cilindros { height: 175px; }
+  .ofertas-carousel .cilindro-grande { height: 175px; }
+  .ofertas-carousel .cilindro-mediano { height: 150px; }
+  .ofertas-carousel .cilindro-pequeno { height: 125px; }
+  .ofertas-carousel > .detalle-enlace { margin-top: 0.4rem; font-size: 0.8rem; }
 }
