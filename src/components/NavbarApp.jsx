@@ -21,8 +21,8 @@ function NavbarApp({ totalPedidos = 0 }) {
             className="marca-banner"
             src="/img/banner-gas-el-volcan.png"
             alt="Gas El Volcán, distribución de gas a domicilio"
-            width="250"
-            height="94"
+            width="320"
+            height="120"
           />
         </Navbar.Brand>
         <Navbar.Toggle
