@@ -29,18 +29,21 @@ function Bienvenida({ productos, onAgregar }) {
             Distribuidora familiar en la Región de Ñuble desde 1998.
           </p>
         </div>
-        <div className="bienvenida-visual">
-          <div className="bienvenida-cilindros" aria-hidden="true">
-            <img className="cilindro-pequeno" src="/img/gas-5kg.png" alt="" />
-            <img className="cilindro-grande" src="/img/gas-15kg.png" alt="" />
-            <img className="cilindro-mediano" src="/img/gas-11kg.png" alt="" />
-          </div>
-          <span className="bienvenida-etiqueta">
-            5, 11 y 15 kg · Elige tu formato
-          </span>
-        </div>
+        <OfertasCarousel
+          productos={ofertas}
+          onAgregar={onAgregar}
+          portada={
+            <div className="carrusel-formatos">
+              <div className="bienvenida-cilindros" aria-hidden="true">
+                <img className="cilindro-pequeno" src="/img/gas-5kg.png" alt="" />
+                <img className="cilindro-grande" src="/img/gas-15kg.png" alt="" />
+                <img className="cilindro-mediano" src="/img/gas-11kg.png" alt="" />
+              </div>
+              <p className="bienvenida-etiqueta">5, 11 y 15 kg · Elige tu formato</p>
+            </div>
+          }
+        />
       </section>
-      <OfertasCarousel productos={ofertas} onAgregar={onAgregar} />
       <div className="servicios-franja">
         <div>
           <span className="servicio-numero" aria-hidden="true">
