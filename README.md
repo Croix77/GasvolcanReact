@@ -2,12 +2,12 @@
 
 Tienda y gestión de despacho de Gas El Volcán. React y Bootstrap usan las APIs REST de `ms-auth` y `ms-negocio`. Cada servicio tiene su propio repositorio y esquema MySQL.
 
-- [ms-auth · autenticación y usuarios](https://github.com/Croix77/GasVolcanAuth/tree/feat/ms-auth-parcial-3)
-- [ms-negocio · catálogo, inventario y pedidos](https://github.com/Croix77/GasVolcanBackend/tree/feat/completar-gas-volcan)
+- [ms-auth · autenticación y usuarios](https://github.com/Croix77/GasVolcanAuth/tree/feat/ms-auth-parcial-3/ms-auth)
+- [ms-negocio · catálogo, inventario y pedidos](https://github.com/Croix77/GasVolcanBackend/tree/feat/completar-gas-volcan/ms-negocio)
 
 ## Ejecutar
 
-1. Inicia ambos servicios según sus README. En local Auth escucha en 8081 y Negocio en 8080.
+1. Desde las carpetas ms-auth y ms-negocio, inicia ambos servicios según sus README. En local Auth escucha en 8081 y Negocio en 8080.
 2. Activa la carga inicial del catálogo en Negocio si usas una base vacía de prueba.
 3. Con Node.js 24 y PowerShell en la carpeta del frontend, ejecuta:
 
