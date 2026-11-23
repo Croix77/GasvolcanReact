@@ -72,7 +72,7 @@ function Bienvenida({ productos, onAgregar }) {
             const producto = productos.find((item) => item.id === id);
             return producto ? (
               <div className="col-12 col-md-6 col-lg-4" key={id}>
-                <TarjetaProducto {...producto} nivelTitulo="h2" onAgregar={() => onAgregar(producto)} />
+                <TarjetaProducto {...producto} nivelTitulo="h2" onAgregar={onAgregar ? () => onAgregar(producto) : undefined} />
               </div>
             ) : null;
           })}

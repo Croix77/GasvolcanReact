@@ -1,8 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
-import { expect, it } from "vitest";
+import { beforeEach, expect, it } from "vitest";
 import App from "../App";
+import { simularApis } from "../test/apiPrueba";
+
+beforeEach(() => { simularApis(); });
 
 function renderLogin() {
   return render(
@@ -36,7 +39,7 @@ it("rechaza credenciales incorrectas", async () => {
   await user.type(screen.getByLabelText("Correo electrónico"), "otro@example.com");
   await user.type(screen.getByLabelText("Contraseña", { exact: true }), "Incorrecta123");
   await user.click(screen.getByRole("button", { name: "Iniciar sesión" }));
-  expect(screen.getByRole("alert")).toHaveTextContent("Correo o contraseña incorrectos");
+  expect(await screen.findByRole("alert")).toHaveTextContent("Correo o contraseña incorrectos");
 });
 
 it("inicia sesión como administrador y redirige a admin", async () => {
@@ -45,7 +48,7 @@ it("inicia sesión como administrador y redirige a admin", async () => {
   await user.type(screen.getByLabelText("Correo electrónico"), "admin@example.com");
   await user.type(screen.getByLabelText("Contraseña", { exact: true }), "VolcanDemo123!");
   await user.click(screen.getByRole("button", { name: "Iniciar sesión" }));
-  expect(screen.getByText("Conectado: Administrador")).toBeInTheDocument();
+  expect(await screen.findByText("Conectado: Administrador")).toBeInTheDocument();
   expect(screen.getByText("Sesión iniciada como administrador.")).toBeInTheDocument();
 });
 
@@ -55,7 +58,7 @@ it("inicia sesión como cliente sin mostrar controles admin", async () => {
   await user.type(screen.getByLabelText("Correo electrónico"), "cliente@example.com");
   await user.type(screen.getByLabelText("Contraseña", { exact: true }), "ClienteDemo123!");
   await user.click(screen.getByRole("button", { name: "Iniciar sesión" }));
-  expect(screen.getByText("Conectado: Cliente")).toBeInTheDocument();
+  expect(await screen.findByText("Conectado: Cliente")).toBeInTheDocument();
   expect(screen.queryByRole("link", { name: "Administración" })).not.toBeInTheDocument();
 });
 

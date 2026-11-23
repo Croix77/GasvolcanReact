@@ -16,7 +16,6 @@ function AdminLayout() {
             ["/admin/pedidos", "Pedidos"],
             ["/admin/reportes", "Reportes"],
             ["/admin/perfil", "Perfil"],
-            ["/admin/pruebas", "Configuración de demostración"],
           ].map(([ruta, nombre]) => (
             <NavLink
               key={ruta}
@@ -33,10 +32,6 @@ function AdminLayout() {
         </nav>
       </aside>
       <div className="col-12 col-lg-9 administracion-contenido">
-        <p className="alert alert-warning">
-          Administración de demostración local. La restricción de rutas no
-          sustituye la autenticación de un servidor.
-        </p>
         <Outlet />
       </div>
     </div>

@@ -53,14 +53,14 @@ function TarjetaProducto({
         <Link className="detalle-enlace mb-3" to={`/productos/${id}`}>
           Ver detalle
         </Link>
-        <button
+        {onAgregar && (<button
           type="button"
           className="btn btn-primary mt-auto"
           onClick={onAgregar}
           disabled={stock === 0}
         >
           Añadir al Carrito
-        </button>
+        </button>)}
       </div>
     </article>
   );

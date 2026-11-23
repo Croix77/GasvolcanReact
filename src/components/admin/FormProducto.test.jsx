@@ -7,6 +7,7 @@ const categorias = ["Cilindros", "Reguladores", "Accesorios"];
 
 it("renderiza formulario vacío para crear", () => {
   render(<FormProducto categorias={categorias} onGuardar={vi.fn()} onCancelar={vi.fn()} />);
+  expect(screen.getByLabelText("Código del producto")).toHaveValue("");
   expect(screen.getByLabelText("Nombre del producto")).toHaveValue("");
   expect(screen.getByLabelText("Descripción")).toHaveValue("");
   expect(screen.getByLabelText("Categoría del producto")).toHaveValue("");
@@ -44,6 +45,7 @@ it("llama onGuardar con datos válidos", async () => {
   const user = userEvent.setup();
   const onGuardar = vi.fn();
   render(<FormProducto categorias={categorias} onGuardar={onGuardar} onCancelar={vi.fn()} />);
+  await user.type(screen.getByLabelText("Código del producto"), "AC-10");
   await user.type(screen.getByLabelText("Nombre del producto"), "Nuevo");
   await user.type(screen.getByLabelText("Descripción"), "Descripción nueva");
   await user.selectOptions(screen.getByLabelText("Categoría del producto"), "Accesorios");
@@ -53,6 +55,7 @@ it("llama onGuardar con datos válidos", async () => {
   await user.click(screen.getByLabelText("Destacar en ofertas"));
   await user.click(screen.getByRole("button", { name: "Guardar producto" }));
   expect(onGuardar).toHaveBeenCalledWith(expect.objectContaining({
+    codigo: "AC-10",
     nombre: "Nuevo",
     categoria: "Accesorios",
     precio: "1500",
@@ -69,4 +72,13 @@ it("llama onCancelar al click en cancelar", async () => {
   render(<FormProducto producto={producto} categorias={categorias} onGuardar={vi.fn()} onCancelar={onCancelar} />);
   await user.click(screen.getByRole("button", { name: "Cancelar edición" }));
   expect(onCancelar).toHaveBeenCalledTimes(1);
+});
+it("conserva los datos cuando el servidor rechaza el guardado", async () => {
+  const user = userEvent.setup();
+  const onGuardar = vi.fn().mockRejectedValue(new Error("El código ya está registrado."));
+  const producto = { codigo: "TEST", nombre: "Test", descripcion: "Desc", categoria: "Reguladores", precio: 100, stock: 5, oferta: false };
+  render(<FormProducto producto={producto} categorias={categorias} onGuardar={onGuardar} onCancelar={vi.fn()} />);
+  await user.click(screen.getByRole("button", { name: "Guardar producto" }));
+  expect(await screen.findByText("El código ya está registrado.")).toBeInTheDocument();
+  expect(screen.getByLabelText("Nombre del producto")).toHaveValue("Test");
 });

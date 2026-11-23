@@ -1,14 +1,13 @@
 import { MAX_UNIDADES_POR_PRODUCTO } from "../utils/compra";
 import { useEffect, useState } from "react";
-import { productos } from "../data/productos";
 
 const clave = "gas-el-volcan-carrito";
 
-function leerCarrito(catalogo) {
+function leerCarrito(catalogo, claveUsuario) {
   try {
-    const guardado = localStorage.getItem(clave);
+    const guardado = localStorage.getItem(claveUsuario);
     const anterior =
-      guardado == null
+      guardado == null && claveUsuario === clave
         ? JSON.parse(localStorage.getItem("pedidosGas") || "[]")
         : [];
     const datos =
@@ -25,7 +24,7 @@ function leerCarrito(catalogo) {
       .filter((item) => {
         if (
           !item ||
-          !catalogo.some((producto) => producto.id === item.id) ||
+          typeof item.id !== "string" ||
           !Number.isSafeInteger(item.cantidad) ||
           item.cantidad < 1 ||
           ids.has(item.id)
@@ -40,16 +39,17 @@ function leerCarrito(catalogo) {
   }
 }
 
-export function useCarrito(catalogo = productos) {
-  const [carrito, setCarrito] = useState(() => leerCarrito(catalogo));
+export function useCarrito(catalogo = [], correo) {
+  const claveUsuario = correo ? clave + ":" + correo : clave;
+  const [carrito, setCarrito] = useState(() => leerCarrito(catalogo, claveUsuario));
 
   useEffect(() => {
     try {
-      localStorage.setItem(clave, JSON.stringify(carrito));
+      localStorage.setItem(claveUsuario, JSON.stringify(carrito));
     } catch {
       // El carrito sigue funcionando si el navegador bloquea el almacenamiento.
     }
-  }, [carrito]);
+  }, [carrito, claveUsuario]);
 
   function agregar(id) {
     const producto = catalogo.find((producto) => producto.id === id);

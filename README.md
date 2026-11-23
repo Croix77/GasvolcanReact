@@ -1,99 +1,44 @@
-# Gas El Volcán
+# Gas El Volcán · React
 
-Frontend académico en React con Vite, React Router, Bootstrap y Vitest.
+Tienda y gestión de despacho de Gas El Volcán. React y Bootstrap usan las APIs REST de `ms-auth` y `ms-negocio`. Cada servicio tiene su propio repositorio y esquema MySQL.
+
+- [ms-auth · autenticación y usuarios](https://github.com/Croix77/GasVolcanAuth/tree/feat/ms-auth-parcial-3)
+- [ms-negocio · catálogo, inventario y pedidos](https://github.com/Croix77/GasVolcanBackend/tree/feat/completar-gas-volcan)
 
 ## Ejecutar
 
-Requiere Node.js compatible con Vite 8 (se verificó con Node 24).
+1. Inicia ambos servicios según sus README. En local Auth escucha en 8081 y Negocio en 8080.
+2. Activa la carga inicial del catálogo en Negocio si usas una base vacía de prueba.
+3. Con Node.js 24 y PowerShell en la carpeta del frontend, ejecuta:
 
-```sh
+```powershell
 npm ci
 npm run dev
 ```
 
-## Verificar
+Abre [Vite en local](http://localhost:5173). Para puertos distintos, copia `.env.example` a `.env.local` y edita las dos URL. El primer usuario administrador se crea en Auth. Desde su panel puedes crear las cuentas de cliente, vendedor, operadora y repartidor.
 
-```sh
+## Flujo para la presentación
+
+1. Entra como **cliente**. Abre el catálogo, agrega hasta tres unidades de un producto y confirma con la dirección y un punto en el mapa.
+2. Entra como **operadora**. En `/despacho` filtra el día, revisa el mapa y asigna el pedido a un repartidor activo.
+3. Entra como **repartidor**. Abre únicamente tus pedidos, inicia el recorrido y comparte la ubicación. Puedes usar GPS con HTTPS o localhost, o marcarla manualmente. Registra la entrega.
+4. Vuelve como cliente y consulta el estado en **Historial de pedidos**. La vista vuelve a consultar cada 15 segundos mientras la pestaña está visible.
+5. Entra como **administrador**. Revisa categorías, productos, usuarios, stock y efectivo de entregas. El vendedor consulta el catálogo y los pedidos en modo de lectura.
+
+El mapa utiliza Leaflet con teselas de OpenStreetMap y atribución visible. Los marcadores se cargan al abrir el mapa. La geolocalización se activa solo cuando el repartidor la solicita.
+
+## Pruebas y organización
+
+```powershell
 npm test
-npm run test:coverage
 npm run lint
 npm run build
 ```
 
-La suite contiene 30 casos automatizados de funciones, componentes e integración de flujos. La cobertura se genera en `coverage/`, excluida de Git. `npm run test:watch` ejecuta las pruebas durante el desarrollo.
+- `src/services` contiene las llamadas HTTP y las validaciones reutilizadas.
+- `src/contexts` conserva la sesión JWT en la pestaña y la renueva antes del vencimiento.
+- `src/hooks` mantiene el catálogo, el carrito y los pedidos. El carrito local guarda identificadores y cantidades separados por cuenta.
+- `src/pages` y `src/components` agrupan las vistas de venta, administración y despacho. `src/test` contiene respuestas simuladas usadas por las pruebas.
 
-## Funciones
-
-- Catálogo de 14 productos con precios residenciales y stock del catálogo Forma C. Los cilindros de 5, 11 y 15 kg reutilizan las imágenes originales; el regulador doméstico y el detector a batería usan imágenes ilustrativas generadas; los demás accesorios no tienen fotografías disponibles.
-- Búsqueda, filtro por categoría, detalle por identificador y vista de ofertas.
-- Carrito con cantidades, eliminación, vaciado, límite de stock y persistencia local.
-- Formulario de contacto controlado con validación. No envía correos.
-- Checkout de demostración con entrega, resultado exitoso o fallido y resumen. No cobra ni envía pedidos reales. Solo los pedidos exitosos aparecen en el panel y en Mis pedidos; sus resúmenes sin datos personales se conservan en este navegador.
-- Administración local del catálogo con crear, leer, actualizar y eliminar; edición de precio, stock y destacados en ofertas.
-- Cobertura de despacho para Chillán y comunas del caso. Navegación SPA y página 404.
-
-## Alcance de los datos
-
-`src/data/productos.js` y `src/data/zonas.js` contienen los datos del caso. `src/services/catalogo.js` reúne validación y funciones CRUD. Los cambios del catálogo y el carrito se guardan en el navegador. Esta persistencia no comparte datos entre dispositivos ni sustituye una API.
-
-El panel administrativo requiere una sesión de demostración. Este control vive en el navegador y no constituye autenticación real de servidor. No debe usarse con información real. Los datos de contacto y dirección no se guardan en almacenamiento persistente. No se recopilan contraseñas o tarjetas. El checkout usa precios residenciales y no incluye una tarifa de despacho; no existe una tarifa verificada en los documentos.
-
-No se implementaron aún backend Spring Boot, cuentas y roles reales, mapas de reparto, base de datos o despliegue AWS. El alcance de demostración se explica dentro del panel administrativo. Los informes de evaluación se entregan por separado.
-
-## Rutas
-
-`/`, `/catalogo`, `/categorias`, `/ofertas`, `/productos/:id`, `/carrito`, `/nosotros`, `/contacto`, `/checkout`, `/compra/:resultado`, `/mis-pedidos`, `/login`, `/admin`, `/admin/productos`, `/admin/pedidos`, `/admin/reportes`, `/admin/perfil`, `/admin/categorias`, `/admin/usuarios`, `/admin/pruebas`.
-
-Al publicar con BrowserRouter, el servidor debe dirigir las rutas internas a `index.html`. Vite permite comprobar las URL directas en desarrollo. El entorno de producción debe configurar esa regla.
-
-## Fuera del repositorio y del ZIP
-
-`node_modules`, `dist`, `coverage`, archivos temporales, ZIP, PDFs de clase, rúbricas, informes de entrega, claves `.pem`/`.key`, archivos `.env` con secretos y datos personales reales. Las pruebas y la configuración de Vitest sí forman parte del código fuente. Las pruebas se ejecutan con Vitest y Testing Library.
-
-## Login de demostración
-
-En `/login`, usar `admin@example.com` y `VolcanDemo123!` para administración, o `cliente@example.com` y `ClienteDemo123!` para el recorrido de cliente. Las credenciales no aparecen en el login público. El cliente no accede al panel administrativo. En `/admin/pruebas` se configura el resultado exitoso o fallido de compra para la misma pestaña, conservado al cerrar sesión y entrar como cliente. El selector no aparece en el checkout. Son credenciales públicas y ficticias destinadas a esta entrega frontend. No introducir contraseñas reales. La sesión dura 30 minutos, se conserva en sessionStorage sin la contraseña y termina con Cerrar sesión. Las rutas administrativas redirigen al login si no hay sesión. Este mecanismo es manipulable por el usuario del navegador y debe reemplazarse por autorización de servidor antes de producción.
-
-## Distribución de carpetas
-
-- `public/img`: única ubicación de las imágenes originales; conserva las rutas aportadas en GitHub.
-- `src/components`: elementos compartidos; `admin`, `auth` y `pedidos` agrupan piezas del panel, control de rutas e historial.
-- `src/pages`: vistas públicas; `src/pages/admin` contiene vistas del panel con menú lateral.
-- `src/contexts`: estado de sesión compartido.
-- `src/services`: operaciones y validaciones de catálogo, categorías y usuarios, y acceso de demostración.
-- `src/hooks`: lógica reutilizable de catálogo, carrito, sesión y pedidos.
-- `src/data`: productos iniciales, zonas y datos ficticios de usuarios.
-- `src/utils`: validación y presentación de moneda.
-- `src/test`: preparación compartida del entorno; las pruebas se colocan junto a la función o vista que verifican.
-
-Los precios y stocks se validan como enteros no negativos; un precio cero se presenta como Gratis. El catálogo del caso conserva sus tarifas originales. El historial de Mis pedidos elimina datos personales y evita duplicar identificadores. No se deben usar datos reales en la demostración.
-
-## Categorías y usuarios ficticios
-
-El panel incorpora `/admin/categorias` y `/admin/usuarios` dentro de las rutas de demostración restringidas.
-
-Las categorías tienen persistencia y nombre único (sin distinguir mayúsculas). Renombrarlas actualiza los productos asignados en el mismo estado. Solo se pueden eliminar categorías sin productos. El registro administrable alimenta los filtros públicos y el formulario de productos, incluidos nombres nuevos y categorías vacías.
-
-Los usuarios se pueden crear, editar, asignar a roles y activar o desactivar. Se admiten únicamente correos ficticios de los dominios reservados example.com, example.org y example.net. No se recopilan contraseñas. Estos registros no crean cuentas de acceso ni cambian el login fijo de demostración; la autenticación y autorización de servidor se dejan para la futura integración con backend.
-
-El catálogo y sus categorías se guardan juntos en `gas-volcan-catalogo-v2`. `src/services/catalogoLocal.js` concentra la lectura y el guardado. Solo se escribe este formato; los datos del catálogo anterior se pueden recuperar para conservar cambios existentes. Los números recuperados se normalizan y los registros inválidos utilizan el catálogo anterior o inicial. Los usuarios ficticios se guardan en `gas-volcan-usuarios-demo-v1`.
-
-El carrito y el historial de pedidos pertenecen al navegador de demostración. No están aislados por cuenta de usuario. El módulo Usuarios administra registros ficticios independientes de las dos cuentas de acceso.
-
-## Validación y acceso al contenido
-
-Los seis formularios usan noValidate y funciones del proyecto, con mensajes por campo, aria-invalid, aria-describedby y foco en el primer error. Tras un envío inválido, los mensajes se actualizan al corregir los campos. Los atributos required, type y maxlength se conservan como información y ayuda de entrada, pero el bloqueo de envío y los mensajes se controlan en React.
-
-La cuenta cliente completa el checkout con el perfil ficticio de src/data/perfilClienteDemo.js. Los datos se pueden editar y no se guardan en la sesión ni en el resumen persistente del pedido. Catálogo y carrito reciben esPagina para utilizar h1 en su ruta propia y h2 dentro de Inicio. El enlace Saltar al contenido permite omitir el menú usando teclado.
-
-## Ofertas de demostracion
-
-El catalogo inicial incluye tres descuentos ficticios para demostrar las ofertas: cilindro 5 kg (6500 a 5900), regulador domestico (8990 a 7990) y detector de gas (19990 a 17990). El precio anterior se muestra tachado solo si el producto esta en oferta y supera al actual. Estos descuentos son datos de demostracion, no un historial comercial verificado. El carrito utiliza el precio actual. El campo opcional Precio anterior permite configurar otras ofertas desde administracion. Los catalogos guardados en el navegador conservan los cambios existentes; sus precios se pueden editar desde el panel.
-
-## Imagenes ilustrativas de accesorios
-
-public/img/regulador-domestico.png y public/img/detector-gas-bateria.png fueron generadas con la herramienta de imagenes de OpenAI para esta demostracion. Representan modelos genericos, sin marca. Los cilindros y el banner conservan sus archivos originales. Las imagenes ilustrativas se asignan por id y tambien se recuperan para los catalogos ya guardados en el navegador.
-
-Indicaciones de generacion: fotografia cuadrada de catalogo sobre blanco puro, producto generico aislado y centrado, iluminacion de estudio, sin marcas ni textos. Regulador: cuerpo redondo metalico plateado con conexiones de laton. Detector: carcasa rectangular blanca, rejilla, indicadores y boton, sin cable ni enchufe. Generacion integrada de imagenes, sin API externa.
-
-Cada compra admite un maximo de 3 unidades de un mismo producto, respetando tambien su stock. Los carritos anteriores con cantidades mayores se recuperan ajustados a tres. Esta regla es por producto y por compra, no un limite historico por usuario.
+Nginx debe dirigir las rutas del navegador a `index.html` y enrutar `/api/auth/` y `/api/v1/` al servicio correspondiente. El build de producción usa rutas del mismo origen. La [guía de despliegue](https://github.com/Croix77/GasVolcanBackend/blob/feat/completar-gas-volcan/deploy/despliegue-ec2.md) incluye la configuración de ejemplo.

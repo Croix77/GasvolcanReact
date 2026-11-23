@@ -53,25 +53,3 @@ export function normalizarProducto(producto) {
     oferta: Boolean(producto.oferta),
   };
 }
-
-export function crearProducto(lista, producto) {
-  const nuevo = normalizarProducto(producto);
-  if (!nuevo.id || lista.some((item) => item.id === nuevo.id))
-    throw new Error("Identificador duplicado o vacío");
-  return [...lista, nuevo];
-}
-
-export function leerProducto(lista, id) {
-  return lista.find((item) => item.id === id);
-}
-
-export function actualizarProducto(lista, id, cambios) {
-  const anterior = leerProducto(lista, id);
-  if (!anterior) throw new Error("Producto inexistente");
-  const actualizado = normalizarProducto({ ...anterior, ...cambios, id });
-  return lista.map((item) => (item.id === id ? actualizado : item));
-}
-
-export function eliminarProducto(lista, id) {
-  return lista.filter((item) => item.id !== id);
-}

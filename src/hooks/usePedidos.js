@@ -1,72 +1,66 @@
-import { useEffect, useState } from "react";
-const clave = "gas-volcan-pedidos-demo-v1";
-function recuperar() {
-  try {
-    const datos = JSON.parse(localStorage.getItem(clave) || "[]");
-    if (!Array.isArray(datos)) return [];
-    const ids = new Set();
-    const pedidos = [];
-    for (const pedido of datos) {
-      if (!pedido || typeof pedido.id !== "string" || ids.has(pedido.id))
-        continue;
-      if (
-        typeof pedido.fecha !== "string" ||
-        !Array.isArray(pedido.items) ||
-        pedido.items.length === 0
-      )
-        continue;
-      const itemsValidos = pedido.items.every(
-        (item) =>
-          item &&
-          typeof item.id === "string" &&
-          typeof item.nombre === "string" &&
-          Number.isSafeInteger(item.cantidad) &&
-          item.cantidad > 0 &&
-          Number.isSafeInteger(item.precio) &&
-          item.precio >= 0,
-      );
-      if (!itemsValidos) continue;
-      ids.add(pedido.id);
-      pedidos.push(limpiar(pedido));
-    }
-    return pedidos.slice(-50);
-  } catch {
-    return [];
-  }
-}
-function limpiar(pedido) {
-  const items = pedido.items.map(({ id, nombre, precio, cantidad }) => ({
-    id,
-    nombre,
-    precio,
-    cantidad,
-  }));
-  return {
-    id: pedido.id,
-    fecha: pedido.fecha,
-    items,
-    total: items.reduce((suma, item) => suma + item.precio * item.cantidad, 0),
-    estado: "Confirmado",
-  };
-}
-export function usePedidos() {
-  const [pedidos, setPedidos] = useState(recuperar);
+import { useCallback, useEffect, useState } from "react";
+import { pedirNegocio } from "../services/api";
+
+const INTERVALO = 15_000;
+
+export function usePedidos(token, fecha = "") {
+  const [consulta, setConsulta] = useState({ pedidos: [], error: "" });
+  const [revision, setRevision] = useState(0);
+  const ruta = fecha ? `/pedidos?fecha=${encodeURIComponent(fecha)}` : "/pedidos";
+
   useEffect(() => {
-    try {
-      localStorage.setItem(clave, JSON.stringify(pedidos));
-    } catch {
-      /* Disponible durante la sesión. */
+    if (!token) return;
+    const controlador = new AbortController();
+    let temporizador;
+    let consultando = false;
+
+    // Solo consulta mientras la pestaña está visible y evita solapar solicitudes.
+    async function consultar() {
+      if (consultando || document.hidden) return;
+      clearTimeout(temporizador);
+      consultando = true;
+      try {
+        const pedidos = await pedirNegocio(ruta, { token, signal: controlador.signal });
+        if (!controlador.signal.aborted) setConsulta({ token, ruta, pedidos, error: "" });
+      } catch (error) {
+        if (!controlador.signal.aborted) {
+          setConsulta((anterior) => ({
+            token,
+            ruta,
+            pedidos: anterior.token === token && anterior.ruta === ruta ? anterior.pedidos : [],
+            error: error.message,
+          }));
+        }
+      } finally {
+        consultando = false;
+        if (!controlador.signal.aborted) temporizador = setTimeout(consultar, INTERVALO);
+      }
     }
-  }, [pedidos]);
+
+    consultar();
+    document.addEventListener("visibilitychange", consultar);
+    return () => {
+      controlador.abort();
+      clearTimeout(temporizador);
+      document.removeEventListener("visibilitychange", consultar);
+    };
+  }, [token, ruta, revision]);
+
+  const recargar = useCallback(() => setRevision((actual) => actual + 1), []);
+
+  async function agregar(datos) {
+    const pedido = await pedirNegocio("/pedidos", { token, metodo: "POST", datos });
+    recargar();
+    return pedido;
+  }
+
+  // Al cambiar de sesión o fecha, nunca se muestran datos de la consulta anterior.
+  const mismosFiltros = Boolean(token && consulta.token === token && consulta.ruta === ruta);
   return {
-    pedidos,
-    agregar: (pedido) =>
-      setPedidos((actual) =>
-        actual.some((item) => item.id === pedido.id)
-          ? actual
-          : [...actual, limpiar(pedido)].slice(-50),
-      ),
-    eliminar: (id) =>
-      setPedidos((actual) => actual.filter((pedido) => pedido.id !== id)),
+    pedidos: mismosFiltros ? consulta.pedidos : [],
+    cargando: Boolean(token && !mismosFiltros),
+    error: mismosFiltros ? consulta.error : "",
+    recargar,
+    agregar,
   };
 }

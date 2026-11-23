@@ -81,7 +81,7 @@ function Catalogo({
             <TarjetaProducto
               {...producto}
               nivelTitulo={esPagina ? "h2" : "h3"}
-              onAgregar={() => onAgregar(producto)}
+              onAgregar={onAgregar ? () => onAgregar(producto) : undefined}
             />
           </div>
         ))}

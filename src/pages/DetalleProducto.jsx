@@ -39,14 +39,14 @@ function DetalleProducto({ productos, onAgregar }) {
           <p>Categoría: {producto.categoria}</p>
           <PrecioProducto precio={producto.precio} precioAnterior={producto.precioAnterior} oferta={producto.oferta} />
           <p>Stock: {producto.stock}</p>
-          <button
+          {onAgregar && (<button
             className="btn btn-primary"
             type="button"
             disabled={producto.stock === 0}
             onClick={() => onAgregar(producto)}
           >
             Añadir al Carrito
-          </button>
+          </button>)}
           <Link className="d-block mt-3" to="/catalogo">
             Volver al catálogo
           </Link>

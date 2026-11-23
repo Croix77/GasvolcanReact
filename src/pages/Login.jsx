@@ -9,15 +9,17 @@ function Login() {
   const { state } = useLocation();
   const navegar = useNavigate();
   function destinoPara(rol) {
-    if (state?.desde === "/mis-pedidos") return "/mis-pedidos";
+    const desde = state?.desde || "";
     if (rol === "administrador")
-      return /^\/admin(?:\/|$)/.test(state?.desde || "") ? state.desde : "/admin";
-    return "/catalogo";
+      return /^\/admin(?:\/|$)/.test(desde) ? desde : "/admin";
+    if (["operadora", "repartidor", "vendedor"].includes(rol)) return "/despacho";
+    return /^\/(?:catalogo|categorias|ofertas|productos|carrito|checkout|mis-pedidos)(?:\/|\?|$)/.test(desde) ? desde : "/catalogo";
   }
   const [datos, setDatos] = useState({ correo: "", clave: "" });
   const [errores, setErrores] = useState({});
   const [error, setError] = useState("");
   const [visible, setVisible] = useState(false);
+  const [enviando, setEnviando] = useState(false);
   if (sesion)
     return (
       <Navigate
@@ -31,7 +33,7 @@ function Login() {
     if (Object.keys(errores).length > 0) setErrores(validarLogin(nuevosDatos));
     setError("");
   }
-  function enviar(evento) {
+  async function enviar(evento) {
     evento.preventDefault();
     const resultado = validarLogin(datos);
     setErrores(resultado);
@@ -40,14 +42,18 @@ function Login() {
       enfocarPrimerError(resultado);
       return;
     }
+    if (enviando) return;
+    setEnviando(true);
     try {
-      const nueva = entrar(datos.correo, datos.clave);
+      const nueva = await entrar(datos.correo, datos.clave);
       setDatos({ correo: "", clave: "" });
       navegar(destinoPara(nueva.rol), {
         replace: true,
       });
     } catch (fallo) {
       setError(fallo.message);
+    } finally {
+      setEnviando(false);
     }
   }
   return (
@@ -78,7 +84,7 @@ function Login() {
           error={errores.clave}
           required
           maxLength={128}
-          autoComplete="off"
+          autoComplete="current-password"
         />
         <button
           type="button"
@@ -94,8 +100,8 @@ function Login() {
           </p>
         )}
         <div>
-          <button type="submit" className="btn btn-primary">
-            Iniciar sesión
+          <button type="submit" className="btn btn-primary" disabled={enviando}>
+            {enviando ? "Ingresando…" : "Iniciar sesión"}
           </button>
         </div>
       </form>

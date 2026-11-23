@@ -3,37 +3,35 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { expect, it } from "vitest";
 import App from "../App";
-import { perfilClienteDemo } from "../data/perfilClienteDemo";
+import { claveCarritoCliente, iniciarSesionPrueba, simularApis } from "../test/apiPrueba";
 
-function renderApp(ruta = "/catalogo", carrito = []) {
+function renderApp(ruta = "/catalogo", carrito = [], api) {
+  iniciarSesionPrueba();
+  const fetch = simularApis(api);
   if (carrito.length > 0) {
-    localStorage.setItem("gas-el-volcan-carrito", JSON.stringify(carrito));
+    localStorage.setItem(claveCarritoCliente, JSON.stringify(carrito));
   }
-  return render(
+  const vista = render(
     <MemoryRouter initialEntries={[ruta]}>
       <App />
     </MemoryRouter>,
   );
+  return { ...vista, fetch };
 }
 
-it("bloquea checkout si stock cambió a 0", () => {
-  localStorage.setItem("gas-el-volcan-catalogo-v1", JSON.stringify([{
-    id: "gas-15kg",
-    nombre: "Cilindro de Gas 15 Kg",
-    descripcion: "Cilindro",
-    categoria: "Cilindros de Gas",
-    precio: 16000,
-    stock: 0,
-  }]));
-  renderApp("/checkout", [{ id: "gas-15kg", cantidad: 1 }]);
-  expect(screen.getByRole("button", { name: "Confirmar compra" })).toBeDisabled();
+it("bloquea checkout si stock cambió a 0", async () => {
+  renderApp("/checkout", [{ id: "gas-15kg", cantidad: 1 }], { productos: [{
+    id: "gas-15kg", nombre: "Cilindro de Gas 15 Kg", descripcion: "Cilindro",
+    categoria: "Cilindros de Gas", precio: 16000, stock: 0,
+  }] });
+  expect(await screen.findByRole("button", { name: "Confirmar compra" })).toBeDisabled();
   expect(screen.getByRole("alert")).toHaveTextContent("stock insuficiente");
 });
 
 it("filtra por categoría y búsqueda en página categorías", async () => {
   const user = userEvent.setup();
   renderApp("/categorias");
-  await user.click(screen.getByRole("link", { name: "Ver productos de Reguladores" }));
+  await user.click(await screen.findByRole("link", { name: "Ver productos de Reguladores" }));
   expect(screen.getByRole("combobox")).toHaveValue("Reguladores");
   expect(screen.getAllByRole("article")).toHaveLength(3);
   await user.type(screen.getByLabelText("Buscar productos"), "inexistente");
@@ -44,7 +42,7 @@ it("filtra por categoría y búsqueda en página categorías", async () => {
 it("navega a detalle de producto desde tarjeta", async () => {
   const user = userEvent.setup();
   renderApp("/catalogo");
-  const card = screen.getByRole("heading", { name: "Cilindro de Gas 5 Kg" }).closest("article");
+  const card = (await screen.findByRole("heading", { name: "Cilindro de Gas 5 Kg" })).closest("article");
   await user.click(within(card).getByRole("link", { name: "Ver detalle" }));
   expect(screen.getByRole("heading", { level: 1, name: "Cilindro de Gas 5 Kg" })).toBeInTheDocument();
 });
@@ -61,54 +59,54 @@ it("valida formulario de contacto", async () => {
   expect(screen.getByText("Consulta validada. No se ha enviado ningún mensaje.")).toBeInTheDocument();
 });
 
-it("rechaza checkout vacío", () => {
+it("rechaza checkout vacío", async () => {
   renderApp("/checkout");
-  expect(screen.getByText("Agrega productos antes de continuar.")).toBeInTheDocument();
+  expect(await screen.findByText("Agrega productos antes de continuar.")).toBeInTheDocument();
 });
 
 it("rechaza checkout con datos de entrega inválidos", async () => {
   const user = userEvent.setup();
   renderApp("/checkout", [{ id: "gas-15kg", cantidad: 1 }]);
-  await user.click(screen.getByRole("button", { name: "Confirmar compra" }));
+  await user.click(await screen.findByRole("button", { name: "Confirmar compra" }));
   expect(screen.getByText("Escribe la dirección de entrega.")).toBeInTheDocument();
 });
 
-it("autocompleta datos de cliente y completa compra", async () => {
-  const user = userEvent.setup();
-  sessionStorage.setItem("gas-volcan-sesion-demo", JSON.stringify({ rol: "cliente", vence: Date.now() + 60000 }));
-  renderApp("/checkout", [{ id: "gas-15kg", cantidad: 1 }]);
-  expect(screen.getByLabelText("Nombre de quien recibe")).toHaveValue(perfilClienteDemo.nombre);
-  expect(screen.getByLabelText("Teléfono")).toHaveValue(perfilClienteDemo.telefono);
-  expect(screen.getByLabelText("Dirección")).toHaveValue(perfilClienteDemo.direccion);
-  expect(screen.getByLabelText("Comuna")).toHaveValue(perfilClienteDemo.comuna);
-  await user.clear(screen.getByLabelText("Nombre de quien recibe"));
-  await user.type(screen.getByLabelText("Nombre de quien recibe"), "Cliente ficticio");
-  await user.clear(screen.getByLabelText("Teléfono"));
-  await user.type(screen.getByLabelText("Teléfono"), "912345678");
-  await user.clear(screen.getByLabelText("Dirección"));
+async function ingresarEntrega(user) {
+  await user.type(await screen.findByLabelText("Teléfono"), "912345678");
   await user.type(screen.getByLabelText("Dirección"), "Dirección ficticia 123");
   await user.selectOptions(screen.getByLabelText("Comuna"), "Chillán");
+  await user.type(screen.getByLabelText("Latitud"), "-36.60");
+  await user.type(screen.getByLabelText("Longitud"), "-72.10");
   await user.click(screen.getByRole("button", { name: "Confirmar compra" }));
-  expect(screen.getByRole("heading", { name: "Compra confirmada" })).toBeInTheDocument();
-  expect(localStorage.getItem("gas-el-volcan-carrito")).toBe("[]");
-});
+}
 
-it("muestra error y conserva carrito si compra falla", async () => {
+it("rellena el nombre de la sesión y envía únicamente identificadores y cantidades", async () => {
   const user = userEvent.setup();
-  sessionStorage.setItem("gas-volcan-resultado-compra", "error");
-  renderApp("/checkout", [{ id: "gas-15kg", cantidad: 1 }]);
-  await user.type(screen.getByLabelText("Nombre de quien recibe"), "Cliente ficticio");
-  await user.type(screen.getByLabelText("Teléfono"), "912345678");
-  await user.type(screen.getByLabelText("Dirección"), "Dirección ficticia 123");
-  await user.selectOptions(screen.getByLabelText("Comuna"), "Chillán");
-  await user.click(screen.getByRole("button", { name: "Confirmar compra" }));
-  expect(screen.getByRole("heading", { name: "No se pudo completar la compra" })).toBeInTheDocument();
-  expect(JSON.parse(localStorage.getItem("gas-el-volcan-carrito"))).toHaveLength(1);
+  const { fetch } = renderApp("/checkout", [{ id: "gas-15kg", cantidad: 1 }]);
+  expect(await screen.findByLabelText("Nombre de quien recibe")).toHaveValue("Cliente de prueba");
+  await ingresarEntrega(user);
+  expect(await screen.findByRole("heading", { name: "Compra confirmada" })).toBeInTheDocument();
+  const compra = fetch.mock.calls.find(([url, opciones]) =>
+    url.endsWith("/api/v1/pedidos") && opciones.method === "POST");
+  expect(JSON.parse(compra[1].body)).toEqual({
+    nombre: "Cliente de prueba", telefono: "912345678", direccion: "Dirección ficticia 123",
+    comuna: "Chillán", items: [{ id: "gas-15kg", cantidad: 1 }],
+    latitudEntrega: -36.6, longitudEntrega: -72.1, referenciaCompra: expect.any(String),
+  });
+  expect(localStorage.getItem(claveCarritoCliente)).toBe("[]");
 });
 
-it("muestra 404 para producto inexistente y ruta inválida", () => {
+it("muestra el error del servidor y conserva el carrito", async () => {
+  const user = userEvent.setup();
+  renderApp("/checkout", [{ id: "gas-15kg", cantidad: 1 }], { errorCompra: "Stock insuficiente." });
+  await ingresarEntrega(user);
+  expect(await screen.findByRole("alert")).toHaveTextContent("Stock insuficiente.");
+  expect(JSON.parse(localStorage.getItem(claveCarritoCliente))).toHaveLength(1);
+});
+
+it("muestra 404 para producto inexistente y ruta inválida", async () => {
   renderApp("/productos/no-existe");
-  expect(screen.getByRole("heading", { level: 1, name: "Producto no encontrado" })).toBeInTheDocument();
+  expect(await screen.findByRole("heading", { level: 1, name: "Producto no encontrado" })).toBeInTheDocument();
   renderApp("/ruta-no-existe");
   expect(screen.getByRole("heading", { level: 1, name: "Página no encontrada" })).toBeInTheDocument();
 });

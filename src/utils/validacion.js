@@ -1,3 +1,5 @@
+import { comunasEntrega } from "./pedidos";
+
 export function validarContacto(datos) {
   const errores = {};
   if (!nombreValido(datos.nombre))
@@ -29,17 +31,7 @@ export function validarEntrega(datos) {
     !/[\p{L}\p{N}]/u.test(datos.direccion)
   )
     errores.direccion = "Escribe la dirección de entrega.";
-  if (
-    ![
-      "Chillán",
-      "Chillán Viejo",
-      "El Carmen",
-      "Pinto",
-      "San Ignacio",
-      "Bulnes",
-      "Quillón",
-    ].includes(datos.comuna)
-  )
+  if (!comunasEntrega.includes(datos.comuna))
     errores.comuna = "Selecciona una comuna de cobertura.";
   return errores;
 }

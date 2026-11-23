@@ -1,5 +1,5 @@
 import { moneda } from "../../utils/moneda";
-function TablaProductos({ productos, onEditar, onEliminar }) {
+function TablaProductos({ productos, onEditar, onEliminar, deshabilitado = false }) {
   return (
     <div className="table-responsive">
       <table className="table align-middle">
@@ -22,6 +22,7 @@ function TablaProductos({ productos, onEditar, onEliminar }) {
                   <button
                     className="btn btn-sm btn-outline-primary"
                     type="button"
+                    disabled={deshabilitado}
                     aria-label={`Editar ${producto.nombre}`}
                     onClick={() => onEditar(producto)}
                   >
@@ -30,6 +31,7 @@ function TablaProductos({ productos, onEditar, onEliminar }) {
                   <button
                     className="btn btn-sm btn-outline-danger"
                     type="button"
+                    disabled={deshabilitado}
                     aria-label={`Eliminar ${producto.nombre}`}
                     onClick={() => onEliminar(producto)}
                   >

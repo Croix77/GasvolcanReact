@@ -2,9 +2,11 @@ import { Container, Nav, Navbar } from "react-bootstrap";
 import { NavLink, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useState } from "react";
+import { etiquetasRol } from "../services/sesion";
 
 function NavbarApp({ totalPedidos = 0 }) {
   const { sesion, salir } = useAuth();
+  const tieneTienda = ["administrador", "cliente", "vendedor"].includes(sesion?.rol);
   const [expandido, setExpandido] = useState(false);
   return (
     <Navbar
@@ -32,20 +34,17 @@ function NavbarApp({ totalPedidos = 0 }) {
         />
         <Navbar.Collapse id="menu-principal">
           <Nav className="ms-auto">
-            {[
+            {(sesion ? [
               ["/", "Inicio"],
-              ["/catalogo", "Catálogo"],
+              ...(tieneTienda ? [["/catalogo", "Catálogo"],
               ["/categorias", "Categorías"],
-              ["/ofertas", "Ofertas"],
-              ["/carrito", "Carrito"],
-              ...(sesion ? [["/mis-pedidos", "Historial de pedidos"]] : []),
+              ["/ofertas", "Ofertas"]] : []),
+              ...(sesion.rol === "cliente" ? [["/carrito", "Carrito"], ["/mis-pedidos", "Historial de pedidos"]] : []),
               ["/nosotros", "Nosotros"],
               ["/contacto", "Contacto"],
-              ...(sesion?.rol === "administrador"
-                ? [["/admin", "Administración"]]
-                : []),
-              ...(!sesion ? [["/login", "Iniciar sesión"]] : []),
-            ].map(([ruta, nombre]) => (
+              ...(sesion.rol === "administrador" ? [["/admin", "Administración"]] : []),
+              ...(["vendedor", "operadora", "repartidor"].includes(sesion.rol) ? [["/despacho", "Pedidos"]] : []),
+            ] : [["/login", "Iniciar sesión"]]).map(([ruta, nombre]) => (
               <Nav.Link
                 key={ruta}
                 as={NavLink}
@@ -67,7 +66,7 @@ function NavbarApp({ totalPedidos = 0 }) {
             ))}
             {sesion && (
               <span className="sesion-rol">
-                Conectado: {sesion.rol === "administrador" ? "Administrador" : "Cliente"}
+                Conectado: {etiquetasRol[sesion.rol]}
               </span>
             )}
             {sesion && (

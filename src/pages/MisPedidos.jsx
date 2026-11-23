@@ -1,15 +1,32 @@
-import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { useState } from "react";
 import ListaPedidos from "../components/pedidos/ListaPedidos";
-function MisPedidos({ pedidos, eliminar }) {
-  const { sesion } = useAuth();
-  const ubicacion = useLocation();
-  if (!sesion) return <Navigate to="/login" replace state={{ desde: ubicacion.pathname }} />;
+import MapaSeguimiento from "../components/pedidos/MapaSeguimiento";
+
+function MisPedidos({ pedidos, cargando, error, recargar }) {
+  const [seguimiento, setSeguimiento] = useState(null);
+  function acciones(pedido) {
+    const abierto = seguimiento === pedido.id;
+    return (
+      <div>
+        <button type="button" className="btn btn-outline-primary" aria-expanded={abierto}
+          onClick={() => setSeguimiento(abierto ? null : pedido.id)}>
+          {abierto ? "Ocultar seguimiento" : "Ver seguimiento"} del pedido {pedido.id}
+        </button>
+        {abierto && <MapaSeguimiento pedidos={[pedido]} etiqueta={`Mapa del pedido ${pedido.id}`} />}
+      </div>
+    );
+  }
   return (
     <section className="historial-pagina">
-      <p className="sobre-titulo">TU HISTORIAL</p>
       <h1>Historial de pedidos</h1>
-      <ListaPedidos pedidos={pedidos} eliminar={eliminar} />
+      {cargando && <p role="status">Cargando pedidos…</p>}
+      {error && (
+        <div role="alert">
+          <p>{error}</p>
+          <button type="button" className="btn btn-outline-secondary mb-3" onClick={recargar}>Reintentar</button>
+        </div>
+      )}
+      {!cargando && (!error || pedidos.length > 0) && <ListaPedidos pedidos={pedidos} acciones={acciones} />}
     </section>
   );
 }
