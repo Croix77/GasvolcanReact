@@ -4,7 +4,7 @@ Tienda y gestión de despacho. React pide los datos a cinco servicios REST media
 
 | Servicio | Puerto local | Rutas |
 | --- | --- | --- |
-| [ms-auth](https://github.com/Croix77/GasVolcanAuth/tree/main/ms-auth) | 8081 | `/api/auth/` |
+| [ms-auth](https://github.com/Croix77/GasVolcanBackend/tree/main/ms-auth) | 8081 | `/api/auth/` |
 | [ms-categorias](https://github.com/Croix77/GasVolcanBackend/tree/main/ms-categorias) | 8082 | `/api/v1/categorias` |
 | [ms-productos](https://github.com/Croix77/GasVolcanBackend/tree/main/ms-productos) | 8083 | `/api/v1/productos` |
 | [ms-pedidos](https://github.com/Croix77/GasVolcanBackend/tree/main/ms-pedidos) | 8084 | `/api/v1/pedidos`, `/api/v1/stock`, `/api/v1/zonas` |
