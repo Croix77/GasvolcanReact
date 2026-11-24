@@ -1,6 +1,8 @@
 import { Container } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 function PiePagina() {
+  const { sesion } = useAuth();
   return (
     <footer className="pie-pagina">
       <Container>
@@ -21,7 +23,9 @@ function PiePagina() {
           <div>
             <h2>Estamos cerca</h2>
             <Link to="/nosotros">Zonas y horarios de despacho</Link>
-            <Link to="/contacto">Preparar una consulta</Link>
+            {["administrador", "cliente"].includes(sesion?.rol) && (
+              <Link to="/contacto">Enviar una consulta</Link>
+            )}
             <p>Cilindros y accesorios para el hogar.</p>
           </div>
         </div>

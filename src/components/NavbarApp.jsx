@@ -41,7 +41,7 @@ function NavbarApp({ totalPedidos = 0 }) {
               ["/ofertas", "Ofertas"]] : []),
               ...(sesion.rol === "cliente" ? [["/carrito", "Carrito"], ["/mis-pedidos", "Historial de pedidos"]] : []),
               ["/nosotros", "Nosotros"],
-              ["/contacto", "Contacto"],
+              ...(["administrador", "cliente"].includes(sesion.rol) ? [["/contacto", "Contacto"]] : []),
               ...(sesion.rol === "administrador" ? [["/admin", "Administración"]] : []),
               ...(["vendedor", "operadora", "repartidor"].includes(sesion.rol) ? [["/despacho", "Pedidos"]] : []),
             ] : [["/login", "Iniciar sesión"]]).map(([ruta, nombre]) => (

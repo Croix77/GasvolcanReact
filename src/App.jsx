@@ -30,6 +30,7 @@ import AdminPerfil from "./pages/admin/AdminPerfil";
 import AdminReportes from "./pages/admin/AdminReportes";
 import AdminCategorias from "./pages/admin/AdminCategorias";
 import AdminUsuarios from "./pages/admin/AdminUsuarios";
+import AdminContacto from "./pages/admin/AdminContacto";
 import MisPedidos from "./pages/MisPedidos";
 import PedidosDespacho from "./pages/PedidosDespacho";
 import { MAX_UNIDADES_POR_PRODUCTO } from "./utils/compra";
@@ -108,8 +109,10 @@ function ContenidoSesion() {
             <Route path="/ofertas" element={vistaCatalogo(<Catalogo productos={catalogo.productos.filter((producto) => producto.oferta)} onAgregar={onAgregar} titulo="Ofertas" esPagina />)} />
             <Route path="/productos/:id" element={vistaCatalogo(<DetalleProducto productos={catalogo.productos} onAgregar={onAgregar} />)} />
             <Route path="/nosotros" element={<Nosotros />} />
-            <Route path="/contacto" element={<Contacto token={sesion?.token} />} />
             <Route path="*" element={<NoEncontrada />} />
+          </Route>
+          <Route element={<RutaProtegida roles={["administrador", "cliente"]} />}>
+            <Route path="/contacto" element={<Contacto />} />
           </Route>
           <Route element={<RutaProtegida roles={["cliente"]} />}>
             <Route path="/carrito" element={vistaCatalogo(<Carrito {...carrito} esPagina />)} />
@@ -129,6 +132,7 @@ function ContenidoSesion() {
               <Route path="pedidos" element={<PedidosDespacho />} />
               <Route path="reportes" element={vistaCatalogo(<AdminReportes productos={catalogo.productos} pedidos={pedidos} error={historial.error} />)} />
               <Route path="perfil" element={<AdminPerfil />} />
+              <Route path="contacto" element={<AdminContacto />} />
               <Route path="categorias" element={vistaCatalogo(<AdminCategorias {...catalogo} />)} />
               <Route path="usuarios" element={<AdminUsuarios {...usuarios} correoSesion={sesion?.correo} alCambiarClavePropia={salir} />} />
             </Route>

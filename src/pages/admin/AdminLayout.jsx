@@ -14,6 +14,7 @@ function AdminLayout() {
             ["/admin/inventario", "Inventario"],
             ["/admin/categorias", "Categorías"],
             ["/admin/usuarios", "Usuarios"],
+            ["/admin/contacto", "Consultas de contacto"],
             ["/admin/pedidos", "Pedidos"],
             ["/admin/reportes", "Reportes"],
             ["/admin/perfil", "Perfil"],

@@ -1,6 +1,6 @@
 # Gas El Volcán · React
 
-Tienda y gestión de despacho. React pide los datos a cinco servicios REST mediante rutas del mismo origen.
+Tienda y gestión de despacho. React pide los datos a seis servicios REST mediante rutas del mismo origen.
 
 | Servicio | Puerto local | Rutas |
 | --- | --- | --- |
@@ -9,6 +9,7 @@ Tienda y gestión de despacho. React pide los datos a cinco servicios REST media
 | [ms-productos](https://github.com/Croix77/GasVolcanBackend/tree/main/ms-productos) | 8083 | `/api/v1/productos` |
 | [ms-pedidos](https://github.com/Croix77/GasVolcanBackend/tree/main/ms-pedidos) | 8084 | `/api/v1/pedidos`, `/api/v1/stock`, `/api/v1/zonas` |
 | [ms-despacho](https://github.com/Croix77/GasVolcanBackend/tree/main/ms-despacho) | 8085 | `/api/v1/despacho` |
+| `ms-contacto` | 8086 | `/api/v1/contacto` |
 
 ## Ejecutar en local
 
@@ -28,6 +29,8 @@ Abre [Vite en local](http://localhost:5173). El proxy de Vite reenvía las rutas
 3. Como **operadora**, filtra el día en `/despacho`, revisa el mapa y asigna un repartidor activo.
 4. Como **repartidor**, abre tus pedidos asignados, inicia el recorrido, actualiza la ubicación y registra la entrega. El mapa usa Leaflet y OpenStreetMap. Puedes marcar un punto manualmente o usar GPS con HTTPS o localhost.
 5. Como **cliente**, consulta la entrega en Historial de pedidos. La vista actualiza los datos cada 15 segundos mientras la pestaña está visible. El **vendedor** consulta catálogo y pedidos en modo de lectura.
+
+6. Como **cliente**, envía una consulta. El correo aparece en solo lectura porque el servidor lo toma de la sesión. Como **administrador**, abre Consultas de contacto para leer los mensajes recibidos.
 
 ## Pruebas y despliegue
 

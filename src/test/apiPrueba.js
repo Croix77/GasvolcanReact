@@ -2,6 +2,7 @@ import { vi } from "vitest";
 import { productos as productosPrueba } from "../data/productos";
 
 const cuentas = {
+  "vendedor@example.com": { rol: "VENDEDOR", interno: "vendedor", nombre: "Vendedor", clave: "VendedorDemo123!" },
   "admin@example.com": { rol: "ADMIN", interno: "administrador", nombre: "Administrador", clave: "VolcanDemo123!" },
   "cliente@example.com": { rol: "CLIENTE", interno: "cliente", nombre: "Cliente de prueba", clave: "ClienteDemo123!" },
 };
@@ -17,7 +18,7 @@ export function iniciarSesionPrueba(correo = "cliente@example.com") {
   }));
 }
 
-export function simularApis({ productos = productosPrueba, errorCompra } = {}) {
+export function simularApis({ productos = productosPrueba, errorCompra, errorContacto, paginasContacto = [] } = {}) {
   const categorias = [...new Set(productos.map((producto) => producto.categoria))]
     .map((nombre, i) => ({ id: i + 1, nombre }));
   const pedidos = [];
@@ -25,7 +26,8 @@ export function simularApis({ productos = productosPrueba, errorCompra } = {}) {
     new Response(JSON.stringify(datos), { status, headers: { "Content-Type": "application/json" } });
 
   return vi.spyOn(globalThis, "fetch").mockImplementation(async (url, opciones = {}) => {
-    const ruta = new URL(url, "http://localhost").pathname;
+    const direccion = new URL(url, "http://localhost");
+    const ruta = direccion.pathname;
     const datos = opciones.body && JSON.parse(opciones.body);
     if (ruta === "/api/auth/login") {
       const cuenta = cuentas[datos.correo];
@@ -35,6 +37,15 @@ export function simularApis({ productos = productosPrueba, errorCompra } = {}) {
     }
 
     if (!opciones.headers?.Authorization) return json({ mensaje: "Token requerido." }, 401);
+    if (ruta === "/api/v1/contacto/mensajes") {
+      if (opciones.method === "POST") {
+        const fallo = errorContacto?.(datos);
+        if (fallo) return json({ mensaje: fallo }, 503);
+        return json({ id: 1, fechaCreacion: new Date().toISOString() }, 201);
+      }
+      const pagina = Number(direccion.searchParams.get("pagina"));
+      return json({ mensajes: paginasContacto[pagina] ?? [], pagina, haySiguiente: pagina < paginasContacto.length - 1 });
+    }
     if (ruta === "/api/v1/productos") {
       return json(productos.map((producto) => {
         const ficha = { ...producto, categoriaId: categorias.find(({ nombre }) => nombre === producto.categoria).id };

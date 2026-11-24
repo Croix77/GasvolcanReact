@@ -47,16 +47,28 @@ it("navega a detalle de producto desde tarjeta", async () => {
   expect(screen.getByRole("heading", { level: 1, name: "Cilindro de Gas 5 Kg" })).toBeInTheDocument();
 });
 
-it("valida formulario de contacto", async () => {
+it("valida y envía una consulta con el correo de la sesión en solo lectura", async () => {
   const user = userEvent.setup();
-  renderApp("/contacto");
-  await user.click(screen.getByRole("button", { name: "Validar consulta" }));
-  expect(screen.getByText("Escribe un correo válido.")).toBeInTheDocument();
-  await user.type(screen.getByLabelText("Nombre"), "Cliente ficticio");
-  await user.type(screen.getByLabelText("Correo electrónico"), "demo@example.com");
-  await user.type(screen.getByLabelText("Mensaje"), "Consulta de demostración");
-  await user.click(screen.getByRole("button", { name: "Validar consulta" }));
-  expect(screen.getByText("Consulta validada. No se ha enviado ningún mensaje.")).toBeInTheDocument();
+  const { fetch } = renderApp("/contacto");
+  const boton = screen.getByRole("button", { name: "Enviar consulta" });
+  const correo = screen.getByLabelText("Correo electrónico");
+  expect(correo).toHaveValue("cliente@example.com");
+  expect(correo).toHaveAttribute("readonly");
+  await user.click(boton);
+  expect(screen.getByText("Escribe un mensaje de 10 a 1000 caracteres.")).toBeInTheDocument();
+
+  const mensaje = screen.getByLabelText("Mensaje");
+  await user.type(mensaje, "Consulta de demostración");
+  await user.click(boton);
+  expect(await screen.findByText("Recibimos tu consulta.")).toBeInTheDocument();
+  const envios = fetch.mock.calls.filter(([url, opciones]) => url === "/api/v1/contacto/mensajes" && opciones.method === "POST");
+  expect(envios).toHaveLength(1);
+  expect(envios[0][1].headers.Authorization).toMatch(/^Bearer /);
+  expect(JSON.parse(envios[0][1].body)).toEqual({
+    nombre: "Cliente de prueba", mensaje: "Consulta de demostración",
+    referencia: expect.stringMatching(/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/),
+  });
+  expect(mensaje).toHaveValue("");
 });
 
 it("rechaza checkout vacío", async () => {

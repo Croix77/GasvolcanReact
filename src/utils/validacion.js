@@ -2,15 +2,14 @@ import { comunasEntrega } from "./pedidos";
 
 export function validarContacto(datos) {
   const errores = {};
-  if (!nombreValido(datos.nombre))
-    errores.nombre = "Escribe un nombre de al menos 2 caracteres.";
-  if (!correoValido(datos.correo)) errores.correo = "Escribe un correo válido.";
+  if (!nombreValido(datos.nombre, /^[\p{L}\p{M}\p{Zs}.'’-]+$/u))
+    errores.nombre = "Escribe un nombre de 2 a 100 caracteres.";
   if (
     typeof datos.mensaje !== "string" ||
     datos.mensaje.trim().length < 10 ||
     datos.mensaje.trim().length > 1000
   )
-    errores.mensaje = "Escribe un mensaje de al menos 10 caracteres.";
+    errores.mensaje = "Escribe un mensaje de 10 a 1000 caracteres.";
   return errores;
 }
 
@@ -36,12 +35,12 @@ export function validarEntrega(datos) {
   return errores;
 }
 
-function nombreValido(nombre) {
+function nombreValido(nombre, caracteres = /^[\p{L}\p{M}\s.'’-]+$/u) {
   return (
     typeof nombre === "string" &&
     nombre.trim().length >= 2 &&
     nombre.trim().length <= 100 &&
-    /^[\p{L}\p{M}\s.'’-]+$/u.test(nombre.trim()) &&
+    caracteres.test(nombre.trim()) &&
     /\p{L}/u.test(nombre)
   );
 }

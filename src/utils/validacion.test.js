@@ -6,10 +6,10 @@ describe("Límites y tipos de los formularios", () => {
     expect(
       validarContacto({
         nombre: "María José",
-        correo: "demo@example.com",
         mensaje: "Consulta de prueba",
       }),
     ).toEqual({});
+    expect(validarLogin({ correo: "demo@example.com", clave: "clave-valida" })).toEqual({});
     expect(
       validarEntrega({
         nombre: "María José",
@@ -21,18 +21,18 @@ describe("Límites y tipos de los formularios", () => {
   });
   it("rechaza espacios, números como nombre, longitudes excesivas y correos inválidos", () => {
     expect(
-      validarContacto({ nombre: "123", correo: "a@", mensaje: "  " }),
+      validarContacto({ nombre: "123", mensaje: "  " }),
     ).toHaveProperty("nombre");
     expect(
       validarContacto({
         nombre: "A".repeat(101),
-        correo: "a".repeat(151),
         mensaje: "x".repeat(1001),
       }),
     ).toHaveProperty("mensaje");
-    expect(validarLogin({ correo: " ", clave: "corta" })).toHaveProperty(
-      "clave",
-    );
+    expect(validarContacto({ nombre: "María\nJosé", mensaje: "Consulta válida" })).toHaveProperty("nombre");
+    expect(validarLogin({ correo: " ", clave: "corta" })).toEqual({
+      correo: expect.any(String), clave: expect.any(String),
+    });
     for (const valor of [" ", null, true, -1, 1.5, "abc"]) {
       expect(
         validarProducto({

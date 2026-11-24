@@ -11,9 +11,9 @@ function Login() {
   function destinoPara(rol) {
     const desde = state?.desde || "";
     if (rol === "administrador")
-      return /^\/admin(?:\/|$)/.test(desde) ? desde : "/admin";
+      return /^\/(?:admin|contacto)(?:\/|\?|$)/.test(desde) ? desde : "/admin";
     if (["operadora", "repartidor", "vendedor"].includes(rol)) return "/despacho";
-    return /^\/(?:catalogo|categorias|ofertas|productos|carrito|checkout|mis-pedidos)(?:\/|\?|$)/.test(desde) ? desde : "/catalogo";
+    return /^\/(?:catalogo|categorias|ofertas|productos|carrito|checkout|mis-pedidos|contacto)(?:\/|\?|$)/.test(desde) ? desde : "/catalogo";
   }
   const [datos, setDatos] = useState({ correo: "", clave: "" });
   const [errores, setErrores] = useState({});

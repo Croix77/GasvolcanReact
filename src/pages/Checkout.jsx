@@ -7,15 +7,7 @@ import { MAX_UNIDADES_POR_PRODUCTO } from "../utils/compra";
 import { moneda } from "../utils/moneda";
 import { comunasEntrega, leerCoordenadas } from "../utils/pedidos";
 import { validarEntrega, enfocarPrimerError } from "../utils/validacion";
-
-function crearReferenciaCompra() {
-  // Los bytes aleatorios permiten generar el UUID incluso al probar sin HTTPS.
-  const bytes = crypto.getRandomValues(new Uint8Array(16));
-  bytes[6] = (bytes[6] & 0x0f) | 0x40;
-  bytes[8] = (bytes[8] & 0x3f) | 0x80;
-  const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
-  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
-}
+import { crearUuid } from "../utils/uuid";
 
 function Checkout({ items, vaciar, onPedido, actualizandoCatalogo = false, catalogoConError = false }) {
   const navegar = useNavigate();
@@ -88,7 +80,7 @@ function Checkout({ items, vaciar, onPedido, actualizandoCatalogo = false, catal
 
     // Si se perdió la respuesta de red, el siguiente envío de la misma compra conserva su UUID.
     if (intento.current?.firma !== firma) {
-      intento.current = { firma, referencia: crearReferenciaCompra() };
+      intento.current = { firma, referencia: crearUuid() };
     }
     intento.current.enviando = true;
     setEnviando(true);

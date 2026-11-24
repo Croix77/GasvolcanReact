@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => {
         "/api/v1/stock": pedidos,
         "/api/v1/zonas": pedidos,
         "/api/v1/despacho": env.VITE_DESPACHO_URL || "http://127.0.0.1:8085",
+        "/api/v1/contacto": env.VITE_CONTACTO_URL || "http://127.0.0.1:8086",
       },
     },
     test: {
