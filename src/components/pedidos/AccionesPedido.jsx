@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { pedirNegocio } from "../../services/api";
+import { pedirApi } from "../../services/api";
 import UbicacionReparto from "./UbicacionReparto";
 
 export default function AccionesPedido({ pedido, sesion, repartidores, recargar }) {
@@ -22,7 +22,7 @@ export default function AccionesPedido({ pedido, sesion, repartidores, recargar 
     setMensaje("");
     setGuardando(true);
     try {
-      await pedirNegocio(`/pedidos/${id}/${accion}`, { token: sesion.token, metodo: "PATCH", datos });
+      await pedirApi(`/despacho/${id}/${accion}`, { token: sesion.token, metodo: "PATCH", datos });
       setMensaje(exito);
       setRepartidor(null);
       recargar();

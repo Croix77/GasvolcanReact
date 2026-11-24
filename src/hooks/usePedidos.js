@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { pedirNegocio } from "../services/api";
+import { pedirApi } from "../services/api";
 
 const INTERVALO = 15_000;
 
-export function usePedidos(token, fecha = "") {
+export function usePedidos(token, fecha = "", recurso = "pedidos") {
   const [consulta, setConsulta] = useState({ pedidos: [], error: "" });
   const [revision, setRevision] = useState(0);
-  const ruta = fecha ? `/pedidos?fecha=${encodeURIComponent(fecha)}` : "/pedidos";
+  const ruta = fecha ? `/${recurso}?fecha=${encodeURIComponent(fecha)}` : `/${recurso}`;
 
   useEffect(() => {
     if (!token) return;
@@ -20,7 +20,7 @@ export function usePedidos(token, fecha = "") {
       clearTimeout(temporizador);
       consultando = true;
       try {
-        const pedidos = await pedirNegocio(ruta, { token, signal: controlador.signal });
+        const pedidos = await pedirApi(ruta, { token, signal: controlador.signal });
         if (!controlador.signal.aborted) setConsulta({ token, ruta, pedidos, error: "" });
       } catch (error) {
         if (!controlador.signal.aborted) {
@@ -49,7 +49,7 @@ export function usePedidos(token, fecha = "") {
   const recargar = useCallback(() => setRevision((actual) => actual + 1), []);
 
   async function agregar(datos) {
-    const pedido = await pedirNegocio("/pedidos", { token, metodo: "POST", datos });
+    const pedido = await pedirApi("/pedidos", { token, metodo: "POST", datos });
     recargar();
     return pedido;
   }

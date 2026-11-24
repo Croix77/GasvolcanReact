@@ -20,8 +20,6 @@ export function validarProducto(producto) {
     errores.categoria = "Selecciona una categoría.";
   if (!enteroNoNegativo(producto.precio))
     errores.precio = "El precio debe ser un entero desde cero.";
-  if (!enteroNoNegativo(producto.stock))
-    errores.stock = "El stock debe ser un entero desde cero.";
   if (producto.precioAnterior != null && producto.precioAnterior !== "") {
     if (!enteroNoNegativo(producto.precioAnterior) ||
         (producto.oferta && Number(producto.precioAnterior) <= Number(producto.precio)))
@@ -48,7 +46,6 @@ export function normalizarProducto(producto) {
     descripcion: producto.descripcion.trim(),
     categoria: producto.categoria.trim(),
     precio: Number(producto.precio),
-    stock: Number(producto.stock),
     precioAnterior: producto.precioAnterior == null || producto.precioAnterior === "" ? null : Number(producto.precioAnterior),
     oferta: Boolean(producto.oferta),
   };

@@ -80,7 +80,7 @@ async function ingresarEntrega(user) {
   await user.click(screen.getByRole("button", { name: "Confirmar compra" }));
 }
 
-it("rellena el nombre de la sesión y envía únicamente identificadores y cantidades", async () => {
+it("rellena el nombre de la sesión y envía el precio esperado de cada producto", async () => {
   const user = userEvent.setup();
   const { fetch } = renderApp("/checkout", [{ id: "gas-15kg", cantidad: 1 }]);
   expect(await screen.findByLabelText("Nombre de quien recibe")).toHaveValue("Cliente de prueba");
@@ -90,7 +90,7 @@ it("rellena el nombre de la sesión y envía únicamente identificadores y canti
     url.endsWith("/api/v1/pedidos") && opciones.method === "POST");
   expect(JSON.parse(compra[1].body)).toEqual({
     nombre: "Cliente de prueba", telefono: "912345678", direccion: "Dirección ficticia 123",
-    comuna: "Chillán", items: [{ id: "gas-15kg", cantidad: 1 }],
+    comuna: "Chillán", items: [{ id: "gas-15kg", cantidad: 1, precioEsperado: 16000 }],
     latitudEntrega: -36.6, longitudEntrega: -72.1, referenciaCompra: expect.any(String),
   });
   expect(localStorage.getItem(claveCarritoCliente)).toBe("[]");
@@ -102,6 +102,38 @@ it("muestra el error del servidor y conserva el carrito", async () => {
   await ingresarEntrega(user);
   expect(await screen.findByRole("alert")).toHaveTextContent("Stock insuficiente.");
   expect(JSON.parse(localStorage.getItem(claveCarritoCliente))).toHaveLength(1);
+});
+
+it("refresca el total en un conflicto de precio y espera una nueva confirmación", async () => {
+  const user = userEvent.setup();
+  const productos = [{
+    id: "gas-15kg", nombre: "Cilindro de Gas 15 Kg", descripcion: "Cilindro",
+    categoria: "Cilindros de Gas", precio: 16000, stock: 5,
+  }];
+  const { fetch } = renderApp("/checkout", [{ id: "gas-15kg", cantidad: 1 }], {
+    productos,
+    errorCompra: ({ items }) => {
+      if (items[0].precioEsperado === 17000) return null;
+      productos[0].precio = 17000;
+      return "El precio del producto cambió.";
+    },
+  });
+
+  await ingresarEntrega(user);
+  expect(await screen.findByRole("alert")).toHaveTextContent("El precio del producto cambió.");
+  expect(await screen.findByText("Total de productos: $17.000")).toBeInTheDocument();
+  expect(screen.getByLabelText("Dirección")).toHaveValue("Dirección ficticia 123");
+  expect(JSON.parse(localStorage.getItem(claveCarritoCliente))).toHaveLength(1);
+  const compras = () => fetch.mock.calls.filter(([ruta, opciones]) =>
+    ruta === "/api/v1/pedidos" && opciones.method === "POST").map(([, opciones]) => JSON.parse(opciones.body));
+  expect(compras()).toHaveLength(1);
+
+  await user.click(await screen.findByRole("button", { name: "Confirmar compra" }));
+  expect(await screen.findByRole("heading", { name: "Compra confirmada" })).toBeInTheDocument();
+  const [primera, segunda] = compras();
+  expect(primera.items[0].precioEsperado).toBe(16000);
+  expect(segunda.items[0].precioEsperado).toBe(17000);
+  expect(primera.referenciaCompra).not.toBe(segunda.referenciaCompra);
 });
 
 it("muestra 404 para producto inexistente y ruta inválida", async () => {

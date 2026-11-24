@@ -34,7 +34,7 @@ async function completarDatos(user, incluirPunto = true) {
   }
 }
 
-it("envía la entrega y las cantidades; muestra el total confirmado por el servidor", async () => {
+it("envía la entrega y el precio esperado y muestra el total del servidor", async () => {
   const onPedido = vi.fn().mockResolvedValue({ id: 8, items, total: 12000, comuna: "Chillán" });
   const vaciar = montar(onPedido);
   const user = userEvent.setup();
@@ -42,7 +42,7 @@ it("envía la entrega y las cantidades; muestra el total confirmado por el servi
   await user.click(screen.getByRole("button", { name: "Confirmar compra" }));
   expect(onPedido).toHaveBeenCalledWith({
     nombre: "María Pérez", telefono: "+56 9 1234 5678", direccion: "Pasaje de prueba 123",
-    comuna: "Chillán", items: [{ id: "gas-5kg", cantidad: 2 }],
+    comuna: "Chillán", items: [{ id: "gas-5kg", cantidad: 2, precioEsperado: 5900 }],
     latitudEntrega: -36.6, longitudEntrega: -72.1, referenciaCompra: expect.stringMatching(uuid),
   });
   expect(vaciar).toHaveBeenCalledOnce();

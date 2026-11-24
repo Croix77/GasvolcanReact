@@ -24,7 +24,7 @@ function PedidosDespacho() {
   const [consulta, setConsulta] = useState(null);
   const [revision, setRevision] = useState(0);
   const [verMapa, setVerMapa] = useState(false);
-  const { pedidos, cargando, error, recargar } = usePedidos(token, puedeGestionar ? fecha : "");
+  const { pedidos, cargando, error, recargar } = usePedidos(token, puedeGestionar ? fecha : "", sesion?.rol === "vendedor" ? "pedidos" : "despacho");
 
   useEffect(() => {
     if (!token || !puedeGestionar) return;

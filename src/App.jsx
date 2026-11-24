@@ -25,6 +25,7 @@ import Login from "./pages/Login";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminInicio from "./pages/admin/AdminInicio";
 import AdminProductos from "./pages/admin/AdminProductos";
+import AdminInventario from "./pages/admin/AdminInventario";
 import AdminPerfil from "./pages/admin/AdminPerfil";
 import AdminReportes from "./pages/admin/AdminReportes";
 import AdminCategorias from "./pages/admin/AdminCategorias";
@@ -56,10 +57,14 @@ function ContenidoSesion() {
   }
 
   async function crearPedido(datos) {
-    const pedido = await historial.agregar(datos);
-    // El servicio confirma el stock disponible y descuenta el pedido en MySQL.
-    void catalogo.recargar();
-    return pedido;
+    try {
+      const pedido = await historial.agregar(datos);
+      catalogo.recargar();
+      return pedido;
+    } catch (fallo) {
+      if (fallo.status === 409) catalogo.recargar();
+      throw fallo;
+    }
   }
 
   const onAgregar = compra ? agregarProducto : undefined;
@@ -68,9 +73,13 @@ function ContenidoSesion() {
   const vistaCatalogo = (vista) => {
     if (catalogo.cargando && !catalogo.productos.length)
       return <p role="status">Cargando catálogo…</p>;
-    if (catalogo.error)
-      return <div role="alert"><p>{catalogo.error}</p><button type="button" className="btn btn-outline-secondary" onClick={catalogo.recargar}>Volver a intentar</button></div>;
-    return vista;
+    const avisoCatalogo = catalogo.error && (
+      <div role="alert" className="alert alert-warning">
+        <p>{catalogo.error}</p>
+        <button type="button" className="btn btn-outline-secondary" onClick={catalogo.recargar}>Volver a intentar</button>
+      </div>
+    );
+    return <>{avisoCatalogo}{(!catalogo.error || catalogo.productos.length > 0) && vista}</>;
   };
 
   return (
@@ -105,7 +114,8 @@ function ContenidoSesion() {
           <Route element={<RutaProtegida roles={["cliente"]} />}>
             <Route path="/carrito" element={vistaCatalogo(<Carrito {...carrito} esPagina />)} />
             <Route path="/mis-pedidos" element={<MisPedidos {...historial} />} />
-            <Route path="/checkout" element={vistaCatalogo(<Checkout items={carrito.items} vaciar={carrito.vaciar} onPedido={crearPedido} />)} />
+            <Route path="/checkout" element={vistaCatalogo(<Checkout items={carrito.items} vaciar={carrito.vaciar} onPedido={crearPedido}
+              actualizandoCatalogo={catalogo.cargando} catalogoConError={Boolean(catalogo.error)} />)} />
             <Route path="/compra/:resultado" element={<ResultadoCompra />} />
           </Route>
           <Route element={<RutaProtegida roles={["administrador", "vendedor", "operadora", "repartidor"]} />}>
@@ -115,6 +125,7 @@ function ContenidoSesion() {
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={vistaCatalogo(<AdminInicio productos={catalogo.productos} pedidos={pedidos} />)} />
               <Route path="productos" element={vistaCatalogo(<AdminProductos {...catalogo} />)} />
+              <Route path="inventario" element={vistaCatalogo(<AdminInventario {...catalogo} />)} />
               <Route path="pedidos" element={<PedidosDespacho />} />
               <Route path="reportes" element={vistaCatalogo(<AdminReportes productos={catalogo.productos} pedidos={pedidos} error={historial.error} />)} />
               <Route path="perfil" element={<AdminPerfil />} />

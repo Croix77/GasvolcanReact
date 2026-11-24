@@ -1,34 +1,35 @@
 # Gas El Volcán · React
 
-Tienda y gestión de despacho de Gas El Volcán. React y Bootstrap usan las APIs REST de `ms-auth` y `ms-negocio`. Cada servicio tiene su propio repositorio y esquema MySQL.
+Tienda y gestión de despacho. React pide los datos a cinco servicios REST mediante rutas del mismo origen.
 
-- [ms-auth · autenticación y usuarios](https://github.com/Croix77/GasVolcanAuth/tree/feat/ms-auth-parcial-3/ms-auth)
-- [ms-negocio · catálogo, inventario y pedidos](https://github.com/Croix77/GasVolcanBackend/tree/feat/completar-gas-volcan/ms-negocio)
+| Servicio | Puerto local | Rutas |
+| --- | --- | --- |
+| [ms-auth](https://github.com/Croix77/GasVolcanAuth/tree/main/ms-auth) | 8081 | `/api/auth/` |
+| [ms-categorias](https://github.com/Croix77/GasVolcanBackend/tree/main/ms-categorias) | 8082 | `/api/v1/categorias` |
+| [ms-productos](https://github.com/Croix77/GasVolcanBackend/tree/main/ms-productos) | 8083 | `/api/v1/productos` |
+| [ms-pedidos](https://github.com/Croix77/GasVolcanBackend/tree/main/ms-pedidos) | 8084 | `/api/v1/pedidos`, `/api/v1/stock`, `/api/v1/zonas` |
+| [ms-despacho](https://github.com/Croix77/GasVolcanBackend/tree/main/ms-despacho) | 8085 | `/api/v1/despacho` |
 
-## Ejecutar
+## Ejecutar en local
 
-1. Desde las carpetas ms-auth y ms-negocio, inicia ambos servicios según sus README. En local Auth escucha en 8081 y Negocio en 8080.
-2. Activa la carga inicial del catálogo en Negocio si usas una base vacía de prueba.
-3. Con Node.js 24 y PowerShell en la carpeta del frontend, ejecuta:
+Inicia los servicios con el mismo emisor y secreto JWT según sus README. En la carpeta de React, con Node.js 24, ejecuta:
 
 ```powershell
 npm ci
 npm run dev
 ```
 
-Abre [Vite en local](http://localhost:5173). Para puertos distintos, copia `.env.example` a `.env.local` y edita las dos URL. El primer usuario administrador se crea en Auth. Desde su panel puedes crear las cuentas de cliente, vendedor, operadora y repartidor.
+Abre [Vite en local](http://localhost:5173). El proxy de Vite reenvía las rutas a los puertos del cuadro. Si usas otros puertos, copia `.env.example` a `.env.local` y ajusta los destinos. El primer administrador se crea en Auth, y desde su panel puedes dar de alta cuentas de cliente, vendedor, operadora y repartidor.
 
-## Flujo para la presentación
+## Probar el flujo
 
-1. Entra como **cliente**. Abre el catálogo, agrega hasta tres unidades de un producto y confirma con la dirección y un punto en el mapa.
-2. Entra como **operadora**. En `/despacho` filtra el día, revisa el mapa y asigna el pedido a un repartidor activo.
-3. Entra como **repartidor**. Abre únicamente tus pedidos, inicia el recorrido y comparte la ubicación. Puedes usar GPS con HTTPS o localhost, o marcarla manualmente. Registra la entrega.
-4. Vuelve como cliente y consulta el estado en **Historial de pedidos**. La vista vuelve a consultar cada 15 segundos mientras la pestaña está visible.
-5. Entra como **administrador**. Revisa categorías, productos, usuarios, stock y efectivo de entregas. El vendedor consulta el catálogo y los pedidos en modo de lectura.
+1. Como **administrador**, crea una ficha en Productos. En Inventario, registra sus unidades disponibles. El ajuste usa la versión de las existencias que consultaste. Si otra compra cambia esa cantidad, debes revisar la cantidad actual antes de guardar.
+2. Como **cliente**, abre el catálogo, agrega hasta tres unidades de un producto y confirma con la dirección y el punto de entrega. React envía el precio mostrado y una referencia de compra. Si cambia el precio o el stock, conserva el carrito y te permite revisar los datos antes de confirmar otra vez.
+3. Como **operadora**, filtra el día en `/despacho`, revisa el mapa y asigna un repartidor activo.
+4. Como **repartidor**, abre tus pedidos asignados, inicia el recorrido, actualiza la ubicación y registra la entrega. El mapa usa Leaflet y OpenStreetMap. Puedes marcar un punto manualmente o usar GPS con HTTPS o localhost.
+5. Como **cliente**, consulta la entrega en Historial de pedidos. La vista actualiza los datos cada 15 segundos mientras la pestaña está visible. El **vendedor** consulta catálogo y pedidos en modo de lectura.
 
-El mapa utiliza Leaflet con teselas de OpenStreetMap y atribución visible. Los marcadores se cargan al abrir el mapa. La geolocalización se activa solo cuando el repartidor la solicita.
-
-## Pruebas y organización
+## Pruebas y despliegue
 
 ```powershell
 npm test
@@ -36,9 +37,6 @@ npm run lint
 npm run build
 ```
 
-- `src/services` contiene las llamadas HTTP y las validaciones reutilizadas.
-- `src/contexts` conserva la sesión JWT en la pestaña y la renueva antes del vencimiento.
-- `src/hooks` mantiene el catálogo, el carrito y los pedidos. El carrito local guarda identificadores y cantidades separados por cuenta.
-- `src/pages` y `src/components` agrupan las vistas de venta, administración y despacho. `src/test` contiene respuestas simuladas usadas por las pruebas.
+`src/services/api.js` agrega el JWT a las peticiones protegidas. `src/hooks/useCatalogo.js` combina las fichas de Productos, los nombres de Categorías y las existencias de Pedidos. El carrito local conserva identificadores y cantidades por cuenta.
 
-Nginx debe dirigir las rutas del navegador a `index.html` y enrutar `/api/auth/` y `/api/v1/` al servicio correspondiente. El build de producción usa rutas del mismo origen. La [guía de despliegue](https://github.com/Croix77/GasVolcanBackend/blob/feat/completar-gas-volcan/deploy/despliegue-ec2.md) incluye la configuración de ejemplo.
+Publica `dist/` en Nginx. Redirige las rutas de navegación a `index.html` y configura un destino por API pública según la tabla. Las rutas internas entre servicios quedan fuera del proxy público. [Guía de despliegue](https://github.com/Croix77/GasVolcanBackend/blob/main/deploy/despliegue-ec2.md)

@@ -17,7 +17,7 @@ function crearReferenciaCompra() {
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
 
-function Checkout({ items, vaciar, onPedido }) {
+function Checkout({ items, vaciar, onPedido, actualizandoCatalogo = false, catalogoConError = false }) {
   const navegar = useNavigate();
   const { sesion } = useAuth();
   const [datos, setDatos] = useState(() => ({
@@ -54,7 +54,7 @@ function Checkout({ items, vaciar, onPedido }) {
 
   async function enviar(evento) {
     evento.preventDefault();
-    if (intento.current?.enviando || noDisponible) return;
+    if (intento.current?.enviando || noDisponible || actualizandoCatalogo || catalogoConError) return;
     const nuevosErrores = validarEntrega(datos);
     setErrores(nuevosErrores);
     setErrorEnvio("");
@@ -73,13 +73,14 @@ function Checkout({ items, vaciar, onPedido }) {
       return;
     }
 
-    // El servidor calcula el total con los identificadores y cantidades del carrito.
+    // El servidor comprueba el precio que se muestra antes de reservar las unidades.
     const solicitud = {
       nombre: datos.nombre.trim(),
       telefono: datos.telefono.trim(),
       direccion: datos.direccion.trim(),
       comuna: datos.comuna,
-      items: items.map(({ id, cantidad }) => ({ id, cantidad })).sort((a, b) => a.id.localeCompare(b.id)),
+      items: items.map(({ id, cantidad, precio }) => ({ id, cantidad, precioEsperado: precio }))
+        .sort((a, b) => a.id.localeCompare(b.id)),
       latitudEntrega: coordenadas.latitud,
       longitudEntrega: coordenadas.longitud,
     };
@@ -96,7 +97,12 @@ function Checkout({ items, vaciar, onPedido }) {
       vaciar();
       navegar("/compra/exito", { state: { pedido }, replace: true });
     } catch (fallo) {
-      setErrorEnvio(fallo.message);
+      if (fallo.status === 409) {
+        intento.current.firma = null;
+        setErrorEnvio(`${fallo.message} Revisa el carrito y vuelve a confirmar.`);
+      } else {
+        setErrorEnvio(fallo.message);
+      }
       if (fallo.campos) {
         setErrores(fallo.campos);
         const coordenadaConError = fallo.campos.latitudEntrega || fallo.campos.longitudEntrega;
@@ -137,7 +143,7 @@ function Checkout({ items, vaciar, onPedido }) {
                 }} />
             </fieldset>
             {errorEnvio && <p role="alert" className="alert alert-danger">{errorEnvio}</p>}
-            <button className="btn btn-primary" type="submit" disabled={noDisponible || enviando}>
+            <button className="btn btn-primary" type="submit" disabled={noDisponible || enviando || actualizandoCatalogo || catalogoConError}>
               {enviando ? "Confirmando compra…" : "Confirmar compra"}
             </button>
           </form>
@@ -150,6 +156,7 @@ function Checkout({ items, vaciar, onPedido }) {
             </ul>
             <p className="fw-bold">Total de productos: {moneda(total)}</p>
             <p>Pago en efectivo al recibir. El total se confirma con el servidor.</p>
+            {actualizandoCatalogo && <p role="status">Actualizando precios y existencias…</p>}
             {noDisponible && (
               <p role="alert">
                 Revisa el carrito: incluye productos sin precio confirmado, con stock insuficiente o por encima

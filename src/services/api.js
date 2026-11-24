@@ -1,10 +1,7 @@
-const apiAuth = import.meta.env.VITE_AUTH_URL ?? (import.meta.env.DEV ? "http://localhost:8081" : "");
-const apiNegocio = import.meta.env.VITE_NEGOCIO_URL ?? (import.meta.env.DEV ? "http://localhost:8080" : "");
-
-async function pedir(base, ruta, { token, metodo = "GET", datos, signal } = {}) {
+async function pedir(ruta, { token, metodo = "GET", datos, signal } = {}) {
   let respuesta;
   try {
-    respuesta = await fetch(base + ruta, {
+    respuesta = await fetch(ruta, {
       method: metodo,
       signal,
       headers: {
@@ -30,5 +27,5 @@ async function pedir(base, ruta, { token, metodo = "GET", datos, signal } = {}) 
   return contenido;
 }
 
-export const pedirAuth = (ruta, opciones) => pedir(apiAuth, "/api/auth" + ruta, opciones);
-export const pedirNegocio = (ruta, opciones) => pedir(apiNegocio, "/api/v1" + ruta, opciones);
+export const pedirAuth = (ruta, opciones) => pedir("/api/auth" + ruta, opciones);
+export const pedirApi = (ruta, opciones) => pedir("/api/v1" + ruta, opciones);

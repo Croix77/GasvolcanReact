@@ -14,7 +14,6 @@ const inicial = {
   precio: "",
   precioComercial: "",
   precioAnterior: "",
-  stock: "",
   stockCritico: "",
   oferta: false,
 };
@@ -30,7 +29,7 @@ function validar(datos) {
     resultado.unidad = "Escribe la unidad de venta.";
   if (datos.descripcion.length > 400)
     resultado.descripcion = "Usa hasta 400 caracteres en la descripción.";
-  for (const campo of ["precio", "precioComercial", "precioAnterior", "stock", "stockCritico"]) {
+  for (const campo of ["precio", "precioComercial", "precioAnterior", "stockCritico"]) {
     const valor = datos[campo];
     if (valor !== "" && valor != null &&
         (!/^\d+$/.test(String(valor).trim()) || Number(valor) > maximoEntero))
@@ -105,8 +104,6 @@ function FormProducto({ producto, categorias, onGuardar, onCancelar, deshabilita
           valor={datos.precioComercial ?? ""} onChange={cambiar} error={errores.precioComercial} min={0} step={1} />
         <CampoFormulario nombre="precioAnterior" etiqueta="Precio anterior (CLP, opcional)" tipo="number"
           valor={datos.precioAnterior ?? ""} onChange={cambiar} error={errores.precioAnterior} min={0} step={1} />
-        <CampoFormulario nombre="stock" etiqueta="Stock" tipo="number"
-          valor={datos.stock} onChange={cambiar} error={errores.stock} required min={0} step={1} />
         <CampoFormulario nombre="stockCritico" etiqueta="Umbral de stock crítico (opcional)" tipo="number"
           valor={datos.stockCritico ?? ""} onChange={cambiar} error={errores.stockCritico} min={0} step={1} />
         <div className="form-check mb-3">

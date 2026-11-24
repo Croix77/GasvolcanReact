@@ -12,7 +12,7 @@ it("renderiza formulario vacío para crear", () => {
   expect(screen.getByLabelText("Descripción")).toHaveValue("");
   expect(screen.getByLabelText("Categoría del producto")).toHaveValue("");
   expect(screen.getByLabelText("Precio residencial (CLP)")).toBeInTheDocument();
-  expect(screen.getByLabelText("Stock")).toBeInTheDocument();
+  expect(screen.queryByLabelText("Stock", { exact: true })).not.toBeInTheDocument();
   expect(screen.getByRole("checkbox", { name: "Destacar en ofertas" })).not.toBeChecked();
   expect(screen.getByRole("button", { name: "Guardar producto" })).toBeInTheDocument();
   expect(screen.queryByRole("button", { name: "Cancelar edición" })).not.toBeInTheDocument();
@@ -25,7 +25,7 @@ it("renderiza formulario con datos para editar", () => {
   expect(screen.getByLabelText("Descripción")).toHaveValue("Desc");
   expect(screen.getByLabelText("Categoría del producto")).toHaveValue("Reguladores");
   expect(screen.getByLabelText("Precio residencial (CLP)")).toHaveValue(100);
-  expect(screen.getByLabelText("Stock")).toHaveValue(5);
+  expect(screen.queryByLabelText("Stock", { exact: true })).not.toBeInTheDocument();
   expect(screen.getByRole("checkbox", { name: "Destacar en ofertas" })).toBeChecked();
   expect(screen.getByRole("button", { name: "Cancelar edición" })).toBeInTheDocument();
 });
@@ -38,7 +38,6 @@ it("muestra errores al enviar vacío", async () => {
   expect(screen.getByText("Escribe una descripción.")).toBeInTheDocument();
   expect(screen.getByText("Selecciona una categoría.")).toBeInTheDocument();
   expect(screen.getByText("El precio debe ser un entero desde cero.")).toBeInTheDocument();
-  expect(screen.getByText("El stock debe ser un entero desde cero.")).toBeInTheDocument();
 });
 
 it("llama onGuardar con datos válidos", async () => {
@@ -50,7 +49,7 @@ it("llama onGuardar con datos válidos", async () => {
   await user.type(screen.getByLabelText("Descripción"), "Descripción nueva");
   await user.selectOptions(screen.getByLabelText("Categoría del producto"), "Accesorios");
   await user.type(screen.getByLabelText("Precio residencial (CLP)"), "1500");
-  await user.type(screen.getByLabelText("Stock"), "10");
+  await user.type(screen.getByLabelText("Umbral de stock crítico (opcional)"), "10");
   await user.type(screen.getByLabelText("Precio anterior (CLP, opcional)"), "2000");
   await user.click(screen.getByLabelText("Destacar en ofertas"));
   await user.click(screen.getByRole("button", { name: "Guardar producto" }));
@@ -61,7 +60,7 @@ it("llama onGuardar con datos válidos", async () => {
     precio: "1500",
     precioAnterior: "2000",
     oferta: true,
-    stock: "10",
+    stockCritico: "10",
   }));
 });
 

@@ -14,13 +14,14 @@ function json(datos, status = 200) {
   });
 }
 
-function simularApi() {
+function simularApi({ conflictoStock = false } = {}) {
   let categorias = [...new Set(datosCatalogo.map((producto) => producto.categoria))]
     .map((nombre, indice) => ({ id: indice + 1, nombre }));
   let productos = datosCatalogo.map((producto) => ({
     ...producto,
     categoriaId: categorias.find(({ nombre }) => nombre === producto.categoria).id,
   }));
+  const existencias = new Map(datosCatalogo.map(({ id, stock }) => [id, { id, stock, version: 0 }]));
   let usuarios = [];
   let proximaCategoria = categorias.length + 1;
   return vi.spyOn(globalThis, "fetch").mockImplementation(async (url, { method, headers, body }) => {
@@ -37,9 +38,6 @@ function simularApi() {
       if (method === "PUT") {
         const actualizada = { id: Number(id), nombre: datos.nombre };
         categorias = categorias.map((categoria) => categoria.id === actualizada.id ? actualizada : categoria);
-        productos = productos.map((producto) => producto.categoriaId === actualizada.id
-          ? { ...producto, categoria: actualizada.nombre }
-          : producto);
         return json(actualizada);
       }
       if (productos.some((producto) => producto.categoriaId === Number(id)))
@@ -48,7 +46,11 @@ function simularApi() {
       return json(null, 204);
     }
     if (servicio === "v1" && recurso === "productos") {
-      if (method === "GET") return json(productos);
+      if (method === "GET") return json(productos.map((producto) => {
+        const ficha = { ...producto };
+        delete ficha.stock;
+        return ficha;
+      }));
       if (method === "POST") {
         const nuevo = {
           ...datos,
@@ -58,6 +60,18 @@ function simularApi() {
         productos = [...productos, nuevo];
         return json(nuevo, 201);
       }
+    }
+    if (servicio === "v1" && recurso === "stock") {
+      if (method === "GET") return json([...existencias.values()]);
+      const anterior = existencias.get(id);
+      if (conflictoStock) {
+        conflictoStock = false;
+        existencias.set(id, { id, stock: anterior.stock - 1, version: anterior.version + 1 });
+        return json({ error: "Las existencias cambiaron." }, 409);
+      }
+      const guardado = { id, stock: datos.stock, version: anterior ? anterior.version + 1 : 0 };
+      existencias.set(id, guardado);
+      return json(guardado);
     }
     if (servicio === "v1" && recurso === "pedidos" && method === "GET") return json([]);
     if (servicio === "auth" && recurso === "usuarios") {
@@ -153,7 +167,7 @@ it("muestra el conflicto al eliminar una categoría usada y confirma la eliminac
   await waitFor(() => expect(screen.queryByRole("button", { name: "Editar categoría Temporal" })).not.toBeInTheDocument());
 });
 
-it("crea un producto con el identificador de la categoría y valores numéricos en el JSON", async () => {
+it("crea la ficha y permite cargar las primeras existencias desde Inventario", async () => {
   const user = userEvent.setup();
   const fetch = simularApi();
   abrir("/admin/productos");
@@ -162,13 +176,56 @@ it("crea un producto con el identificador de la categoría y valores numéricos 
   await user.type(screen.getByLabelText("Descripción", { exact: true }), "Producto de prueba");
   await user.selectOptions(screen.getByLabelText("Categoría del producto"), "Accesorios");
   await user.type(screen.getByLabelText("Precio residencial (CLP)"), "0");
-  await user.type(screen.getByLabelText("Stock", { exact: true }), "3");
   await user.click(screen.getByRole("button", { name: "Guardar producto" }));
   expect(await screen.findByText("Producto creado.")).toBeInTheDocument();
   const peticion = fetch.mock.calls.find(([ruta, opciones]) => ruta.endsWith("/productos") && opciones.method === "POST");
-  expect(JSON.parse(peticion[1].body)).toMatchObject({
-    codigo: "AC-99", nombre: "Accesorio de prueba", categoriaId: 4, precio: 0, stock: 3, unidad: "Unidad",
+  const ficha = JSON.parse(peticion[1].body);
+  expect(ficha).toMatchObject({
+    codigo: "AC-99", nombre: "Accesorio de prueba", categoriaId: 4, precio: 0, unidad: "Unidad",
   });
+  expect(ficha).not.toHaveProperty("stock");
+  expect(fetch).not.toHaveBeenCalledWith(expect.stringContaining("/stock/"), expect.anything());
+
+  await user.click(within(screen.getByRole("navigation", { name: "Menú administrativo" }))
+    .getByRole("link", { name: "Inventario" }));
+  await user.selectOptions(screen.getByLabelText("Producto"), "ac-99");
+  expect(screen.getByText("Unidades registradas: 0")).toBeInTheDocument();
+  const unidades = screen.getByLabelText("Unidades disponibles");
+  await user.clear(unidades);
+  await user.type(unidades, "3");
+  await user.click(screen.getByRole("button", { name: "Guardar inventario" }));
+  expect(await screen.findByText("Existencias actualizadas.")).toBeInTheDocument();
+  expect(fetch).toHaveBeenCalledWith("/api/v1/stock/ac-99", expect.objectContaining({
+    method: "PUT", body: JSON.stringify({ stock: 3, version: null }),
+  }));
+});
+
+it("revisa el inventario antes de volver a guardar si hubo una compra en paralelo", async () => {
+  const user = userEvent.setup();
+  const fetch = simularApi({ conflictoStock: true });
+  const primero = datosCatalogo[0];
+  abrir("/admin/inventario");
+  await user.selectOptions(await screen.findByLabelText("Producto"), primero.id);
+  const unidades = screen.getByLabelText("Unidades disponibles");
+  await user.clear(unidades);
+  await user.type(unidades, "20");
+  const guardar = screen.getByRole("button", { name: "Guardar inventario" });
+  await user.click(guardar);
+
+  expect(await screen.findByText("Las existencias cambiaron.")).toBeInTheDocument();
+  expect(await screen.findByText("Unidades registradas: " + (primero.stock - 1))).toBeInTheDocument();
+  expect(guardar).toBeDisabled();
+  const ajustes = () => fetch.mock.calls.filter(([ruta, peticion]) =>
+    ruta.startsWith("/api/v1/stock/") && peticion.method === "PUT");
+  expect(ajustes()).toHaveLength(1);
+
+  await user.click(screen.getByRole("button", { name: "Usar cantidad actual" }));
+  expect(unidades).toHaveValue(primero.stock - 1);
+  await user.clear(unidades);
+  await user.type(unidades, "21");
+  await user.click(guardar);
+  expect(await screen.findByText("Existencias actualizadas.")).toBeInTheDocument();
+  expect(JSON.parse(ajustes()[1][1].body)).toEqual({ stock: 21, version: 1 });
 });
 
 it("crea y edita usuarios en Auth y les cambia el rol y el estado", async () => {

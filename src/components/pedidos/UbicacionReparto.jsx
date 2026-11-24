@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { pedirNegocio } from "../../services/api";
+import { pedirApi } from "../../services/api";
 import { leerCoordenadas } from "../../utils/pedidos";
 import SeleccionUbicacion from "./SeleccionUbicacion";
 
@@ -24,7 +24,7 @@ export default function UbicacionReparto({ pedidoId, token, recargar }) {
       ultimoEnvio = Date.now();
       enviando = true;
       try {
-        await pedirNegocio(`/pedidos/${pedidoId}/ubicacion`, {
+        await pedirApi(`/despacho/${pedidoId}/ubicacion`, {
           token, metodo: "PUT", signal: controlador.signal,
           datos: { latitud: coords.latitude, longitud: coords.longitude },
         });
@@ -69,7 +69,7 @@ export default function UbicacionReparto({ pedidoId, token, recargar }) {
     }
     setGuardando(true);
     try {
-      await pedirNegocio(`/pedidos/${pedidoId}/ubicacion`, { token, metodo: "PUT", datos });
+      await pedirApi(`/despacho/${pedidoId}/ubicacion`, { token, metodo: "PUT", datos });
       setMensaje("Ubicación guardada.");
       recargar();
     } catch (fallo) {

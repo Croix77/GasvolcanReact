@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
-import { pedirNegocio } from "../services/api";
+import { pedirApi } from "../services/api";
 
 function Nosotros() {
   const token = useAuth().sesion?.token;
@@ -10,7 +10,7 @@ function Nosotros() {
   useEffect(() => {
     if (!token) return;
     const controlador = new AbortController();
-    pedirNegocio("/zonas", { token, signal: controlador.signal })
+    pedirApi("/zonas", { token, signal: controlador.signal })
       .then((zonas) => {
         if (!controlador.signal.aborted) setConsulta({ token, revision, zonas });
       })
