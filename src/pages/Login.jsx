@@ -1,11 +1,11 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { validarLogin, enfocarPrimerError } from "../utils/validacion";
 import CampoFormulario from "../components/CampoFormulario";
 
 function Login() {
-  const { sesion, entrar } = useAuth();
+  const { sesion, entrar, cargando } = useAuth();
   const { state } = useLocation();
   const navegar = useNavigate();
   function destinoPara(rol) {
@@ -18,20 +18,17 @@ function Login() {
   const [errores, setErrores] = useState({});
   const [error, setError] = useState("");
   const [visible, setVisible] = useState(false);
+  const [enviando, setEnviando] = useState(false);
+  if (cargando) return <p>Cargando sesión...</p>;
   if (sesion)
-    return (
-      <Navigate
-        to={destinoPara(sesion.rol)}
-        replace
-      />
-    );
+    return <Navigate to={destinoPara(sesion.rol)} replace />;
   function cambiar(evento) {
     const nuevosDatos = { ...datos, [evento.target.name]: evento.target.value };
     setDatos(nuevosDatos);
     if (Object.keys(errores).length > 0) setErrores(validarLogin(nuevosDatos));
     setError("");
   }
-  function enviar(evento) {
+  async function enviar(evento) {
     evento.preventDefault();
     const resultado = validarLogin(datos);
     setErrores(resultado);
@@ -40,14 +37,15 @@ function Login() {
       enfocarPrimerError(resultado);
       return;
     }
+    setEnviando(true);
     try {
-      const nueva = entrar(datos.correo, datos.clave);
+      const nueva = await entrar(datos.correo, datos.clave);
       setDatos({ correo: "", clave: "" });
-      navegar(destinoPara(nueva.rol), {
-        replace: true,
-      });
+      navegar(destinoPara(nueva.rol), { replace: true });
     } catch (fallo) {
-      setError(fallo.message);
+      setError(fallo.message || "No se pudo iniciar sesión.");
+    } finally {
+      setEnviando(false);
     }
   }
   return (
@@ -58,44 +56,15 @@ function Login() {
         Ingresa con tu correo y contraseña para acceder a tu cuenta.
       </p>
       <form noValidate onSubmit={enviar}>
-        <CampoFormulario
-          nombre="correo"
-          etiqueta="Correo electrónico"
-          tipo="email"
-          valor={datos.correo}
-          onChange={cambiar}
-          error={errores.correo}
-          required
-          maxLength={150}
-          autoComplete="username"
-        />
-        <CampoFormulario
-          nombre="clave"
-          etiqueta="Contraseña"
-          tipo={visible ? "text" : "password"}
-          valor={datos.clave}
-          onChange={cambiar}
-          error={errores.clave}
-          required
-          maxLength={128}
-          autoComplete="off"
-        />
-        <button
-          type="button"
-          className="btn btn-outline-secondary mb-3"
-          onClick={() => setVisible(!visible)}
-          aria-pressed={visible}
-        >
+        <CampoFormulario nombre="correo" etiqueta="Correo electrónico" tipo="email" valor={datos.correo} onChange={cambiar} error={errores.correo} required maxLength={150} autoComplete="username" />
+        <CampoFormulario nombre="clave" etiqueta="Contraseña" tipo={visible ? "text" : "password"} valor={datos.clave} onChange={cambiar} error={errores.clave} required maxLength={128} autoComplete="current-password" />
+        <button type="button" className="btn btn-outline-secondary mb-3" onClick={() => setVisible(!visible)} aria-pressed={visible}>
           {visible ? "Ocultar contraseña" : "Mostrar contraseña"}
         </button>
-        {error && (
-          <p role="alert" className="alert alert-danger">
-            {error}
-          </p>
-        )}
+        {error && <p role="alert" className="alert alert-danger">{error}</p>}
         <div>
-          <button type="submit" className="btn btn-primary">
-            Iniciar sesión
+          <button type="submit" className="btn btn-primary" disabled={enviando}>
+            {enviando ? "Ingresando..." : "Iniciar sesión"}
           </button>
         </div>
       </form>

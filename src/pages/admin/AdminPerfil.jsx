@@ -1,12 +1,12 @@
-import { useAuth } from "../../hooks/useAuth";
+﻿import { useAuth } from "../../hooks/useAuth";
 function AdminPerfil() {
   const { sesion } = useAuth();
   return (
     <section>
-      <h1>Perfil de demostración</h1>
-      <p>{sesion.nombre}</p>
-      <p>Rol: {sesion.rol}</p>
-      <p>La sesión vence después de 30 minutos. No se guarda la contraseña.</p>
+      <h1>Perfil</h1>
+      <p><strong>Nombre:</strong> {sesion?.nombre}</p>
+      <p><strong>Correo:</strong> {sesion?.correo}</p>
+      <p><strong>Rol:</strong> {sesion?.rolReal || sesion?.rol}</p>
     </section>
   );
 }

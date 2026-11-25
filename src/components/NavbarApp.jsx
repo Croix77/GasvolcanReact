@@ -1,4 +1,4 @@
-import { Container, Nav, Navbar } from "react-bootstrap";
+﻿import { Container, Nav, Navbar } from "react-bootstrap";
 import { NavLink, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useState } from "react";
@@ -7,83 +7,33 @@ function NavbarApp({ totalPedidos = 0 }) {
   const { sesion, salir } = useAuth();
   const [expandido, setExpandido] = useState(false);
   return (
-    <Navbar
-      collapseOnSelect
-      expand="xl"
-      className="navegacion"
-      sticky="top"
-      expanded={expandido}
-      onToggle={setExpandido}
-    >
+    <Navbar collapseOnSelect expand="xl" className="navegacion" sticky="top" expanded={expandido} onToggle={setExpandido}>
       <Container>
         <Navbar.Brand as={Link} to="/" aria-label="Gas El Volcán - Inicio">
-          <img
-            className="marca-banner"
-            src="/img/banner-gas-el-volcan.png"
-            alt="Gas El Volcán, distribución de gas a domicilio"
-            width="320"
-            height="120"
-          />
+          <img className="marca-banner" src="/img/banner-gas-el-volcan.png" alt="Gas El Volcán, distribución de gas a domicilio" width="320" height="120" />
         </Navbar.Brand>
-        <Navbar.Toggle
-          aria-controls="menu-principal"
-          label="Abrir menú"
-          aria-expanded={expandido}
-        />
+        <Navbar.Toggle aria-controls="menu-principal" label="Abrir menú" aria-expanded={expandido} />
         <Navbar.Collapse id="menu-principal">
           <Nav className="ms-auto">
             {[
-              ["/", "Inicio"],
-              ["/catalogo", "Catálogo"],
-              ["/categorias", "Categorías"],
-              ["/ofertas", "Ofertas"],
+              ["/", "Inicio"], ["/catalogo", "Catálogo"], ["/categorias", "Categorías"], ["/ofertas", "Ofertas"],
               ["/carrito", "Carrito"],
               ...(sesion ? [["/mis-pedidos", "Historial de pedidos"]] : []),
-              ["/nosotros", "Nosotros"],
-              ["/contacto", "Contacto"],
-              ...(sesion?.rol === "administrador"
-                ? [["/admin", "Administración"]]
-                : []),
+              ["/nosotros", "Nosotros"], ["/contacto", "Contacto"],
+              ...(sesion?.rol === "administrador" ? [["/admin", "Administración"]] : []),
               ...(!sesion ? [["/login", "Iniciar sesión"]] : []),
             ].map(([ruta, nombre]) => (
-              <Nav.Link
-                key={ruta}
-                as={NavLink}
-                to={ruta}
-                end={ruta === "/"}
-                eventKey={ruta}
-                aria-label={ruta === "/carrito" ? "Carrito" : undefined}
-              >
+              <Nav.Link key={ruta} as={NavLink} to={ruta} end={ruta === "/"} eventKey={ruta} aria-label={ruta === "/carrito" ? "Carrito" : undefined}>
                 {nombre}
-                {ruta === "/carrito" && totalPedidos > 0 && (
-                  <span
-                    className="badge bg-warning text-dark ms-1"
-                    aria-label={`${totalPedidos} unidades en el carrito`}
-                  >
-                    {totalPedidos}
-                  </span>
-                )}
+                {ruta === "/carrito" && totalPedidos > 0 && <span className="badge bg-warning text-dark ms-1" aria-label={`${totalPedidos} unidades en el carrito`}>{totalPedidos}</span>}
               </Nav.Link>
             ))}
-            {sesion && (
-              <span className="sesion-rol">
-                Conectado: {sesion.rol === "administrador" ? "Administrador" : "Cliente"}
-              </span>
-            )}
-            {sesion && (
-              <button
-                className="btn btn-outline-secondary"
-                type="button"
-                onClick={salir}
-              >
-                Cerrar sesión
-              </button>
-            )}
+            {sesion && <span className="sesion-rol">Conectado: {sesion.nombre}</span>}
+            {sesion && <button className="btn btn-outline-secondary" type="button" onClick={salir}>Cerrar sesión</button>}
           </Nav>
         </Navbar.Collapse>
       </Container>
     </Navbar>
   );
 }
-
 export default NavbarApp;

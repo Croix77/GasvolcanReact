@@ -1,72 +1,41 @@
-import { useEffect, useState } from "react";
-const clave = "gas-volcan-pedidos-demo-v1";
-function recuperar() {
-  try {
-    const datos = JSON.parse(localStorage.getItem(clave) || "[]");
-    if (!Array.isArray(datos)) return [];
-    const ids = new Set();
-    const pedidos = [];
-    for (const pedido of datos) {
-      if (!pedido || typeof pedido.id !== "string" || ids.has(pedido.id))
-        continue;
-      if (
-        typeof pedido.fecha !== "string" ||
-        !Array.isArray(pedido.items) ||
-        pedido.items.length === 0
-      )
-        continue;
-      const itemsValidos = pedido.items.every(
-        (item) =>
-          item &&
-          typeof item.id === "string" &&
-          typeof item.nombre === "string" &&
-          Number.isSafeInteger(item.cantidad) &&
-          item.cantidad > 0 &&
-          Number.isSafeInteger(item.precio) &&
-          item.precio >= 0,
-      );
-      if (!itemsValidos) continue;
-      ids.add(pedido.id);
-      pedidos.push(limpiar(pedido));
-    }
-    return pedidos.slice(-50);
-  } catch {
-    return [];
-  }
-}
-function limpiar(pedido) {
-  const items = pedido.items.map(({ id, nombre, precio, cantidad }) => ({
-    id,
-    nombre,
-    precio,
-    cantidad,
-  }));
+﻿import { useCallback, useEffect, useState } from "react";
+import { listarPedidos } from "../services/pedidosApi";
+import { useAuth } from "./useAuth";
+
+function mapPedido(p) {
   return {
-    id: pedido.id,
-    fecha: pedido.fecha,
-    items,
-    total: items.reduce((suma, item) => suma + item.precio * item.cantidad, 0),
-    estado: "Confirmado",
+    id: String(p.id),
+    fecha: p.fechaCreacion,
+    estado: p.estado,
+    total: Number(p.total || 0),
+    comuna: p.comuna,
+    direccion: p.direccion,
+    nombre: p.nombre,
+    items: (p.items || []).map((i) => ({ id: i.id, nombre: i.nombre, precio: i.precioUnitario, cantidad: i.cantidad })),
   };
 }
+
 export function usePedidos() {
-  const [pedidos, setPedidos] = useState(recuperar);
-  useEffect(() => {
+  const { sesion, asegurarToken } = useAuth();
+  const [pedidos, setPedidos] = useState([]);
+  const [cargando, setCargando] = useState(false);
+
+  const cargar = useCallback(async () => {
+    if (!sesion) { setPedidos([]); return; }
+    setCargando(true);
     try {
-      localStorage.setItem(clave, JSON.stringify(pedidos));
+      const token = await asegurarToken();
+      if (!token) { setPedidos([]); return; }
+      const data = await listarPedidos(token);
+      setPedidos((data || []).map(mapPedido));
     } catch {
-      /* Disponible durante la sesión. */
+      setPedidos([]);
+    } finally {
+      setCargando(false);
     }
-  }, [pedidos]);
-  return {
-    pedidos,
-    agregar: (pedido) =>
-      setPedidos((actual) =>
-        actual.some((item) => item.id === pedido.id)
-          ? actual
-          : [...actual, limpiar(pedido)].slice(-50),
-      ),
-    eliminar: (id) =>
-      setPedidos((actual) => actual.filter((pedido) => pedido.id !== id)),
-  };
+  }, [sesion, asegurarToken]);
+
+  useEffect(() => { cargar(); }, [cargar]);
+
+  return { pedidos, cargando, recargar: cargar, agregar: () => cargar() };
 }

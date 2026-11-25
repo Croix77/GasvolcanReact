@@ -1,5 +1,4 @@
-import { MAX_UNIDADES_POR_PRODUCTO } from "./utils/compra";
-import AdminPruebas from "./pages/admin/AdminPruebas";
+﻿import { MAX_UNIDADES_POR_PRODUCTO } from "./utils/compra";
 import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import NavbarApp from "./components/NavbarApp";
@@ -30,7 +29,6 @@ import AdminReportes from "./pages/admin/AdminReportes";
 import MisPedidos from "./pages/MisPedidos";
 import ListaPedidos from "./components/pedidos/ListaPedidos";
 import { usePedidos } from "./hooks/usePedidos";
-import { useUsuariosDemo } from "./hooks/useUsuariosDemo";
 import AdminCategorias from "./pages/admin/AdminCategorias";
 import AdminUsuarios from "./pages/admin/AdminUsuarios";
 
@@ -40,8 +38,6 @@ function ContenidoApp() {
   const carrito = useCarrito(catalogo.productos);
   const [toast, setToast] = useState({ visible: false, mensaje: "" });
   const historial = usePedidos();
-  const pedidos = historial.pedidos;
-  const usuariosDemo = useUsuariosDemo();
 
   function agregarProducto(producto) {
     const actual = carrito.items.find((item) => item.id === producto.id);
@@ -55,134 +51,36 @@ function ContenidoApp() {
   const totalItems = carrito.items.reduce((suma, item) => suma + item.cantidad, 0);
   return (
     <>
-      <a className="saltar-contenido" href="#contenido">
-        Saltar al contenido
-      </a>
+      <a className="saltar-contenido" href="#contenido">Saltar al contenido</a>
       <NavbarApp totalPedidos={totalItems} />
-      <CarritoSidebar
-        items={carrito.items}
-        cambiarCantidad={carrito.cambiarCantidad}
-        eliminar={carrito.eliminar}
-        vaciar={carrito.vaciar}
-        totalItems={totalItems}
-      />
-      <main
-        tabIndex={-1}
-        id="contenido"
-        className="container contenido-principal"
-      >
+      <CarritoSidebar items={carrito.items} cambiarCantidad={carrito.cambiarCantidad} eliminar={carrito.eliminar} vaciar={carrito.vaciar} totalItems={totalItems} />
+      <main tabIndex={-1} id="contenido" className="container contenido-principal">
         <div role="status" aria-live="polite" aria-atomic="true">
-          {aviso && (
-            <div className="alert alert-success d-flex align-items-center justify-content-between gap-3">
-              <span>{aviso}</span>
-              <button type="button" className="btn-close" aria-label="Cerrar aviso de sesión" onClick={cerrarAviso} />
-            </div>
-          )}
+          {aviso && <div className="alert alert-success d-flex align-items-center justify-content-between gap-3"><span>{aviso}</span><button type="button" className="btn-close" aria-label="Cerrar aviso" onClick={cerrarAviso} /></div>}
         </div>
         <Toast mensaje={toast.mensaje} visible={toast.visible} onClose={() => setToast({ visible: false, mensaje: "" })} />
         <Routes>
           <Route path="/" element={<Bienvenida productos={catalogo.productos} onAgregar={agregarProducto} />} />
-          <Route
-            path="/catalogo"
-            element={
-              <Catalogo
-                esPagina
-                productos={catalogo.productos}
-                categoriasDisponibles={catalogo.categorias}
-                onAgregar={agregarProducto}
-              />
-            }
-          />
-          <Route
-            path="/categorias"
-            element={
-              <Categorias
-                productos={catalogo.productos}
-                categorias={catalogo.categorias}
-              />
-            }
-          />
-          <Route
-            path="/ofertas"
-            element={
-              <Catalogo
-                productos={catalogo.productos.filter(
-                  (producto) => producto.oferta,
-                )}
-                onAgregar={agregarProducto}
-                titulo="Ofertas"
-                esPagina
-              />
-            }
-          />
-          <Route
-            path="/productos/:id"
-            element={
-              <DetalleProducto
-                productos={catalogo.productos}
-                onAgregar={agregarProducto}
-              />
-            }
-          />
+          <Route path="/catalogo" element={<Catalogo esPagina productos={catalogo.productos} categoriasDisponibles={catalogo.categorias} onAgregar={agregarProducto} />} />
+          <Route path="/categorias" element={<Categorias productos={catalogo.productos} categorias={catalogo.categorias} />} />
+          <Route path="/ofertas" element={<Catalogo productos={catalogo.productos.filter((p) => p.oferta)} onAgregar={agregarProducto} titulo="Ofertas" esPagina />} />
+          <Route path="/productos/:id" element={<DetalleProducto productos={catalogo.productos} onAgregar={agregarProducto} />} />
           <Route path="/carrito" element={<Carrito {...carrito} esPagina />} />
           <Route path="/nosotros" element={<Nosotros />} />
           <Route path="/contacto" element={<Contacto />} />
           <Route path="/login" element={<Login />} />
           <Route path="/mis-pedidos" element={<MisPedidos {...historial} />} />
-          <Route
-            path="/checkout"
-            element={
-              <Checkout
-                items={carrito.items}
-                vaciar={carrito.vaciar}
-                onPedido={historial.agregar}
-              />
-            }
-          />
+          <Route path="/checkout" element={<Checkout items={carrito.items} vaciar={carrito.vaciar} onPedido={historial.agregar} />} />
           <Route path="/compra/:resultado" element={<ResultadoCompra />} />
           <Route element={<RutaAdministrador />}>
             <Route path="/admin" element={<AdminLayout />}>
-              <Route
-                index
-                element={
-                  <AdminInicio
-                    productos={catalogo.productos}
-                    pedidos={pedidos}
-                  />
-                }
-              />
-              <Route
-                path="productos"
-                element={<AdminProductos {...catalogo} />}
-              />
-              <Route
-                path="pedidos"
-                element={
-                  <section>
-                    <h1>Pedidos de demostración</h1>
-                    <ListaPedidos pedidos={pedidos} />
-                  </section>
-                }
-              />
-              <Route
-                path="reportes"
-                element={
-                  <AdminReportes
-                    productos={catalogo.productos}
-                    pedidos={pedidos}
-                  />
-                }
-              />
+              <Route index element={<AdminInicio productos={catalogo.productos} pedidos={historial.pedidos} />} />
+              <Route path="productos" element={<AdminProductos {...catalogo} />} />
+              <Route path="pedidos" element={<section><h1>Pedidos</h1><ListaPedidos pedidos={historial.pedidos} /></section>} />
+              <Route path="reportes" element={<AdminReportes productos={catalogo.productos} pedidos={historial.pedidos} />} />
               <Route path="perfil" element={<AdminPerfil />} />
-              <Route path="pruebas" element={<AdminPruebas />} />
-              <Route
-                path="categorias"
-                element={<AdminCategorias {...catalogo} />}
-              />
-              <Route
-                path="usuarios"
-                element={<AdminUsuarios {...usuariosDemo} />}
-              />
+              <Route path="categorias" element={<AdminCategorias {...catalogo} />} />
+              <Route path="usuarios" element={<AdminUsuarios />} />
             </Route>
           </Route>
           <Route path="*" element={<NoEncontrada />} />
@@ -193,11 +91,7 @@ function ContenidoApp() {
   );
 }
 
-export default App;
 function App() {
-  return (
-    <AuthProvider>
-      <ContenidoApp />
-    </AuthProvider>
-  );
+  return <AuthProvider><ContenidoApp /></AuthProvider>;
 }
+export default App;
