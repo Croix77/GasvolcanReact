@@ -1,3 +1,11 @@
+const sesiones = new EventTarget();
+
+export function escucharSesionRechazada(alRechazar) {
+  const escuchar = (evento) => alRechazar(evento.detail);
+  sesiones.addEventListener("sesion-rechazada", escuchar);
+  return () => sesiones.removeEventListener("sesion-rechazada", escuchar);
+}
+
 async function pedir(ruta, { token, metodo = "GET", datos, signal } = {}) {
   let respuesta;
   try {
@@ -18,7 +26,13 @@ async function pedir(ruta, { token, metodo = "GET", datos, signal } = {}) {
   if (respuesta.status === 204) return null;
   const contenido = await respuesta.json().catch(() => null);
   if (!respuesta.ok) {
-    const error = new Error(contenido?.mensaje ?? contenido?.error ?? "El servidor no pudo completar la solicitud.");
+    if (token && respuesta.status === 401 && !signal?.aborted) {
+      sesiones.dispatchEvent(new CustomEvent("sesion-rechazada", { detail: token }));
+    }
+    const mensaje = respuesta.status === 403
+      ? "Tu cuenta no tiene permiso para esta operación."
+      : contenido?.mensaje ?? contenido?.error ?? "El servidor no pudo completar la solicitud.";
+    const error = new Error(mensaje);
     error.status = respuesta.status;
     error.campos = contenido?.campos ?? contenido?.errores;
     throw error;

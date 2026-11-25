@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { AuthContext } from "./AuthContext";
+import { escucharSesionRechazada } from "../services/api";
 import { etiquetasRol, guardarSesion, iniciarSesion, recuperarSesion, renovarSesion } from "../services/sesion";
 
 function AuthProvider({ children }) {
@@ -12,28 +13,47 @@ function AuthProvider({ children }) {
     let vigente = true;
     cancelarRenovacion.current = () => { vigente = false; };
     const restante = sesion.vence - Date.now();
-    const vencer = () => {
+    const vencer = (mensaje) => {
       if (!vigente) return;
       vigente = false;
       guardarSesion(null);
       setSesion(null);
-      setAviso("Tu sesión ha expirado. Inicia sesión nuevamente.");
+      setAviso(mensaje);
     };
-    const temporizadorVencimiento = setTimeout(vencer, Math.max(0, restante));
-    const temporizadorRenovacion = setTimeout(async () => {
+    // Una respuesta atrasada de otro token no debe cerrar la sesión actual.
+    const dejarDeEscuchar = escucharSesionRechazada((token) => {
+      if (token === sesion.token) vencer("Tu sesión ya no está activa. Inicia sesión nuevamente.");
+    });
+    const temporizadorVencimiento = setTimeout(
+      () => vencer("Tu sesión ha expirado. Inicia sesión nuevamente."),
+      Math.max(0, restante),
+    );
+    async function intentarRenovar() {
       try {
         const nueva = await renovarSesion(sesion.token);
         if (!vigente) return;
-        guardarSesion(nueva);
-        setSesion(nueva);
+        if (nueva.token !== sesion.token) {
+          vigente = false;
+          guardarSesion(nueva);
+          setSesion(nueva);
+          return;
+        }
       } catch (error) {
-        if ([401, 403].includes(error.status)) vencer();
-        // Si se pierde la conexión, el token sigue vigente hasta su vencimiento.
+        if (error.status === 403) vencer("No se pudo renovar tu sesión. Inicia sesión nuevamente.");
       }
-    }, Math.max(0, restante - Math.min(60_000, Math.max(1000, restante / 5))));
+      // Un reinicio de Auth puede interrumpir la renovación. Se reintenta mientras el JWT esté vigente.
+      if (vigente && sesion.vence - Date.now() > 5000)
+        temporizadorRenovacion = setTimeout(intentarRenovar, 5000);
+    }
+
+    let temporizadorRenovacion = setTimeout(
+      intentarRenovar,
+      Math.max(0, restante - Math.min(60_000, Math.max(1000, restante / 5))),
+    );
 
     return () => {
       vigente = false;
+      dejarDeEscuchar();
       clearTimeout(temporizadorVencimiento);
       clearTimeout(temporizadorRenovacion);
     };

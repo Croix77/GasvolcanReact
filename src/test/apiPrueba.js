@@ -18,10 +18,10 @@ export function iniciarSesionPrueba(correo = "cliente@example.com") {
   }));
 }
 
-export function simularApis({ productos = productosPrueba, errorCompra, errorContacto, paginasContacto = [] } = {}) {
+export function simularApis({ productos = productosPrueba, errorCompra, errorContacto, paginasContacto = [], pedidosIniciales = [] } = {}) {
   const categorias = [...new Set(productos.map((producto) => producto.categoria))]
     .map((nombre, i) => ({ id: i + 1, nombre }));
-  const pedidos = [];
+  const pedidos = [...pedidosIniciales];
   const json = (datos, status = 200) =>
     new Response(JSON.stringify(datos), { status, headers: { "Content-Type": "application/json" } });
 
@@ -71,6 +71,10 @@ export function simularApis({ productos = productosPrueba, errorCompra, errorCon
       return json(pedido, 201);
     }
     if (ruta === "/api/v1/pedidos") return json(pedidos);
+    if (/^\/api\/v1\/pedidos\/\d+$/.test(ruta)) {
+      const pedido = pedidos.find(({ id }) => String(id) === ruta.split("/").at(-1));
+      return pedido ? json(pedido) : json({ mensaje: "No existe el pedido." }, 404);
+    }
     return json({ mensaje: "Ruta de prueba desconocida." }, 404);
   });
 }

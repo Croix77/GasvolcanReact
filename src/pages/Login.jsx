@@ -12,7 +12,9 @@ function Login() {
     const desde = state?.desde || "";
     if (rol === "administrador")
       return /^\/(?:admin|contacto)(?:\/|\?|$)/.test(desde) ? desde : "/admin";
-    if (["operadora", "repartidor", "vendedor"].includes(rol)) return "/despacho";
+    if (rol === "vendedor")
+      return /^\/(?:catalogo|productos|pedidos)(?:\/|\?|$)/.test(desde) ? desde : "/despacho";
+    if (["operadora", "repartidor"].includes(rol)) return "/despacho";
     return /^\/(?:catalogo|categorias|ofertas|productos|carrito|checkout|mis-pedidos|contacto)(?:\/|\?|$)/.test(desde) ? desde : "/catalogo";
   }
   const [datos, setDatos] = useState({ correo: "", clave: "" });

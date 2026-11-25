@@ -6,7 +6,22 @@ import { etiquetasRol } from "../services/sesion";
 
 function NavbarApp({ totalPedidos = 0 }) {
   const { sesion, salir } = useAuth();
-  const tieneTienda = ["administrador", "cliente", "vendedor"].includes(sesion?.rol);
+  const tieneTienda = ["administrador", "cliente"].includes(sesion?.rol);
+  const vende = sesion?.rol === "vendedor";
+  const despacha = ["operadora", "repartidor"].includes(sesion?.rol);
+  const inicio = vende ? "/catalogo" : despacha ? "/despacho" : "/";
+  const enlaces = sesion
+    ? [
+        ...(tieneTienda ? [
+          ["/", "Inicio"], ["/catalogo", "Catálogo"], ["/categorias", "Categorías"],
+          ["/ofertas", "Ofertas"], ["/nosotros", "Nosotros"], ["/contacto", "Contacto"],
+        ] : []),
+        ...(sesion.rol === "cliente" ? [["/carrito", "Carrito"], ["/mis-pedidos", "Historial de pedidos"]] : []),
+        ...(sesion.rol === "administrador" ? [["/admin", "Administración"]] : []),
+        ...(vende ? [["/catalogo", "Productos"]] : []),
+        ...(vende || despacha ? [["/despacho", "Pedidos"]] : []),
+      ]
+    : [["/login", "Iniciar sesión"]];
   const [expandido, setExpandido] = useState(false);
   return (
     <Navbar
@@ -18,7 +33,7 @@ function NavbarApp({ totalPedidos = 0 }) {
       onToggle={setExpandido}
     >
       <Container>
-        <Navbar.Brand as={Link} to="/" aria-label="Gas El Volcán - Inicio">
+        <Navbar.Brand as={Link} to={inicio} aria-label="Gas El Volcán">
           <img
             className="marca-banner"
             src="/img/banner-gas-el-volcan.png"
@@ -34,17 +49,7 @@ function NavbarApp({ totalPedidos = 0 }) {
         />
         <Navbar.Collapse id="menu-principal">
           <Nav className="ms-auto">
-            {(sesion ? [
-              ["/", "Inicio"],
-              ...(tieneTienda ? [["/catalogo", "Catálogo"],
-              ["/categorias", "Categorías"],
-              ["/ofertas", "Ofertas"]] : []),
-              ...(sesion.rol === "cliente" ? [["/carrito", "Carrito"], ["/mis-pedidos", "Historial de pedidos"]] : []),
-              ["/nosotros", "Nosotros"],
-              ...(["administrador", "cliente"].includes(sesion.rol) ? [["/contacto", "Contacto"]] : []),
-              ...(sesion.rol === "administrador" ? [["/admin", "Administración"]] : []),
-              ...(["vendedor", "operadora", "repartidor"].includes(sesion.rol) ? [["/despacho", "Pedidos"]] : []),
-            ] : [["/login", "Iniciar sesión"]]).map(([ruta, nombre]) => (
+            {enlaces.map(([ruta, nombre]) => (
               <Nav.Link
                 key={ruta}
                 as={NavLink}

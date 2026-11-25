@@ -33,6 +33,7 @@ import AdminUsuarios from "./pages/admin/AdminUsuarios";
 import AdminContacto from "./pages/admin/AdminContacto";
 import MisPedidos from "./pages/MisPedidos";
 import PedidosDespacho from "./pages/PedidosDespacho";
+import DetallePedido from "./pages/DetallePedido";
 import { MAX_UNIDADES_POR_PRODUCTO } from "./utils/compra";
 
 function ContenidoSesion() {
@@ -101,17 +102,21 @@ function ContenidoSesion() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route element={<RutaProtegida />}>
-            <Route path="/" element={puedeVerCatalogo ? vistaCatalogo(<Bienvenida productos={catalogo.productos} onAgregar={onAgregar} />) : <Navigate to="/despacho" replace />} />
+            <Route path="/" element={
+              administra || compra
+                ? vistaCatalogo(<Bienvenida productos={catalogo.productos} onAgregar={onAgregar} />)
+                : <Navigate to={sesion?.rol === "vendedor" ? "/catalogo" : "/despacho"} replace />
+            } />
+            <Route path="*" element={<NoEncontrada />} />
           </Route>
           <Route element={<RutaProtegida roles={["administrador", "cliente", "vendedor"]} />}>
             <Route path="/catalogo" element={vistaCatalogo(<Catalogo esPagina productos={catalogo.productos} categoriasDisponibles={catalogo.categorias} onAgregar={onAgregar} />)} />
-            <Route path="/categorias" element={vistaCatalogo(<Categorias productos={catalogo.productos} categorias={catalogo.categorias} />)} />
-            <Route path="/ofertas" element={vistaCatalogo(<Catalogo productos={catalogo.productos.filter((producto) => producto.oferta)} onAgregar={onAgregar} titulo="Ofertas" esPagina />)} />
             <Route path="/productos/:id" element={vistaCatalogo(<DetalleProducto productos={catalogo.productos} onAgregar={onAgregar} />)} />
-            <Route path="/nosotros" element={<Nosotros />} />
-            <Route path="*" element={<NoEncontrada />} />
           </Route>
           <Route element={<RutaProtegida roles={["administrador", "cliente"]} />}>
+            <Route path="/categorias" element={vistaCatalogo(<Categorias productos={catalogo.productos} categorias={catalogo.categorias} />)} />
+            <Route path="/ofertas" element={vistaCatalogo(<Catalogo productos={catalogo.productos.filter((producto) => producto.oferta)} onAgregar={onAgregar} titulo="Ofertas" esPagina />)} />
+            <Route path="/nosotros" element={<Nosotros />} />
             <Route path="/contacto" element={<Contacto />} />
           </Route>
           <Route element={<RutaProtegida roles={["cliente"]} />}>
@@ -123,6 +128,9 @@ function ContenidoSesion() {
           </Route>
           <Route element={<RutaProtegida roles={["administrador", "vendedor", "operadora", "repartidor"]} />}>
             <Route path="/despacho" element={<PedidosDespacho />} />
+          </Route>
+          <Route element={<RutaProtegida roles={["vendedor"]} />}>
+            <Route path="/pedidos/:id" element={<DetallePedido />} />
           </Route>
           <Route element={<RutaProtegida roles={["administrador"]} />}>
             <Route path="/admin" element={<AdminLayout />}>

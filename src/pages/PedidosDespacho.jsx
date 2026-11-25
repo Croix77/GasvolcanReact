@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import AccionesPedido from "../components/pedidos/AccionesPedido";
 import ListaPedidos from "../components/pedidos/ListaPedidos";
 import MapaSeguimiento from "../components/pedidos/MapaSeguimiento";
@@ -19,12 +20,13 @@ const titulos = {
 function PedidosDespacho() {
   const { sesion } = useAuth();
   const token = sesion?.token;
+  const soloConsulta = sesion?.rol === "vendedor";
   const puedeGestionar = ["administrador", "operadora"].includes(sesion?.rol);
   const [fecha, setFecha] = useState(() => fechaChile.format(new Date()));
   const [consulta, setConsulta] = useState(null);
   const [revision, setRevision] = useState(0);
   const [verMapa, setVerMapa] = useState(false);
-  const { pedidos, cargando, error, recargar } = usePedidos(token, puedeGestionar ? fecha : "", sesion?.rol === "vendedor" ? "pedidos" : "despacho");
+  const { pedidos, cargando, error, recargar } = usePedidos(token, puedeGestionar ? fecha : "", soloConsulta ? "pedidos" : "despacho");
 
   useEffect(() => {
     if (!token || !puedeGestionar) return;
@@ -73,7 +75,7 @@ function PedidosDespacho() {
       )}
       {!cargando && (!error || pedidos.length > 0) && (
         <>
-          {pedidos.length > 0 && sesion.rol !== "vendedor" && (
+          {pedidos.length > 0 && !soloConsulta && (
             <>
               <button type="button" className="btn btn-outline-primary mb-3" aria-expanded={verMapa}
                 onClick={() => setVerMapa(!verMapa)}>
@@ -82,8 +84,10 @@ function PedidosDespacho() {
               {verMapa && <MapaSeguimiento pedidos={pedidos} etiqueta="Mapa de pedidos de despacho" />}
             </>
           )}
-          <ListaPedidos pedidos={pedidos} mostrarContacto={sesion.rol !== "vendedor"} acciones={(pedido) => (
-            <AccionesPedido pedido={pedido} sesion={sesion} repartidores={repartidores} recargar={recargar} />
+          <ListaPedidos pedidos={pedidos} mostrarContacto={!soloConsulta} soloResumen={soloConsulta} acciones={(pedido) => (
+            soloConsulta
+              ? <Link to={"/pedidos/" + pedido.id}>Ver detalle del pedido {pedido.id}</Link>
+              : <AccionesPedido pedido={pedido} sesion={sesion} repartidores={repartidores} recargar={recargar} />
           )} />
         </>
       )}
